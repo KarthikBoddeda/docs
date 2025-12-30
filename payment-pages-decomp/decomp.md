@@ -1,5 +1,138 @@
 # Overview
-This document outlines the decomposition of payment handle functionality from the monolithic API service to the NoCodeApp (NCA) service, including current patterns, migration flows, and implementation tasks.
+
+This document outlines the decomposition of **Payment Pages** functionality from the monolithic API service to the NoCodeApp (NCA) service, including current architecture, target state, migration flows, and implementation tasks.
+
+---
+
+# Target State Architecture
+
+The target state after full migration - NCA service will serve all Payment Pages traffic independently.
+
+```mermaid
+flowchart LR
+    subgraph Clients[" "]
+        direction TB
+        MD[Merchant Dashboard]
+        HP[Hosted Pages]
+        CR[Crons etc.]
+    end
+
+    subgraph EdgeBox[" "]
+        AUTH[Auth<br/>Rate Lt]
+    end
+
+    subgraph Monolith[Monolith]
+        direction TB
+        MO[Merchant/Org<br/>Details]
+        PGR[PG Router]
+        PW[Payment<br/>Worker]
+    end
+
+    subgraph NCABox[" "]
+        direction TB
+        CURL[Custom URL]
+        NCAS[NCAS]
+        CACHE[(Cache)]
+    end
+
+    subgraph Storage[" "]
+        direction TB
+        DB[(DB)]
+        ES[(ES)]
+    end
+
+    subgraph Queue[" "]
+        MQ[/Queue/]
+    end
+
+    subgraph Workers[Workers]
+        direction TB
+        PWH[Partner Webhook]
+        RW[Receipt Wrk]
+        RISKW[Risk Worker]
+        ESW[ES Worker]
+        PEW[Payment Events<br/>Worker]
+    end
+
+    subgraph External[" "]
+        direction TB
+        STORK[Stork]
+        IRG[Invoice Receipt<br/>Generation]
+        RISKS[Risk Service]
+    end
+
+    MD --> AUTH
+    HP --> AUTH
+    CR --> AUTH
+    AUTH --> NCAS
+
+    NCAS --- CURL
+    NCAS ---|fetch| MO
+    NCAS -->|create order| PGR
+    PW -->|payment events CB| NCAS
+
+    NCAS --- CACHE
+    NCAS --> DB
+    NCAS --> ES
+
+    NCAS --> MQ
+    MQ --> PWH
+    MQ --> RW
+    MQ --> RISKW
+    MQ --> ESW
+    MQ --> PEW
+
+    PWH --> STORK
+    RW --> IRG
+    RISKW --> RISKS
+    ESW -->|update ES| ES
+    PEW -->|update analytics| DB
+
+    style EdgeBox fill:#f5f5f5,stroke:#333
+    style NCABox fill:#f5f5f5,stroke:#333
+    style Monolith fill:#fff,stroke:#333
+    style Workers fill:#f5f5f5,stroke:#333
+```
+
+---
+
+# Migration Phase Architecture
+
+During migration, NCA acts as a proxy layer handling dual writes, shadowing, and gradual traffic shift.
+
+```mermaid
+graph LR
+    Edge -->|1| NCA[no-code-app service]
+    NCA -->|11| Edge
+    NCA -->|2 proxy| Monolith_Apps[Existing Apps Module]
+    Monolith_Apps -->|3| NCA
+    NCA -.->|4,5| Monolith_Merchant[Merchant/Org Details]
+    NCA -.->|6,7| Splitz[Splitz/Gimli/DCS]
+    NCA -.->|8| NCADB[(NoCodeApps DB)]
+    NCA -.->|9| ES[(Elasticsearch)]
+    NCA -.->|10| Diff[Diff Logs/Metrics]
+```
+
+**Components:**
+- **Edge**: Entry point, routes requests to NCA
+- **NCA (no-code-app service)**: Central service handling proxying, dual writes, shadowing
+- **Monolith**: Contains Existing Apps Module (proxied) and Merchant/Org Details
+- **New NCA Infrastructure** (dotted lines): NoCodeApps DB, Elasticsearch, Diff Logs, Splitz/Gimli/DCS
+
+**Migration Flow Steps:**
+1. Edge routes request to NCA service
+2. NCA proxies request to Monolith's Existing Apps Module
+3. Monolith returns response
+4. NCA fetches merchant/org details from Monolith
+5. Merchant data returned
+6. NCA checks Splitz/Gimli/DCS for experiment flags
+7. Flag configuration returned
+8. NCA performs dual write to its own DB
+9. NCA indexes data to Elasticsearch
+10. NCA logs diffs/metrics for comparison
+11. Final response returned to Edge
+
+---
 
 # Request Flow during Migration
 
@@ -18,22 +151,37 @@ The migration uses separate databases for Monolith and NCA services with a speci
 ## Request Flow - Write/Read APIs
 
 **APIs covered by this flow:**
-<--TODO: update the APIs>
-**Write APIs:**
-- `payment_handle_create` - `POST /payment_handle`
-- `payment_handle_update` - `PATCH /payment_handle`
-- `payment_page_create_order` - `POST /payment_pages/{id}/order` (when view_type is handle)
-- `payment_page_set_merchant_details` - For handle-related settings
 
-**Read APIs:**
-- `payment_handle_get` - `GET /payment_handle`
-- `payment_handle_availability` - `GET /payment_handle/{slug}/exists`
-- `payment_handle_suggestion` - `GET /payment_handle/suggestion`
-- `payment_handle_amount_encryption` - `POST /payment_handle/custom_amount`
-- `pages_view_by_slug` - `GET /pages/{slug}` (for payment handles)
-- `payment_page_get_details` - For handle details from dashboard
-- `payment_page_get` - Handle-related page data
-- `payment_page_fetch_merchant_details` - For handle-related settings
+### Write APIs (Need NCA proxy for dual write)
+
+| API Route Name | Route Signature | Description | Status |
+|----------------|-----------------|-------------|--------|
+| `payment_page_create` | `POST /payment_pages` | Create a payment page (shared by buttons, subscription_buttons, pages, file_upload_page) | |
+| `payment_page_update` | `PATCH /payment_pages/{id}` | Update a payment page | |
+| `payment_page_create_order` | `POST /payment_pages/{id}/order` | Create Order | |
+| `payment_page_set_receipt_details` | `POST /payment_pages/{id}/receipt` | Set receipt details for a page | |
+| `payment_page_activate` | `PATCH /payment_pages/{id}/activate` | Activate a payment page | |
+| `payment_page_deactivate` | `PATCH /payment_pages/{id}/deactivate` | Deactivate a payment page | |
+| `payment_page_item_update` | `PATCH /payment_pages/payment_page_item/{id}` | Update a payment page item | |
+
+### Read APIs
+
+| API Route Name | Route Signature | Description | Status |
+|----------------|-----------------|-------------|--------|
+| `pages_view` | `GET/POST /pages/{x_entity_id}/view` | Hosted page view by page id | |
+| `pages_view_by_slug` | `GET/POST /pages/{slug}` | Hosted page view by slug | |
+| `pages_view_by_slug_empty` | `GET/POST /pages` | Hosted page view by empty slug | |
+| `payment_page_list` | `GET /payment_pages` | Get list of pages for a merchant | |
+| `payment_page_get` | `GET /payment_pages/{id}` | Get payment page by ID | |
+| `payment_page_get_details` | `GET /payment_pages/{id}/details` | Get detailed information on a page | |
+| `payment_page_view_get` | `GET/POST /payment_pages/{x_entity_id}/view` | Hosted page view by page id | |
+| `payment_page_get_invoice_details` | `GET /payment_pages/{payment_id}/receipt` | Fetch receipt details for a page | |
+| `payment_page_notify` | `POST /payment_pages/{id}/notify` | Sends notification to end customer | |
+| `payment_page_send_receipt` | `POST /payment_pages/{payment_id}/send_receipt` | Send receipt details to end user | |
+| `payment_page_save_receipt_for_payment` | `POST /payment_pages/{payment_id}/save_receipt` | Save receipt for a payment | |
+| `fetch_product_details_for_order` | `GET orders/{id}/product_details` | Get payment page details from order id (specific to pages and buttons) | |
+| `payment_page_slug_exists` | `GET /payment_pages/{slug}/exists` | Check if slug exists already | |
+| `payment_page_expire_cron` | `POST /payment_pages/expire` | Called from cron to expire a page (Internal) | |
 
 ```mermaid
 sequenceDiagram
