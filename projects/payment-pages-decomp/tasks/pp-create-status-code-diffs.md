@@ -43,6 +43,7 @@ Before starting, ensure:
 | Action | Reference |
 |--------|-----------|
 | Deploy to devstack | [/docs/agent-actions/deploy-to-devstack.md](/docs/agent-actions/deploy-to-devstack.md) |
+| Hot reload (test code changes) | [/docs/agent-actions/hot-reload-devspace.md](/docs/agent-actions/hot-reload-devspace.md) |
 | Sample API requests | [/docs/projects/payment-pages-decomp/payment-pages-api.http](/docs/projects/payment-pages-decomp/payment-pages-api.http) |
 | Failure logs location | `/pythonscripts/decomp-scripts/failure_logs/pp_create_failures/` |
 | Analysis report | `/pythonscripts/decomp-scripts/failure_logs/pp_create_failures/analysis.md` |
@@ -143,8 +144,16 @@ helmfile lint && helmfile sync
 
 ### Step 4: Test the Fix
 
-1. Apply code changes (TODO: setup hot reloading - see agent-actions)
-2. Rebuild/redeploy if needed
+1. Apply code changes using hot reload (see [/docs/agent-actions/hot-reload-devspace.md](/docs/agent-actions/hot-reload-devspace.md))
+   ```bash
+   cd ~/rzp/no-code-apps
+   # Update devspace.yaml with your devstack_label
+   devspace dev --no-warn
+   ```
+2. Wait for pod to be ready:
+   ```bash
+   kubectl get pods -n no-code-apps -l name=<devstack-label> -w
+   ```
 3. Hit the same request again
 4. Verify:
    - Diff is gone
