@@ -12,7 +12,7 @@ This folder contains code documentation for Payment Pages APIs in NCA service.
 
 | API | File | Description |
 |-----|------|-------------|
-| `payment_page_create` | [pp-create.md](./pp-create.md) | `POST /payment_pages` - Create payment page (NCA) |
+| `payment_page_create` | [nca-pp-create.md](./nca-pp-create.md) | `POST /payment_pages` - Create payment page (NCA) |
 | Proxying Logic | [proxying.md](./proxying.md) | How NCA proxies requests to monolith |
 
 ### Monolith (API) Code
