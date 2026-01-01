@@ -1,0 +1,66 @@
+---
+description: Payment Pages Decomposition project - context and index maintenance
+globs: ["**/payment-pages-decomp/**"]
+alwaysApply: false
+---
+
+# Payment Pages Decomposition Project
+
+## Project Context
+
+This project migrates Payment Pages functionality from the API monolith to the NoCodeApp (NCA) microservice.
+
+**Entry Point:** Always start by reading `/docs/projects/payment-pages-decomp/_index.md`
+
+## Repos Involved
+
+| Repo | Path | Description |
+|------|------|-------------|
+| api | `~/rzp/api` | PHP Monolith - source code |
+| no-code-apps | `~/rzp/no-code-apps` | Go microservice - target |
+| kube-manifests | `~/rzp/kube-manifests` | Devstack deployment |
+| docs | `~/rzp/docs` | Documentation |
+| pythonscripts | `~/rzp/pythonscripts` | Analysis scripts, failure logs |
+
+## Key Files
+
+- Architecture & APIs: `PAYMENT_PAGES_DECOMP.md`
+- API Requests (.http): `payment-pages-api.http`
+- Task Tracking: `tasks/` folder
+- Failure Logs: `/pythonscripts/decomp-scripts/failure_logs/`
+
+## Index Maintenance Rule
+
+**IMPORTANT:** When you modify any file in this project folder, you MUST update `_index.md` accordingly:
+
+1. **Adding a new file:**
+   - Add entry to "Where to Find Things" table
+   - Update "Key Files" section if it's a code reference
+
+2. **Adding/completing a task:**
+   - Update "Current Tasks" table
+   - If task has its own file in `tasks/`, link to it
+
+3. **Making a decision:**
+   - Add entry to "Decision Log" with date and decision
+
+4. **Adding new API:**
+   - Update `payment-pages-api.http`
+   - Update API tables in `PAYMENT_PAGES_DECOMP.md`
+
+5. **Changing project status:**
+   - Update "Quick Context" table (Stage field)
+
+## Testing & Deployment
+
+For deployment, follow: `/docs/agent-actions/deploy-to-devstack/overview.md`
+
+Required headers for devstack:
+```
+rzpctx-dev-serve-user: <devstack_label>
+```
+
+## When Stuck
+
+- Ask user for clarification if context is missing
+- Check `_index.md` for navigation

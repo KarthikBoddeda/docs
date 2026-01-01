@@ -1,0 +1,1632 @@
+{
+	"info": {
+		"_postman_id": "518a4fc2-53a3-408b-a7b7-0552e48d631a",
+		"name": "No Code Apps",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34448862",
+		"_collection_link": "https://blue-sunset-150839.postman.co/workspace/My-Workspace~fa2df796-0edb-41c7-8a8d-100c8498e55d/collection/18574584-518a4fc2-53a3-408b-a7b7-0552e48d631a?action=share&source=collection_link&creator=34448862"
+	},
+	"item": [
+		{
+			"name": "NCA Payment Pages",
+			"item": [
+				{
+					"name": "Hosted Page APIs",
+					"item": [
+						{
+							"name": "payment_page_view_get - GET",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pl_PTeYjKajBRjGj8/view",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pl_PTeYjKajBRjGj8",
+										"view"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "pages_view - GET",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/pages/pl_PSrmhQb3PdSCZW/view",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"pages",
+										"pl_PSrmhQb3PdSCZW",
+										"view"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "pages_view_by_slug - GET",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/pages/ranchodas",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"pages",
+										"ranchodas"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "pages_view_by_slug_post",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/pages/namoona3",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"pages",
+										"namoona3"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Basic Page CRUD APIs",
+					"item": [
+						{
+							"name": "payment_page_create",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live"
+									},
+									{
+										"key": "X-Dual-Write-State",
+										"value": "nca_only"
+									},
+									{
+										"key": "X-Passport-JWT-V1",
+										"value": "eyJ0eXAiOiJKV1QiLCJraWQiOiJlZGdldjIiLCJhbGciOiJSUzI1NiJ9.eyJwYXlsb2FkaGFzaCI6IjVjYjAwNDJmNTA3NzdjMzIzYjFkZjAyYmQzNmVmNTA2ZWQ5MzQ2YmE5OWYzZmFmNmIzNjlhZTM2OTg5NmMxOGMiLCJyb2xlcyI6WyJvd25lciIsInN0YXRlbWVudF9iYWxhbmNlX3ZpZXdfYWNjZXNzIiwibWlzY19hbGxfcm9sZXMiLCJjb250YWN0X3ZpZXdfYWNjZXNzIiwiZnVuZGFjY291bnRfdmlld19hY2Nlc3MiLCJ0ZHNfY2F0ZWdvcmllc192aWV3IiwicmVwb3J0aW5nX2NvbmZpZ192aWV3IiwibWVyY2hhbnRfdXNlcnNfdmlldyIsImJhbmtpbmdfaW5mb192aWV3X2FjY2VzcyIsInBheW91dF9jcmVhdGVfdmlldyIsImZ1bmRhY2NvdW50X2NyZWF0ZV92aWV3IiwiY29udGFjdF9jcmVhdGVfdmlldyIsIndvcmtmbG93X3ZpZXdfYWNjZXNzIiwicGF5b3V0X2xpbmtfY3JlYXRlX3ZpZXciLCJ0YXhfcGF5bWVudF9zZXR0aW5nc192aWV3IiwiYWNjb3VudGluZ192aWV3X2FjY2VzcyIsInBheW91dF9hdHRhY2htZW50X2NyZWF0ZV92aWV3IiwicGF5b3V0X2xpbmtfc2V0dGluZ3NfdmlldyIsInBheW91dF92aWV3X2FjY2VzcyIsInBheW91dF9saW5rX3ZpZXdfYWNjZXNzIiwiaW52b2ljZV9jcmVhdGVfdmlldyIsImludm9pY2Vfdmlld19hY2Nlc3MiLCJ0YXhfY3JlYXRlX3ZpZXciLCJ0YXhfdmlld19hY2Nlc3MiLCJyZXBvcnRpbmdfY29uZmlnIiwidGRzX2NoYWxsYW5fZG93bmxvYWQiLCJtZXJjaGFudF9hbmFseXRpY3MiLCJtZXJjaGFudF91c2VyX2ludml0ZV9jcmVhdGVfdmlldyIsIm1lcmNoYW50X3JvbGVfY3JlYXRlX3ZpZXciLCJtZXJjaGFudF91c2VyX3ZpZXdfYWNjZXNzIiwibWVyY2hhbnRfcm9sZV92aWV3X2FjY2VzcyIsImRldl9jb250cm9sc19jcmVhdGVfdmlldyIsImRldl9jb250cm9sc192aWV3X2FjY2VzcyIsImFjY291bnRpbmdfY3JlYXRlX3ZpZXciLCJiaWxsaW5nX2ludm9pY2VzIiwidmFfY29uZmlnIiwiYnVzaW5lc3NfaW5mb19jb25maWciLCJmZWF0dXJlX2NvbnRyb2xzIiwibWVyY2hhbnRfbWlzY19jb25maWciLCJtZXJjaGFudF9wcmVmZXJlbmNlX2NyZWF0ZSIsIndvcmtmbG93X2NyZWF0ZV92aWV3IiwiYWNjb3VudHNfcmVjZWl2YWJsZV9hZG1pbiIsImZpbmFuY2V4X3JlcG9ydF9jcmVhdGUiLCJmaW5hbmNleF9yZXBvcnRfdmlldyIsImJpbGxfcGF5bWVudHNfY3JlYXRlX3ZpZXciLCJ2aWV3X2FsbF90cmFuc2FjdGlvbnMiLCJnZW5lcmljX2FjY291bnRpbmdfaW50ZWdyYXRpb25fY3JlYXRlX3ZpZXciLCJnZW5lcmljX2FjY291bnRpbmdfaW50ZWdyYXRpb25fdmlldyIsIm1lcmNoYW50X29uYm9hcmRpbmdfdmlld19hY2Nlc3MiLCJtZXJjaGFudF9vbmJvYXJkaW5nX2NyZWF0ZV92aWV3IiwiY29zdF9jZW50ZXJfdmlldyIsImNvc3RfY2VudGVyX2NyZWF0ZV92aWV3IiwiYnJhbmNoX3ZpZXdfYWNjZXNzX3JvbGUiLCJicmFuY2hfY3JlYXRlX2FjY2Vzc19yb2xlIiwiY29udGFjdF9hcHByb3ZlX3ZpZXciLCJmdW5kYWNjb3VudF9hcHByb3ZlX3ZpZXciLCJ0ZXN0Iiwidmlld19hbGxfdnBfYWNjZXNzX3JvbGUiLCJncm91cF90eXBlX3ZpZXciLCJncm91cF92aWV3IiwidXNlcl9ncm91cF9tYXBwaW5nX3ZpZXciLCJncm91cF90eXBlX2NyZWF0ZV92aWV3IiwiZ3JvdXBfY3JlYXRlX3ZpZXciLCJ1c2VyX2dyb3VwX21hcHBpbmdfY3JlYXRlX3ZpZXciLCJwdXJjaGFzZV9vcmRlcl92aWV3X2FjY2Vzc19yb2xlIiwicHVyY2hhc2Vfb3JkZXJfY3JlYXRlX2FjY2Vzc19yb2xlIiwidmVuZG9yX3ZpZXdfYWNjZXNzIiwidmVuZG9yX2NyZWF0ZV92aWV3IiwidmVuZG9yX2FwcHJvdmVfcmVqZWN0X3ZpZXciLCJwZXR0eV9jYXNoX3ZpZXciLCJwZXR0eV9jYXNoX3ZpZXdfYWxsIiwiYnVkZ2V0X2NyZWF0ZSIsImJ1ZGdldF92aWV3IiwiYnVkZ2V0X3ZpZXdfYWxsIiwiZXhwZW5zZV9jYXRlZ29yeV9jcmVhdGUiLCJleHBlbnNlX2NhdGVnb3JpZXNfdmlldyIsInBheW91dF92aWV3X2FsbF9hY2Nlc3MiLCJwYXlvdXRfbGlua192aWV3X2FsbF9hY2Nlc3MiLCJwZXR0eV9jYXNoX2NyZWF0ZSIsIm1hbmFnZV9nc3RfaXRjX3JvbGUiLCJpdGVtX3ZpZXdfYWNjZXNzX3JvbGUiLCJpdGVtX2NyZWF0ZV9hY2Nlc3Nfcm9sZSJdLCJpbXBlcnNvbmF0aW9uIjp7InR5cGUiOiJ1c2VyX21lcmNoYW50IiwiY29uc3VtZXIiOnsiaWQiOiJMTGtqTGRKejRnV1Z2ayIsInR5cGUiOiJtZXJjaGFudCJ9fSwiZXhwIjoxNzM1NTg0MTE0LCJwcm9kdWN0IjoicGciLCJjb25zdW1lciI6eyJpZCI6IkxMa2pMWEI4V3lrd2I3IiwidHlwZSI6InVzZXIifSwiaWF0IjoxNzM1NTgzODE0LCJhdXRoZW50aWNhdGVkIjp0cnVlLCJhdWQiOiJhcGktZGFzaGJvYXJkLW1lcmNoYW50LXNlcnZpY2UiLCJpZGVudGlmaWVkIjp0cnVlLCJjcmVkZW50aWFsIjp7fSwianRpIjoiNGY0Y2Q3MmEtZWViNy00YmYwLWJjNjUtM2FmNTdiYjViNzI2IiwiaXNzIjoiZWRnZSIsIm1vZGUiOiJsaXZlIiwib3JnIjoiMTAwMDAwcmF6b3JwYXkiLCJuYmYiOjE3MzU1ODM4MTR9.VHnL9FZu5di8XnGviWNenfIpQ9oKck7oX2brq5UwGGlEG3SqHBphz8dKUw9cWzJX9uHn_NYis1NDWX1QJgl-T3Ta0EbyNB85ksForXKSNK5CwDJOpKJ8MC9uSbyDbuChY3aYtUWKV5uNBZE1gXcebPQ52uYYHpNl-JAWkKi8eeQ",
+										"disabled": true
+									},
+									{
+										"key": "",
+										"value": "rzp_live_iQzmHmnhlSPXlm",
+										"disabled": true
+									},
+									{
+										"key": "X-",
+										"value": "",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"currency\": \"INR\",\n    \"expire_by\": null,\n    \"title\": \"Test Page Man\",\n    // \"description\": \"sdfsdf\",\n    \"description\": \"{\\\"value\\\":[{\\\"insert\\\":\\\"asdfsadfasdf\\\\n\\\"}],\\\"metaText\\\":\\\"asdfsadfasdf. \\\"}\",\n    \"terms\": null,\n    \"support_email\": \"pavankarthikboddeda@gmail.com\",\n    \"support_contact\": \"909090990\",\n    \"notes\":{\n        \"key\": \"value\",\n        \"key2\": \"value\"\n    },\n    \"settings\": {\n        \"allow_social_share\": \"0\",\n        \"udf_schema\": \"[{\\\"name\\\":\\\"email\\\",\\\"required\\\":true,\\\"title\\\":\\\"Email\\\",\\\"type\\\":\\\"string\\\",\\\"pattern\\\":\\\"email\\\",\\\"settings\\\":{\\\"position\\\":0}},{\\\"name\\\":\\\"name\\\",\\\"title\\\":\\\"Name\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"settings\\\":{\\\"position\\\":4}},{\\\"name\\\":\\\"phone\\\",\\\"title\\\":\\\"Phone\\\",\\\"required\\\":true,\\\"type\\\":\\\"number\\\",\\\"pattern\\\":\\\"phone\\\",\\\"minLength\\\":\\\"8\\\",\\\"options\\\":[],\\\"settings\\\":{\\\"position\\\":5}},{\\\"name\\\":\\\"address\\\",\\\"title\\\":\\\"Address\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"options\\\":{\\\"cmp\\\":\\\"textarea\\\"},\\\"settings\\\":{\\\"position\\\":6}},{\\\"name\\\":\\\"state\\\",\\\"title\\\":\\\"State\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"settings\\\":{\\\"position\\\":7}},{\\\"name\\\":\\\"city\\\",\\\"title\\\":\\\"City\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"settings\\\":{\\\"position\\\":8}},{\\\"name\\\":\\\"pincode\\\",\\\"title\\\":\\\"Pincode\\\",\\\"required\\\":true,\\\"type\\\":\\\"number\\\",\\\"minLength\\\":\\\"5\\\",\\\"maxLength\\\":6,\\\"pattern\\\":\\\"number\\\",\\\"options\\\":[],\\\"settings\\\":{\\\"position\\\":9}},{\\\"name\\\":\\\"custom_input\\\",\\\"title\\\":\\\"Custom input\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"settings\\\":{\\\"position\\\":10}}]\",\n        \"checkout_options\": {\n            \"email\": \"email\",\n            \"phone\": \"phone\"\n        },\n        \"custom_domain\": \"\",\n        \"payment_button_label\": \"\",\n        \"theme\": \"dark\",\n        \"payment_success_redirect_url\": \"https://google.com\",\n        \"payment_success_message\": \"asdfsadfasfadsfas\",\n        \"payment_button_theme\": \"asdfsadfasfadsfasa\"\n    },\n    \"view_type\": \"button\",\n    \"payment_page_items\": [\n        {\n            \"item\": {\n                \"name\": \"Amount\",\n                \"amount\": 800,\n                \"currency\": \"INR\",\n                \"description\": \"what\"\n            },\n            \"settings\": {\n                \"position\": 0\n            },\n            \"mandatory\": true,\n            \"min_amount\": null,\n            \"max_amount\": null,\n            \"stock\": 1,\n            \"min_purchase\": 0,\n            \"max_purchase\": 1,\n            \"image_url\": \"https://s3.ap-south-1.amazonaws.com/rzp-prod-merchant-assets/payment-link/description/oxplpgnogozejy.jpeg\"\n        }\n    ],\n    \"template_type\": \"custom\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "receipt testing",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live"
+									},
+									{
+										"key": "X-Dual-Write-State",
+										"value": "nca_only"
+									},
+									{
+										"key": "X-Passport-JWT-V1",
+										"value": "eyJ0eXAiOiJKV1QiLCJraWQiOiJlZGdldjIiLCJhbGciOiJSUzI1NiJ9.eyJwYXlsb2FkaGFzaCI6IjVjYjAwNDJmNTA3NzdjMzIzYjFkZjAyYmQzNmVmNTA2ZWQ5MzQ2YmE5OWYzZmFmNmIzNjlhZTM2OTg5NmMxOGMiLCJyb2xlcyI6WyJvd25lciIsInN0YXRlbWVudF9iYWxhbmNlX3ZpZXdfYWNjZXNzIiwibWlzY19hbGxfcm9sZXMiLCJjb250YWN0X3ZpZXdfYWNjZXNzIiwiZnVuZGFjY291bnRfdmlld19hY2Nlc3MiLCJ0ZHNfY2F0ZWdvcmllc192aWV3IiwicmVwb3J0aW5nX2NvbmZpZ192aWV3IiwibWVyY2hhbnRfdXNlcnNfdmlldyIsImJhbmtpbmdfaW5mb192aWV3X2FjY2VzcyIsInBheW91dF9jcmVhdGVfdmlldyIsImZ1bmRhY2NvdW50X2NyZWF0ZV92aWV3IiwiY29udGFjdF9jcmVhdGVfdmlldyIsIndvcmtmbG93X3ZpZXdfYWNjZXNzIiwicGF5b3V0X2xpbmtfY3JlYXRlX3ZpZXciLCJ0YXhfcGF5bWVudF9zZXR0aW5nc192aWV3IiwiYWNjb3VudGluZ192aWV3X2FjY2VzcyIsInBheW91dF9hdHRhY2htZW50X2NyZWF0ZV92aWV3IiwicGF5b3V0X2xpbmtfc2V0dGluZ3NfdmlldyIsInBheW91dF92aWV3X2FjY2VzcyIsInBheW91dF9saW5rX3ZpZXdfYWNjZXNzIiwiaW52b2ljZV9jcmVhdGVfdmlldyIsImludm9pY2Vfdmlld19hY2Nlc3MiLCJ0YXhfY3JlYXRlX3ZpZXciLCJ0YXhfdmlld19hY2Nlc3MiLCJyZXBvcnRpbmdfY29uZmlnIiwidGRzX2NoYWxsYW5fZG93bmxvYWQiLCJtZXJjaGFudF9hbmFseXRpY3MiLCJtZXJjaGFudF91c2VyX2ludml0ZV9jcmVhdGVfdmlldyIsIm1lcmNoYW50X3JvbGVfY3JlYXRlX3ZpZXciLCJtZXJjaGFudF91c2VyX3ZpZXdfYWNjZXNzIiwibWVyY2hhbnRfcm9sZV92aWV3X2FjY2VzcyIsImRldl9jb250cm9sc19jcmVhdGVfdmlldyIsImRldl9jb250cm9sc192aWV3X2FjY2VzcyIsImFjY291bnRpbmdfY3JlYXRlX3ZpZXciLCJiaWxsaW5nX2ludm9pY2VzIiwidmFfY29uZmlnIiwiYnVzaW5lc3NfaW5mb19jb25maWciLCJmZWF0dXJlX2NvbnRyb2xzIiwibWVyY2hhbnRfbWlzY19jb25maWciLCJtZXJjaGFudF9wcmVmZXJlbmNlX2NyZWF0ZSIsIndvcmtmbG93X2NyZWF0ZV92aWV3IiwiYWNjb3VudHNfcmVjZWl2YWJsZV9hZG1pbiIsImZpbmFuY2V4X3JlcG9ydF9jcmVhdGUiLCJmaW5hbmNleF9yZXBvcnRfdmlldyIsImJpbGxfcGF5bWVudHNfY3JlYXRlX3ZpZXciLCJ2aWV3X2FsbF90cmFuc2FjdGlvbnMiLCJnZW5lcmljX2FjY291bnRpbmdfaW50ZWdyYXRpb25fY3JlYXRlX3ZpZXciLCJnZW5lcmljX2FjY291bnRpbmdfaW50ZWdyYXRpb25fdmlldyIsIm1lcmNoYW50X29uYm9hcmRpbmdfdmlld19hY2Nlc3MiLCJtZXJjaGFudF9vbmJvYXJkaW5nX2NyZWF0ZV92aWV3IiwiY29zdF9jZW50ZXJfdmlldyIsImNvc3RfY2VudGVyX2NyZWF0ZV92aWV3IiwiYnJhbmNoX3ZpZXdfYWNjZXNzX3JvbGUiLCJicmFuY2hfY3JlYXRlX2FjY2Vzc19yb2xlIiwiY29udGFjdF9hcHByb3ZlX3ZpZXciLCJmdW5kYWNjb3VudF9hcHByb3ZlX3ZpZXciLCJ0ZXN0Iiwidmlld19hbGxfdnBfYWNjZXNzX3JvbGUiLCJncm91cF90eXBlX3ZpZXciLCJncm91cF92aWV3IiwidXNlcl9ncm91cF9tYXBwaW5nX3ZpZXciLCJncm91cF90eXBlX2NyZWF0ZV92aWV3IiwiZ3JvdXBfY3JlYXRlX3ZpZXciLCJ1c2VyX2dyb3VwX21hcHBpbmdfY3JlYXRlX3ZpZXciLCJwdXJjaGFzZV9vcmRlcl92aWV3X2FjY2Vzc19yb2xlIiwicHVyY2hhc2Vfb3JkZXJfY3JlYXRlX2FjY2Vzc19yb2xlIiwidmVuZG9yX3ZpZXdfYWNjZXNzIiwidmVuZG9yX2NyZWF0ZV92aWV3IiwidmVuZG9yX2FwcHJvdmVfcmVqZWN0X3ZpZXciLCJwZXR0eV9jYXNoX3ZpZXciLCJwZXR0eV9jYXNoX3ZpZXdfYWxsIiwiYnVkZ2V0X2NyZWF0ZSIsImJ1ZGdldF92aWV3IiwiYnVkZ2V0X3ZpZXdfYWxsIiwiZXhwZW5zZV9jYXRlZ29yeV9jcmVhdGUiLCJleHBlbnNlX2NhdGVnb3JpZXNfdmlldyIsInBheW91dF92aWV3X2FsbF9hY2Nlc3MiLCJwYXlvdXRfbGlua192aWV3X2FsbF9hY2Nlc3MiLCJwZXR0eV9jYXNoX2NyZWF0ZSIsIm1hbmFnZV9nc3RfaXRjX3JvbGUiLCJpdGVtX3ZpZXdfYWNjZXNzX3JvbGUiLCJpdGVtX2NyZWF0ZV9hY2Nlc3Nfcm9sZSJdLCJpbXBlcnNvbmF0aW9uIjp7InR5cGUiOiJ1c2VyX21lcmNoYW50IiwiY29uc3VtZXIiOnsiaWQiOiJMTGtqTGRKejRnV1Z2ayIsInR5cGUiOiJtZXJjaGFudCJ9fSwiZXhwIjoxNzM1NTg0MTE0LCJwcm9kdWN0IjoicGciLCJjb25zdW1lciI6eyJpZCI6IkxMa2pMWEI4V3lrd2I3IiwidHlwZSI6InVzZXIifSwiaWF0IjoxNzM1NTgzODE0LCJhdXRoZW50aWNhdGVkIjp0cnVlLCJhdWQiOiJhcGktZGFzaGJvYXJkLW1lcmNoYW50LXNlcnZpY2UiLCJpZGVudGlmaWVkIjp0cnVlLCJjcmVkZW50aWFsIjp7fSwianRpIjoiNGY0Y2Q3MmEtZWViNy00YmYwLWJjNjUtM2FmNTdiYjViNzI2IiwiaXNzIjoiZWRnZSIsIm1vZGUiOiJsaXZlIiwib3JnIjoiMTAwMDAwcmF6b3JwYXkiLCJuYmYiOjE3MzU1ODM4MTR9.VHnL9FZu5di8XnGviWNenfIpQ9oKck7oX2brq5UwGGlEG3SqHBphz8dKUw9cWzJX9uHn_NYis1NDWX1QJgl-T3Ta0EbyNB85ksForXKSNK5CwDJOpKJ8MC9uSbyDbuChY3aYtUWKV5uNBZE1gXcebPQ52uYYHpNl-JAWkKi8eeQ",
+										"disabled": true
+									},
+									{
+										"key": "",
+										"value": "rzp_live_iQzmHmnhlSPXlm",
+										"disabled": true
+									},
+									{
+										"key": "X-",
+										"value": "",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"currency\": \"INR\",\n    \"expire_by\": null,\n    \"title\": \"Test Page Man\",\n    // \"description\": \"sdfsdf\",\n    \"description\": \"{\\\"value\\\":[{\\\"insert\\\":\\\"asdfsadfasdf\\\\n\\\"}],\\\"metaText\\\":\\\"asdfsadfasdf. \\\"}\",\n    \"terms\": null,\n    \"support_email\": \"pavankarthikboddeda@gmail.com\",\n    \"support_contact\": \"909090990\",\n    \"notes\":{\n        \"key\": \"value\",\n        \"key2\": \"value\"\n    },\n    \"settings\": {\n        \"allow_social_share\": \"0\",\n        \"udf_schema\": \"[{\\\"name\\\":\\\"email\\\",\\\"required\\\":true,\\\"title\\\":\\\"Email\\\",\\\"type\\\":\\\"string\\\",\\\"pattern\\\":\\\"email\\\",\\\"settings\\\":{\\\"position\\\":0}},{\\\"name\\\":\\\"name\\\",\\\"title\\\":\\\"Name\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"settings\\\":{\\\"position\\\":4}},{\\\"name\\\":\\\"phone\\\",\\\"title\\\":\\\"Phone\\\",\\\"required\\\":true,\\\"type\\\":\\\"number\\\",\\\"pattern\\\":\\\"phone\\\",\\\"minLength\\\":\\\"8\\\",\\\"options\\\":[],\\\"settings\\\":{\\\"position\\\":5}},{\\\"name\\\":\\\"address\\\",\\\"title\\\":\\\"Address\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"options\\\":{\\\"cmp\\\":\\\"textarea\\\"},\\\"settings\\\":{\\\"position\\\":6}},{\\\"name\\\":\\\"state\\\",\\\"title\\\":\\\"State\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"settings\\\":{\\\"position\\\":7}},{\\\"name\\\":\\\"city\\\",\\\"title\\\":\\\"City\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"settings\\\":{\\\"position\\\":8}},{\\\"name\\\":\\\"pincode\\\",\\\"title\\\":\\\"Pincode\\\",\\\"required\\\":true,\\\"type\\\":\\\"number\\\",\\\"minLength\\\":\\\"5\\\",\\\"maxLength\\\":6,\\\"pattern\\\":\\\"number\\\",\\\"options\\\":[],\\\"settings\\\":{\\\"position\\\":9}},{\\\"name\\\":\\\"custom_input\\\",\\\"title\\\":\\\"Custom input\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"settings\\\":{\\\"position\\\":10}}]\",\n        \"checkout_options\": {\n            \"email\": \"email\",\n            \"phone\": \"phone\"\n        },\n        \"custom_domain\": \"\",\n        \"payment_button_label\": \"\",\n        \"theme\": \"dark\",\n        \"payment_success_redirect_url\": \"https://google.com\",\n        \"payment_success_message\": \"asdfsadfasfadsfas\",\n        \"payment_button_theme\": \"asdfsadfasfadsfasa\"\n    },\n    \"view_type\": \"button\",\n    \"payment_page_items\": [\n        {\n            \"item\": {\n                \"name\": \"Amount\",\n                \"amount\": 800,\n                \"currency\": \"INR\",\n                \"description\": \"what\"\n            },\n            \"settings\": {\n                \"position\": 0\n            },\n            \"mandatory\": true,\n            \"min_amount\": null,\n            \"max_amount\": null,\n            \"stock\": 1,\n            \"min_purchase\": 0,\n            \"max_purchase\": 1,\n            \"image_url\": \"https://s3.ap-south-1.amazonaws.com/rzp-prod-merchant-assets/payment-link/description/oxplpgnogozejy.jpeg\"\n        }\n    ],\n    \"template_type\": \"custom\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_update",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live"
+									},
+									{
+										"key": "X-Dual-Write-State",
+										"value": "nca_only"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"BRKNAOD\",\n    \"settings\": {\n        \"payment_button_label\": \"Paypl\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pl_PmMm26EeRXcZDF",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pl_PmMm26EeRXcZDF"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_activate",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live"
+									},
+									{
+										"key": "X-Proxy-State",
+										"value": "nca_only"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic UkFORE9NX05DQV9VU0VSOlJBTkRPTV9OQ0FfUEFTU1dPUkQ=",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pl_PvbaIPMzbQUNf2/activate",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pl_PvbaIPMzbQUNf2",
+										"activate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_deactivate",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live"
+									},
+									{
+										"key": "X-Proxy-State",
+										"value": "dual_write_no_reads_no_external"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pl_PvbYRxZd7r7LQ4/deactivate",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pl_PvbYRxZd7r7LQ4",
+										"deactivate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_list",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages?skip=0&count=1",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "0"
+										},
+										{
+											"key": "count",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_get_details",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pl_PSrmhQb3PdSCZW/details?expand[0]=user",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pl_PSrmhQb3PdSCZW",
+										"details"
+									],
+									"query": [
+										{
+											"key": "expand[0]",
+											"value": "user"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_get",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pl_PSrmhQb3PdSCZW",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pl_PSrmhQb3PdSCZW"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_item_update",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "payment_callback",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "bulk_expire",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "test",
+										"type": "text"
+									},
+									{
+										"key": "X-Razorpay-User-Role",
+										"value": "owner",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{nca-url}}/v1/stores/bulk_expire",
+									"host": [
+										"{{nca-url}}"
+									],
+									"path": [
+										"v1",
+										"stores",
+										"bulk_expire"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Order APIs",
+					"item": [
+						{
+							"name": "payment_page_create_order",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-NoCodeApps-Routing",
+										"value": "nocodeapps"
+									},
+									{
+										"key": "X-Proxy-State",
+										"value": "nca_only"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"line_items\": [\n        {\n            \"payment_page_item_id\": \"ppi_PuRBb5q0LEuGsw\",\n            \"amount\": 100,\n            \"quantity\": 1\n        }\n        // {\n        //     \"payment_page_item_id\": \"ppi_Pu3zrZRprEjQS5\",\n        //     \"amount\": 800,\n        //     \"quantity\": 2\n        // }\n    ],\n    \"notes\": {\n        \"email\": \"pavankarthikboddeda@gmail.com\",\n        \"phone\": \"7013605095\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pl_PuRBai18gvtWWc/order",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pl_PuRBai18gvtWWc",
+										"order"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Share Notification APIs",
+					"item": [
+						{
+							"name": "payment_page_notify",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"emails\": [\n        \"pavankarthikboddeda@gmail.com\"\n    ],\n    \"contacts\": [\n        \"7013605095\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pl_PSrmhQb3PdSCZW/notify",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pl_PSrmhQb3PdSCZW",
+										"notify"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Invoice Receipt APIs",
+					"item": [
+						{
+							"name": "payment_page_fetch_merchant_details",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/merchant_details/{{merchant_id}}",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"merchant_details",
+										"{{merchant_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_set_receipt_details",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live",
+										"type": "text"
+									},
+									{
+										"key": "X-Dual-Write-State",
+										"value": "nca_only",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"enable_receipt\": 1,\n    // \"enable_custom_serial_number\": \"0\",\n    \"selected_udf_field\": \"email\",\n    \"enable_80g_details\": \"0\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pl_PgxG5yWE8AZNyr/receipt",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pl_PgxG5yWE8AZNyr",
+										"receipt"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_get_invoice_details",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "{{merchant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live",
+										"type": "text"
+									},
+									{
+										"key": "X-Dual-Write-State",
+										"value": "nca_only",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"enable_receipt\": 1,\n    // \"enable_custom_serial_number\": \"0\",\n    \"selected_udf_field\": \"email\",\n    \"enable_80g_details\": \"0\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pl_PgxG5yWE8AZNyr/receipt",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pl_PgxG5yWE8AZNyr",
+										"receipt"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_save_receipt_for_payment",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "KK3Yi8SZpwBP2M",
+										"type": "text"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live",
+										"type": "text"
+									},
+									{
+										"key": "X-Dual-Write-State",
+										"value": "nca_only",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"receipt\": \"harish\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pay_Q8eTZpxiqfjEfI/save_receipt",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pay_Q8eTZpxiqfjEfI",
+										"save_receipt"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "payment_page_send_receipt",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{nca-password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{nca-user}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Razorpay-Merchant-Id",
+										"value": "KK3Yi8SZpwBP2M",
+										"type": "text"
+									},
+									{
+										"key": "X-Razorpay-Mode",
+										"value": "live",
+										"type": "text"
+									},
+									{
+										"key": "X-Dual-Write-State",
+										"value": "nca_only",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"receipt\": \"harish\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{nca_personal_url}}/v1/payment_pages/pay_Q8eTZpxiqfjEfI/send_receipt",
+									"host": [
+										"{{nca_personal_url}}"
+									],
+									"path": [
+										"v1",
+										"payment_pages",
+										"pay_Q8eTZpxiqfjEfI",
+										"send_receipt"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Dashboard APIs",
+					"item": [
+						{
+							"name": "payment_page_create",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Merchant-Id",
+										"value": "LJ3P0FyFtOULha"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "rzpctx-dev-serve-user",
+										"value": "ppcreate"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic cnpwX2xpdmVfTEozUDBGeUZ0T1VMaGE6UkFORE9NX05DQV9QQVNTV09SRA==",
+										"disabled": true
+									},
+									{
+										"key": "cookie",
+										"value": "PHPSESSID=8e3d8a0b29f303a9657c0fd8f835d0fc; hubspotutk=4516d0e38091eef4805cd6a6f6b6be7e; __hssrc=1; _fbp=fb.1.1733826446839.690689535445472660; ajs_anonymous_id=0ec7350e-840e-4e0d-b8f7-727157c8c1a3; _ga=GA1.2.129169582.1733826746; clientId=0b91cce1-521b-4ad4-8a6d-cc820a48c3ca; midExists=true; rzp_mid=LLkjLdJz4gWVvk; rzp_userid=LLkjLXB8Wykwb7; ajs_user_id=LLkjLXB8Wykwb7; _gid=GA1.2.1516887634.1734362294; _clck=81mo3y%7C2%7Cfrs%7C0%7C1805; commonSessionId=5854f770-f8c2-4bd0-8faa-b652810ccb6a; __hstc=22539044.4516d0e38091eef4805cd6a6f6b6be7e.1724400196207.1734004853156.1734437572007.53; __hssc=22539044.2.1734437572007; rzp_user_merchant_region=IN; rzp_usr_session=iulEOwqUrYCVfb1Poq50xB5f7zYzU6hsy0pUrPrn; _rdt_uuid=1733826742034.11660bdd-c9e7-4ee1-a918-1a6d810a2608; _uetsid=3d2653f0bc7011ef85a0fffb356bf176; _uetvid=0ca92e80b6e211ef8365754dea3667d9; analytics_session_id=1734437603548; WZRK_S_TEST-W44-5W4-KR6Z=%7B%22p%22%3A1%7D; _ga_6BYES03TGC=GS1.2.1734437572.4.1.1734437616.16.0.0; _ga_E074D81KRF=GS1.2.1734437572.4.1.1734437616.16.0.0; XSRF-TOKEN=eyJpdiI6Ik9GcUFUei9pZkw3UC9sLzNPWGI3RVE9PSIsInZhbHVlIjoiaTFTTlhNdG9OaTcvZE5HQ1VwZ2tpd3lRVWtVWW9MUHl4OC8rbVl1SENYcVpwbFZtVU1Dcy9nVklEc2YzSUxGU0t1V2VLbUljc0g0V3hhWkwxdVVxeW02Vnp3VVFRTkVQNk16ZU5mMEhuU0Z0YmpWdG9KaWRkM3EvZzFQQWtuNDciLCJtYWMiOiI2OTY3OGU0Yjc2MWQ1ODczNzllMmEzOGQ2ODc1MzllNTFmOWMxN2Y0NmNiZWE1MTAwMDA3Njg3YTY5NDIwNTE2IiwidGFnIjoiIn0%3D; analytics_session_id.last_access=1734437636572; _clsk=n38zm8%7C1734437637135%7C4%7C0%7Ca.clarity.ms%2Fcollect; __tld__=1"
+									},
+									{
+										"key": "x-xsrf-token",
+										"value": "eyJpdiI6ImJERFZveTNLdFJyeW1nUmliWWRLdkE9PSIsInZhbHVlIjoiRVlXWU04ZkpMYm16cTNvK3Z3bDZEVFYzR0FDVjdvbmlXZ1NnaklTZXdDZUh1K1NWOWN5dlNWNGU4VElvTDJpQ00zTTJiMmlpV3M3bTNVL00zTXRmbTl1SFVKY0REVUlsckdPSEpaVjBub2Yvd0tzT3JLYTI5cWlQeHozSWJHTUoiLCJtYWMiOiI5MGMzZDk1YjNhNTdkMjA3ODA5MDNmOGQ5NDQ0ODQ1OWZhNmIxZDZmMWQ1YzQzM2QwN2NkN2IxZmRjNTE3YmRkIiwidGFnIjoiIn0=",
+										"type": "text"
+									},
+									{
+										"key": "X-NoCodeApps-Routing",
+										"value": "nocodeapps",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"currency\": \"INR\",\n    \"expire_by\": null,\n    \"title\": \"Test Page Man\",\n    \"description\": \"{\\\"value\\\":[{\\\"insert\\\":\\\"asdfsadfasdf\\\\n\\\"}],\\\"metaText\\\":\\\"asdfsadfasdf. \\\"}\",\n    \"terms\": null,\n    \"support_email\": \"pavankarthikboddeda@gmail.com\",\n    \"support_contact\": \"7013605095\",\n    \"settings\": {\n        \"allow_social_share\": \"0\",\n        \"udf_schema\": \"[{\\\"name\\\":\\\"email\\\",\\\"title\\\":\\\"Email\\\",\\\"required\\\":true,\\\"type\\\":\\\"string\\\",\\\"pattern\\\":\\\"email\\\",\\\"settings\\\":{\\\"position\\\":1}},{\\\"name\\\":\\\"phone\\\",\\\"title\\\":\\\"Phone\\\",\\\"required\\\":true,\\\"type\\\":\\\"number\\\",\\\"pattern\\\":\\\"phone\\\",\\\"minLength\\\":\\\"8\\\",\\\"options\\\":{},\\\"settings\\\":{\\\"position\\\":2}}]\",\n        \"checkout_options\": {\n            \"email\": \"email\",\n            \"phone\": \"phone\"\n        },\n        \"custom_domain\": \"\",\n        \"payment_button_label\": \"Pay\"\n    },\n    \"template_type\": \"custom\",\n    \"payment_page_items\": [\n        {\n            \"item\": {\n                \"name\": \"Amount\",\n                \"amount\": 100,\n                \"currency\": \"INR\"\n            },\n            \"settings\": {\n                \"position\": 0\n            },\n            \"mandatory\": true,\n            \"min_amount\": null,\n            \"max_amount\": null,\n            \"stock\": null\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://dashboard.dev.razorpay.in/merchant/api/live/payment_pages",
+									"protocol": "https",
+									"host": [
+										"dashboard",
+										"dev",
+										"razorpay",
+										"in"
+									],
+									"path": [
+										"merchant",
+										"api",
+										"live",
+										"payment_pages"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Store Front",
+			"item": [
+				{
+					"name": "create_store",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic UkFORE9NX05DQV9VU0VSOlJBTkRPTV9OQ0FfUEFTU1dPUkQ="
+							},
+							{
+								"key": "X-Razorpay-merchant-id",
+								"value": "LJ3P0FyFtOULha"
+							},
+							{
+								"key": "X-razorpay-mode",
+								"value": "live"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "anshuman-k"
+							},
+							{
+								"key": "X-Razorpay-User-Id",
+								"value": "IzOnOnr57QHnEx"
+							},
+							{
+								"key": "X-Razorpay-User-Role",
+								"value": "owner"
+							},
+							{
+								"key": "X-Razorpay-User-Email",
+								"value": "playwright.test+1@gmail.com"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"KARTHIK SAIPAVAN BODDEDA\",\n    \"terms\": \"\",\n    \"currency\": \"INR\",\n    \"type\": \"store\",\n    \"support_email\": \"email@email.com\",\n    \"support_contact\": \"7897897899\",\n    \"mode\": \"live\",\n    \"banner_images\": [],\n    \"line_items\": [\n        {\n            \"description\": \"\",\n            \"status\": \"active\",\n            \"catalog_id\": \"ctl_P4iSniQon0ojTY\",\n            \"position\": 1,\n            \"entity_type\": \"price\",\n            \"mandatory\": true\n        }\n    ],\n    \"expire_by\": null,\n    \"settings\": {\n        \"theme\": \"light\",\n        \"allow_social_share\": \"0\",\n        \"custom_domain\": \"\",\n        \"payment_button_label\": \"Pay\",\n        \"payment_button_theme\": \"asdfsdf\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nca_personal_url}}/v1/stores",
+							"host": [
+								"{{nca_personal_url}}"
+							],
+							"path": [
+								"v1",
+								"stores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_store",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic UkFORE9NX05DQV9VU0VSOlJBTkRPTV9OQ0FfUEFTU1dPUkQ="
+							},
+							{
+								"key": "X-Razorpay-merchant-id",
+								"value": "LJ3P0FyFtOULha"
+							},
+							{
+								"key": "X-razorpay-mode",
+								"value": "live"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "anshuman-k"
+							},
+							{
+								"key": "X-Razorpay-User-Id",
+								"value": "IzOnOnr57QHnEx"
+							},
+							{
+								"key": "X-Razorpay-User-Role",
+								"value": "owner"
+							},
+							{
+								"key": "X-Razorpay-User-Email",
+								"value": "playwright.test+1@gmail.com"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Testing final Cron-2\",\n    // \"banners_images\": [\n    //     {\n    //         \"original\": \"https://s3.ap-south-1.amazonaws.com/rzp-prod-merchant-assets/payment-link/description/oxpljawxv7zymm.jpeg\"\n    //     },\n    //     {\n    //         \"original\": \"https://s3.ap-south-1.amazonaws.com/rzp-prod-merchant-assets/payment-link/description/oxplpgnogozejy.jpeg\"\n    //     }\n    // ],\n    // \"description\": \"Description of the Nike Jordan\",\n    // \"currency\": \"INR\",\n    // \"expire_by\" : 1833148747,\n    // \"type\": \"store\",\n    // \"support_email\": \"test@gmail.com\",\n    // \"support_contact\": \"12345565\",\n    // \"notes\": {\n    //     \"key1\": \"Select your favourite Jordan\"\n    // },\n    // \"line_items\": [\n    //     {\n    //         \"catalog_id\": \"ctl_P4iSniQon0ojTY\",\n    //         \"entity_type\": \"price\",\n    //         \"position\": 1,\n    //         \"mandatory\": true\n    //     }\n    // ],\n    \"settings\": {\n        \"enable_receipt\": \"1\",\n        \"support_contact\": \"7897897899\",\n        \"support_email\": \"email@email.com\",\n        \"payment_success_message\" : \"trouble2\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nca_personal_url}}/v1/stores/st_Pc8zAekA0EgJqX",
+							"host": [
+								"{{nca_personal_url}}"
+							],
+							"path": [
+								"v1",
+								"stores",
+								"st_Pc8zAekA0EgJqX"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_store",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{nca-password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{nca-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-razorpay-mode",
+								"value": "live",
+								"type": "text"
+							},
+							{
+								"key": "X-Razorpay-merchant-id",
+								"value": "{{merchant_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{nca_personal_url}}/v1/stores/st_PcAQaSIS1F52ui",
+							"host": [
+								"{{nca_personal_url}}"
+							],
+							"path": [
+								"v1",
+								"stores",
+								"st_PcAQaSIS1F52ui"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deactivate",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{nca-password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{nca-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-razorpay-mode",
+								"value": "live",
+								"type": "text"
+							},
+							{
+								"key": "X-Razorpay-merchant-id",
+								"value": "{{merchant_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{nca_personal_url}}/v1/stores/st_PcAQaSIS1F52ui/deactivate",
+							"host": [
+								"{{nca_personal_url}}"
+							],
+							"path": [
+								"v1",
+								"stores",
+								"st_PcAQaSIS1F52ui",
+								"deactivate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_store Copy",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{nca-password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{nca-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-razorpay-mode",
+								"value": "live",
+								"type": "text"
+							},
+							{
+								"key": "X-Razorpay-merchant-id",
+								"value": "{{merchant_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{nca_personal_url}}/v1/stores/st_PcAQaSIS1F52ui",
+							"host": [
+								"{{nca_personal_url}}"
+							],
+							"path": [
+								"v1",
+								"stores",
+								"st_PcAQaSIS1F52ui"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "bulk_expire",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{nca-password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{nca-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "test",
+								"type": "text"
+							},
+							{
+								"key": "X-Razorpay-User-Role",
+								"value": "owner",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{nca-url}}/v1/stores/bulk_expire",
+							"host": [
+								"{{nca-url}}"
+							],
+							"path": [
+								"v1",
+								"stores",
+								"bulk_expire"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Fetch Payments",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "RANDOM_NCA_PASSWORD",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "RANDOM_NCA_USER",
+							"type": "string"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Razorpay-Merchant-Id",
+						"value": "I6Wg2wAr5sY6ca",
+						"type": "text"
+					},
+					{
+						"key": "X-Razorpay-Mode",
+						"value": "test",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/v1/stores/pl_IBsHPKdcmBA2c0/payments?type=page&status=captured&email=sanjib.devnath@razorpay.com",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"stores",
+						"pl_IBsHPKdcmBA2c0",
+						"payments"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "page"
+						},
+						{
+							"key": "status",
+							"value": "captured"
+						},
+						{
+							"key": "email",
+							"value": "sanjib.devnath@razorpay.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Gimli Shorten",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "paymentlinks",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{paymentlinks_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Razorpay-App",
+						"value": "PAYMENTLINKS",
+						"type": "text"
+					},
+					{
+						"key": "rzpctx-dev-serve-user",
+						"value": "{{rzpctx-dev-serve-user}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"https://www.example.com/ykKjcaTYKnISj2ZD6dvHa2bhurz9qiYZzrLFwDHy5Ouqn3gf7TZetD2OCfa2jYpG9pRq4odGoGlXVlUUv5y5w9m4d3yZd0QaXmpu1Diyh2IgmtZXzN9hyIp7b4Qsb6G9cqiPn9K19J18gG9HtuOnNMMnOQHmoD8YB3MhXP4YdJBif6M9qau9PJRn5KUIXBcWzv05nngUMa5P0XYCh28c5cXrqBwltYuGE1RC4D7nwgr4AHt4YMO653GP46l58BifCqVtgDFLDpOHvy4oEDvGRVboNgEFA34PpwPKARprPssczdYQq60daueYr05oPFVzq2WNFFvxuCkaqZGbtwQ2SpKQdwPf8KWrn892k6YOifCrtznu0s0kxrIQtpyq8qwZCQd3BqBIMEPci8rlzzi7tKsNOG0rhxmbcduiibDqoZPU3OS5Y4qBDGy95opgQjawZBkMGl3d3aIQNra9VOneaVZh1X6kZtC77MWJ6zoyEjTEohfLb3uguBnbZmCZnYGRXnhvSDG1C3Q8GcFB5CoBdiPTqZr6gpHu7WC5QeOFedwwLZFmzAywJYvFno3Tdbnji4PPo70Q5RuSUjR5VifoFSCvKmH6J5gfQMrgLMSk3LcCM9eUTJ79x4eI7TNQoz7ixFfUHJ5WRsqOu13HaCECyY4ONzEmSjAhYOg1GaYIC2skBv1zzmkdqPyupBJhrvTRIAXZmeditT6UYDqlcUjEqzbXGgNHg7ZT1v3NMpUiUTOgtnQzgsOamwvXhg1cY8H4KSrELPDRpAprNunpsOuHtu3xECCuij2nf0aJqpPvjsnPatZBTbhfXl4SCCvLEfIopeP4S6NnWBJ5TOnMRIWiwKf8EhLFHP9Ay601wm8DQOKo47qGrEVNm2fzJRK7VOPcAlqUyT12jSe6LxvyCMYvVH4CZQrm9uvdctXmyPrqDxOVWhQfpjyNHq78v42Uw1LNkFZ2otIu3m1JHWvnUks9l8Bb1tMJ1yVQuArOzX7EhC8KCBHOjvexL3bcA25kJnhMZCWLatokNm7sOcz1fvw5iyoxXq0ZFosiA3pPbIflafLiSbMBbyXTx8qswgb6Pku4BHfY3ra0iSMkITrMJ7zSG6YC2OpFe9eXmsMCVms1Z17l15Romia8CnD8oZIRfd5CkiNY5SJ1sUOF7DgXCePcizkaPccUmemAcKyuV4vL1QdKvwBbr8MAIO4014wLBKeGClsn6CNDeEPcQ7R2SMosUvZT6pRTcerVxQOrO4ljdbJGRtVWy3FX2wkjguLixP9mfKb5c08cJDVgkpWqswk9pySkGJEJxEq3wo4uBoTfsIkSV8keeZibLsgs0gHNMvzYqURqroUSXtkoCWBJA02e3Pw4gkMzunY98C83EjSuA7JdBRrcJPbOeQnRI9h3kQipd4Z8WQsT1FmCMvP6PpzbeFa6yZ23p1YBx7Gby7XX4HMQ5Cud1nZe8fdDCDDJOPOr6uxSHJMCxWqYgH76cEP2Wi5pMHep9hQNKuyWqBgmRsUraCWZqI28owVIuBT8LrFQNelDhkAVXg67EfpQsQmBuACedTZexdrMzAbB23pAsnILCACrxWzRNZNySYuYU4lTcVhphQmfVHWkFNgDbJP9JRTsKDHYqpWsHUjz9Q9YnFBVK4iiTWFDQBaKtUNM2vepmOBpUlI9Dsi6PCwsmAzLEPLTg8BokFE4flxjaC8abUflfoVuBwsSvFO1ZRFFCnsphx95AKhp6wS4aBUfcOjiHULD9tTxsPJDrmENvySqBmIs6DdGa7MmoqIo8w9VSZgUkdDGg040nmJ2lvi9RJLWJNuVhWVzMK8CCjsn7C3JU9mXDmAwfWIc0vm8g0hbDvwCm7HyL2x4XKBsp0AoSsSUaAWE3ML4OUWpGftMCnYKtgPxvqhGJsFo0e0TGYoDjvbzNY6W0wHKTYQRJpOIcIkddwhiyMytjC7fg7b2JcJbxSiCRv9RI6mV8rzm1KhNPuEv432F37ni1FYogBwlj8hTmKFr05Lb6D9Aj6vAgmtBPHuyBm5ijl9bmcbSHcz1kf7fO\",\n    \"source\": \"payment_links_service\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{gimli_host}}/v1/shorten",
+					"host": [
+						"{{gimli_host}}"
+					],
+					"path": [
+						"v1",
+						"shorten"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Domain",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "payment_page_stage",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "secret",
+							"type": "string"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"merchant_id\": \"NMSkiDTMyj3b4M\",\n    \"domain_name\": \"retry_cds\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://cds-madeyedexter.dev.razorpay.in/twirp/rzp.custom_domain_service.domain.v1.DomainAPI/Create",
+					"protocol": "https",
+					"host": [
+						"cds-madeyedexter",
+						"dev",
+						"razorpay",
+						"in"
+					],
+					"path": [
+						"twirp",
+						"rzp.custom_domain_service.domain.v1.DomainAPI",
+						"Create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{nca_personal_url}}/health",
+					"host": [
+						"{{nca_personal_url}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "metrics",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{nca_personal_url}}/metrics",
+					"host": [
+						"{{nca_personal_url}}"
+					],
+					"path": [
+						"metrics"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

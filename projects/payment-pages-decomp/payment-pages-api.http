@@ -1,0 +1,310 @@
+# Payment Pages API Collection
+# Converted from Postman collection
+# 
+# Usage: Use REST Client extension in VS Code, or convert to curl commands
+# Variables: See bottom of file for required variables
+
+
+#============================================================
+# Hosted Page APIs (Public)
+#============================================================
+
+### payment_page_view_get
+# View payment page by ID (public hosted page)
+GET {{nca_personal_url}}/v1/payment_pages/pl_PTeYjKajBRjGj8/view
+
+
+### pages_view
+# View page by entity ID
+GET {{nca_personal_url}}/v1/pages/pl_PSrmhQb3PdSCZW/view
+
+
+### pages_view_by_slug
+# View page by slug (public)
+GET {{nca_personal_url}}/v1/pages/ranchodas
+
+
+### pages_view_by_slug_post
+# View page by slug via POST
+POST {{nca_personal_url}}/v1/pages/namoona3
+
+
+#============================================================
+# Basic Page CRUD APIs (Merchant)
+#============================================================
+
+### payment_page_create
+# Create a new payment page
+POST {{nca_personal_url}}/v1/payment_pages
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+X-Dual-Write-State: nca_only
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+{
+    "currency": "INR",
+    "expire_by": null,
+    "title": "Test Page",
+    "description": "{\"value\":[{\"insert\":\"Description\\n\"}],\"metaText\":\"Description\"}",
+    "terms": null,
+    "support_email": "test@example.com",
+    "support_contact": "9999999999",
+    "notes": {
+        "key": "value"
+    },
+    "settings": {
+        "allow_social_share": "0",
+        "udf_schema": "[{\"name\":\"email\",\"required\":true,\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"email\",\"settings\":{\"position\":0}}]",
+        "checkout_options": {
+            "email": "email",
+            "phone": "phone"
+        }
+    },
+    "view_type": "button",
+    "payment_page_items": [
+        {
+            "item": {
+                "name": "Amount",
+                "amount": 100,
+                "currency": "INR"
+            },
+            "settings": {
+                "position": 0
+            },
+            "mandatory": true
+        }
+    ],
+    "template_type": "custom"
+}
+
+
+### payment_page_update
+# Update an existing payment page
+PATCH {{nca_personal_url}}/v1/payment_pages/{{page_id}}
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+X-Dual-Write-State: nca_only
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+{
+    "title": "Updated Title",
+    "settings": {
+        "payment_button_label": "Pay Now"
+    }
+}
+
+
+### payment_page_activate
+# Activate a deactivated payment page
+PATCH {{nca_personal_url}}/v1/payment_pages/{{page_id}}/activate
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+X-Proxy-State: nca_only
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+[]
+
+
+### payment_page_deactivate
+# Deactivate a payment page
+PATCH {{nca_personal_url}}/v1/payment_pages/{{page_id}}/deactivate
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+X-Proxy-State: dual_write_no_reads_no_external
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+[]
+
+
+### payment_page_list
+# Get list of payment pages for a merchant
+GET {{nca_personal_url}}/v1/payment_pages?skip=0&count=10
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+Authorization: Basic {{auth_token}}
+
+
+### payment_page_get_details
+# Get detailed information on a payment page
+GET {{nca_personal_url}}/v1/payment_pages/{{page_id}}/details?expand[0]=user
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+Authorization: Basic {{auth_token}}
+
+
+### payment_page_get
+# Get payment page by ID
+GET {{nca_personal_url}}/v1/payment_pages/{{page_id}}
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+Authorization: Basic {{auth_token}}
+
+
+#============================================================
+# Order APIs
+#============================================================
+
+### payment_page_create_order
+# Create an order for a payment page
+POST {{nca_personal_url}}/v1/payment_pages/{{page_id}}/order
+X-NoCodeApps-Routing: nocodeapps
+X-Proxy-State: nca_only
+Content-Type: application/json
+
+{
+    "line_items": [
+        {
+            "payment_page_item_id": "ppi_xxxxx",
+            "amount": 100,
+            "quantity": 1
+        }
+    ],
+    "notes": {
+        "email": "test@example.com",
+        "phone": "9999999999"
+    }
+}
+
+
+#============================================================
+# Share Notification APIs
+#============================================================
+
+### payment_page_notify
+# Send notification (email/SMS) for a payment page
+POST {{nca_personal_url}}/v1/payment_pages/{{page_id}}/notify
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+{
+    "emails": ["test@example.com"],
+    "contacts": ["9999999999"]
+}
+
+
+#============================================================
+# Invoice Receipt APIs
+#============================================================
+
+### payment_page_fetch_merchant_details
+# Fetch merchant details for receipt
+GET {{nca_personal_url}}/v1/payment_pages/merchant_details/{{merchant_id}}
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+Authorization: Basic {{auth_token}}
+
+
+### payment_page_set_receipt_details
+# Set receipt details for a payment page
+POST {{nca_personal_url}}/v1/payment_pages/{{page_id}}/receipt
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+X-Dual-Write-State: nca_only
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+{
+    "enable_receipt": 1,
+    "selected_udf_field": "email",
+    "enable_80g_details": "0"
+}
+
+
+### payment_page_get_invoice_details
+# Get receipt/invoice details for a payment page
+GET {{nca_personal_url}}/v1/payment_pages/{{page_id}}/receipt
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+Authorization: Basic {{auth_token}}
+
+
+### payment_page_save_receipt_for_payment
+# Save receipt for a completed payment
+POST {{nca_personal_url}}/v1/payment_pages/{{payment_id}}/save_receipt
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+{
+    "receipt": "RECEIPT-001"
+}
+
+
+### payment_page_send_receipt
+# Send receipt to customer for a payment
+POST {{nca_personal_url}}/v1/payment_pages/{{payment_id}}/send_receipt
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: live
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+{
+    "receipt": "RECEIPT-001"
+}
+
+
+#============================================================
+# Dashboard APIs (via Dashboard proxy)
+#============================================================
+
+### payment_page_create_dashboard
+# Create payment page via dashboard
+POST https://dashboard.dev.razorpay.in/merchant/api/live/payment_pages
+X-Merchant-Id: {{merchant_id}}
+Content-Type: application/json
+rzpctx-dev-serve-user: {{devstack_label}}
+X-NoCodeApps-Routing: nocodeapps
+
+{
+    "currency": "INR",
+    "title": "Test Page",
+    "description": "{\"value\":[{\"insert\":\"Description\\n\"}],\"metaText\":\"Description\"}",
+    "support_email": "test@example.com",
+    "support_contact": "9999999999",
+    "settings": {
+        "allow_social_share": "0",
+        "udf_schema": "[{\"name\":\"email\",\"title\":\"Email\",\"required\":true,\"type\":\"string\",\"pattern\":\"email\",\"settings\":{\"position\":1}}]",
+        "checkout_options": {
+            "email": "email",
+            "phone": "phone"
+        },
+        "payment_button_label": "Pay"
+    },
+    "template_type": "custom",
+    "payment_page_items": [
+        {
+            "item": {
+                "name": "Amount",
+                "amount": 100,
+                "currency": "INR"
+            },
+            "settings": {
+                "position": 0
+            },
+            "mandatory": true
+        }
+    ]
+}
+
+
+#============================================================
+# VARIABLES (to be defined)
+#============================================================
+# 
+# Required variables:
+#   - nca_personal_url: NCA service URL (e.g., https://nca.dev.razorpay.in)
+#   - merchant_id: Razorpay merchant ID
+#   - auth_token: Base64 encoded API key:secret
+#   - page_id: Payment page ID (e.g., pl_xxxxx)
+#   - payment_id: Payment ID (e.g., pay_xxxxx)
+#   - devstack_label: Devstack label for routing (when using devstack)
+#
+# For devstack testing, add header:
+#   rzpctx-dev-serve-user: {{devstack_label}}
