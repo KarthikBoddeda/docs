@@ -94,7 +94,7 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 
 | # | Diff Type | Count | M | N | Deployed | Reproduced | HotReload | Tested | Status | Commit |
 |---|-----------|-------|---|---|----------|------------|-----------|--------|--------|--------|
-| 1 | `tracker type field is required` | 13,345 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 1 | `tracker type field is required` | 13,345 | 200 | 400 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | |
 | 2 | `description contains invalid characters` | 8,090 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
 | 3 | `title contains invalid characters` | 676 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
 | 4 | `slug already exists` | 519 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
@@ -163,6 +163,49 @@ kubectl get pods -A -l name=pp-decomp-<label> -w
 
 ---
 
+### 🔲 STEP 1.5: SET UP HOT RELOAD WITH AUTH BYPASS (Required for Direct Testing)
+
+**⚠️ IMPORTANT:** When hitting NCA directly (not via Edge), Passport auth headers are not present. You MUST bypass Passport auth to test.
+
+1. **Apply auth bypass in NCA code:**
+
+   In `internal/router/payment_page_private_routes.go`, update `GetMiddlewares()`:
+   
+   ```go
+   func (a *PaymentPageRoutes) GetMiddlewares() []gin.HandlerFunc {
+       return []gin.HandlerFunc{
+           middlewares.Serialize,
+           middlewares.WithAppErrorHandler(),
+           middlewares.WithRequestInterceptor(),
+           middlewares.WithResponseInterceptor(),
+           //middlewares.PassportPrivateAuth(),  // COMMENTED OUT for direct testing
+           middlewares.WithAuth(),               // USE THIS INSTEAD
+           middlewares.WithMerchantIdInterceptor(),
+           middlewares.WithModeInterceptor(),
+           middlewares.WithDualWriteStateInterceptor(),
+           middlewares.WithPrometheus(),
+           tracingIntegration.GinTracingMiddleware,
+       }
+   }
+   ```
+
+2. **Set up hot reload:**
+   ```bash
+   cd ~/rzp/no-code-apps
+   go mod tidy && go mod vendor
+   # Update devspace.yaml with your devstack_label
+   devspace dev --no-warn
+   ```
+
+3. **Wait for sync to complete and pod to be ready**
+
+> **🛑 CHECKPOINT:** Devspace is syncing and pod is running with auth bypass.  
+> **✅ Once confirmed → Update subtask row: `HotReload` = ✅**
+
+> **📝 NOTE:** You can reuse the same hot reload session for multiple subtasks. Just close the terminal when done - no need to run `devspace purge` between tasks.
+
+---
+
 ### 🔲 STEP 2: REPRODUCE THE DIFF (Required Before Coding)
 
 **You MUST reproduce the diff on devstack BEFORE writing any fix.**
@@ -210,41 +253,31 @@ kubectl get pods -A -l name=pp-decomp-<label> -w
 
 ---
 
-### 🔲 STEP 4: TEST THE FIX VIA HOT RELOAD (Required Before Commit)
+### 🔲 STEP 4: TEST THE FIX
 
-**You MUST test your fix on devstack using hot reload. DO NOT commit untested code.**
+**`devspace dev` must be running for hot reload to work. Code changes auto-sync while it's running.**
+But the devspace pod must already be running right now, so this time devspace dev would be much faster.
 
-1. **Prepare dependencies:**
+1. **Ensure devspace dev is running:**
    ```bash
+   # If not already running, start it:
    cd ~/rzp/no-code-apps
-   go mod tidy
-   go mod vendor
-   ```
-
-2. **Update devspace.yaml** with your devstack label
-
-3. **Start hot reload:**
-   ```bash
    devspace dev --no-warn
    ```
-   
-   > This syncs your local code to the running pod. Wait for sync to complete.
 
-4. **Verify pod is ready:**
+2. **Make your fix** - code changes will auto-sync to the pod
+
+3. **If you added new dependencies:**
    ```bash
-   kubectl get pods -n no-code-apps -l name=<devstack-label>
-   # Should show Running and READY=1/1
+   go mod tidy && go mod vendor
    ```
-
-> **🛑 CHECKPOINT:** Is devspace syncing and pod is running?  
-> **✅ Once confirmed → Update subtask row: `HotReload` = ✅**
 
 5. **TEST: Hit the SAME request that reproduced the diff:**
    ```bash
    curl -X POST "https://nca-<devstack-label>.dev.razorpay.in/v1/payment_pages" \
-     -H "rzpctx-dev-serve-user: <devstack-label>" \
-     -H "Authorization: Basic <auth_token>" \
      -H "Content-Type: application/json" \
+     -H "X-Merchant-Id: <merchant_id>" \
+     -H "X-Mode: test" \
      -d '<same_request_body>'
    ```
 
@@ -255,7 +288,7 @@ kubectl get pods -A -l name=pp-decomp-<label> -w
 
 > **🛑 CHECKPOINT:** Did the fix work?  
 > - **YES** → ✅ Update subtask row: `Tested` = ✅ → Proceed to Step 5  
-> - **NO** → Debug, fix, repeat Step 4. DO NOT proceed until fix is verified.
+> - **NO** → Debug, fix, repeat. DO NOT proceed until fix is verified.
 
 ---
 

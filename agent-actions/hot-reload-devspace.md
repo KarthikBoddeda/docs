@@ -119,11 +119,27 @@ kubectl logs <pod-name> -n <namespace> -f
 
 ---
 
-## Cleanup
+## Stopping and Cleanup
+
+### Between Tasks (Same Devstack)
+
+**You do NOT need to run `devspace purge` between tasks.** Just keep `devspace dev` running:
+
+- **Hot reload only works while `devspace dev` is running**
+- If you closed the terminal, just run `devspace dev --no-warn` again
+- No need to purge - the pod continues running and you can reconnect
+
+### Full Cleanup (Tearing Down Devstack)
+
+Only run `devspace purge` when you're completely done and want to tear down the devstack:
 
 ```bash
-# Stop devspace (Ctrl+C in the terminal)
+# Stop devspace first
 devspace purge
+
+# Then delete the devstack
+cd ~/rzp/kube-manifests/helmfile
+helmfile delete
 ```
 
 > **Important:** Run `devspace purge` before `helmfile delete` to ensure clean removal.

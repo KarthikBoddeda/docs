@@ -98,6 +98,36 @@ For devstack, add header: `rzpctx-dev-serve-user: {{devstack_label}}`
 
 ---
 
+## Testing on Devstack - Auth Bypass
+
+**⚠️ IMPORTANT:** When hitting NCA directly (not via Edge), Passport auth is not present. You MUST bypass it for testing.
+
+In `internal/router/payment_page_private_routes.go`, update `GetMiddlewares()`:
+
+```go
+func (a *PaymentPageRoutes) GetMiddlewares() []gin.HandlerFunc {
+    return []gin.HandlerFunc{
+        middlewares.Serialize,
+        middlewares.WithAppErrorHandler(),
+        middlewares.WithRequestInterceptor(),
+        middlewares.WithResponseInterceptor(),
+        //middlewares.PassportPrivateAuth(),  // COMMENT OUT for direct testing
+        middlewares.WithAuth(),               // USE THIS INSTEAD
+        middlewares.WithMerchantIdInterceptor(),
+        middlewares.WithModeInterceptor(),
+        middlewares.WithDualWriteStateInterceptor(),
+        middlewares.WithPrometheus(),
+        tracingIntegration.GinTracingMiddleware,
+    }
+}
+```
+
+Apply this change via hot reload before testing. See [hot-reload-devspace.md](/docs/agent-actions/hot-reload-devspace.md).
+
+**Tip:** Hot reload only works while `devspace dev` is running. No need to run `devspace purge` between tasks - just run `devspace dev` again if you closed the terminal.
+
+---
+
 ## Useful Commands
 
 ```bash

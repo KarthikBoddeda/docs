@@ -109,10 +109,38 @@ Monolith uses `PaymentLink` naming but it's actually Payment Pages (legacy). Val
 
 For deployment, follow: `/docs/agent-actions/deploy-to-devstack.md`
 
-Required headers for devstack:
+### Auth Bypass for Direct Testing
+
+**⚠️ IMPORTANT:** When hitting NCA directly (not via Edge), Passport auth headers are not present. You MUST bypass Passport auth.
+
+In `internal/router/payment_page_private_routes.go`, update `GetMiddlewares()`:
+
+```go
+func (a *PaymentPageRoutes) GetMiddlewares() []gin.HandlerFunc {
+    return []gin.HandlerFunc{
+        middlewares.Serialize,
+        middlewares.WithAppErrorHandler(),
+        middlewares.WithRequestInterceptor(),
+        middlewares.WithResponseInterceptor(),
+        //middlewares.PassportPrivateAuth(),  // COMMENT OUT for direct testing
+        middlewares.WithAuth(),               // USE THIS INSTEAD
+        middlewares.WithMerchantIdInterceptor(),
+        middlewares.WithModeInterceptor(),
+        middlewares.WithDualWriteStateInterceptor(),
+        middlewares.WithPrometheus(),
+        tracingIntegration.GinTracingMiddleware,
+    }
+}
 ```
-rzpctx-dev-serve-user: <devstack_label>
-```
+
+Apply this via hot reload before testing. See task doc for full workflow.
+
+### Hot Reload Tips
+
+- **Hot reload only works while `devspace dev` is running**
+- If you closed the terminal, run `devspace dev --no-warn` again to reconnect
+- No need to run `devspace purge` between tasks - the pod continues running
+- Only run `devspace purge` when completely tearing down the devstack
 
 ## When Stuck
 
