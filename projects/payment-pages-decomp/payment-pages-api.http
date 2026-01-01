@@ -2,7 +2,48 @@
 # Converted from Postman collection
 # 
 # Usage: Use REST Client extension in VS Code, or convert to curl commands
-# Variables: See bottom of file for required variables
+# Note: All requests include devstack routing header
+
+
+#============================================================
+# VARIABLES (from DEVSTACK.postman_environment.json)
+#============================================================
+
+# NCA Service URLs
+@nca_personal_url = https://nca-dev-cahn.dev.razorpay.in
+
+# API Monolith URLs
+@api_monolith_base_url = https://api-web-usa.dev.razorpay.in
+@api_monolith_personal_url = https://api-web-communist.dev.razorpay.in
+@api_ext_personal_url = https://api-web-ppkar.ext.dev.razorpay.in
+@api_dashboard_url = https://api-dashboard-merchant.dev.razorpay.in/v1/payment_pages
+
+# Merchant Details
+@merchant_id = LJ3P0FyFtOULha
+@merchant_proxy_auth_key = rzp_live_LJ3P0FyFtOULha
+@payment_page_id = pl_PAWIUa4XRsfNlC
+
+# Auth (Base64 encode key:secret for Basic auth)
+@nca_user = RANDOM_NCA_USER
+@nca_password = RANDOM_NCA_PASSWORD
+@nca_to_monolith_password = RANDOM_NCA_PASSWORD
+
+# Payment Links
+@payment_links_base_url = https://payment-links-base.dev.razorpay.in
+@payment_links_dev_username = dev
+@payment_links_dev_password = dev-password
+@pl_to_api_password = RANDOM_PL_PASSWORD
+
+# Other Services
+@gimli_base_url = https://gimli-sur.dev.razorpay.in
+@internal_auth_live = rzp_live
+
+# ⚠️ UPDATE THESE WITH YOUR VALUES
+@devstack_label = your-devstack-label
+@payment_id = pay_xxxxx
+
+# Auth token = base64(nca_user:nca_password)
+@auth_token = UkFORE9NX05DQV9VU0VSOlJBTkRPTV9OQ0FfUEFTU1dPUkQ=
 
 
 #============================================================
@@ -12,21 +53,25 @@
 ### payment_page_view_get
 # View payment page by ID (public hosted page)
 GET {{nca_personal_url}}/v1/payment_pages/pl_PTeYjKajBRjGj8/view
+rzpctx-dev-serve-user: {{devstack_label}}
 
 
 ### pages_view
 # View page by entity ID
 GET {{nca_personal_url}}/v1/pages/pl_PSrmhQb3PdSCZW/view
+rzpctx-dev-serve-user: {{devstack_label}}
 
 
 ### pages_view_by_slug
 # View page by slug (public)
 GET {{nca_personal_url}}/v1/pages/ranchodas
+rzpctx-dev-serve-user: {{devstack_label}}
 
 
 ### pages_view_by_slug_post
 # View page by slug via POST
 POST {{nca_personal_url}}/v1/pages/namoona3
+rzpctx-dev-serve-user: {{devstack_label}}
 
 
 #============================================================
@@ -36,6 +81,7 @@ POST {{nca_personal_url}}/v1/pages/namoona3
 ### payment_page_create
 # Create a new payment page
 POST {{nca_personal_url}}/v1/payment_pages
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 X-Dual-Write-State: nca_only
@@ -81,7 +127,8 @@ Content-Type: application/json
 
 ### payment_page_update
 # Update an existing payment page
-PATCH {{nca_personal_url}}/v1/payment_pages/{{page_id}}
+PATCH {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 X-Dual-Write-State: nca_only
@@ -98,7 +145,8 @@ Content-Type: application/json
 
 ### payment_page_activate
 # Activate a deactivated payment page
-PATCH {{nca_personal_url}}/v1/payment_pages/{{page_id}}/activate
+PATCH {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}/activate
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 X-Proxy-State: nca_only
@@ -110,7 +158,8 @@ Content-Type: application/json
 
 ### payment_page_deactivate
 # Deactivate a payment page
-PATCH {{nca_personal_url}}/v1/payment_pages/{{page_id}}/deactivate
+PATCH {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}/deactivate
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 X-Proxy-State: dual_write_no_reads_no_external
@@ -123,6 +172,7 @@ Content-Type: application/json
 ### payment_page_list
 # Get list of payment pages for a merchant
 GET {{nca_personal_url}}/v1/payment_pages?skip=0&count=10
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 Authorization: Basic {{auth_token}}
@@ -130,7 +180,8 @@ Authorization: Basic {{auth_token}}
 
 ### payment_page_get_details
 # Get detailed information on a payment page
-GET {{nca_personal_url}}/v1/payment_pages/{{page_id}}/details?expand[0]=user
+GET {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}/details?expand[0]=user
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 Authorization: Basic {{auth_token}}
@@ -138,7 +189,8 @@ Authorization: Basic {{auth_token}}
 
 ### payment_page_get
 # Get payment page by ID
-GET {{nca_personal_url}}/v1/payment_pages/{{page_id}}
+GET {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 Authorization: Basic {{auth_token}}
@@ -150,7 +202,8 @@ Authorization: Basic {{auth_token}}
 
 ### payment_page_create_order
 # Create an order for a payment page
-POST {{nca_personal_url}}/v1/payment_pages/{{page_id}}/order
+POST {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}/order
+rzpctx-dev-serve-user: {{devstack_label}}
 X-NoCodeApps-Routing: nocodeapps
 X-Proxy-State: nca_only
 Content-Type: application/json
@@ -176,7 +229,8 @@ Content-Type: application/json
 
 ### payment_page_notify
 # Send notification (email/SMS) for a payment page
-POST {{nca_personal_url}}/v1/payment_pages/{{page_id}}/notify
+POST {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}/notify
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 Authorization: Basic {{auth_token}}
@@ -195,6 +249,7 @@ Content-Type: application/json
 ### payment_page_fetch_merchant_details
 # Fetch merchant details for receipt
 GET {{nca_personal_url}}/v1/payment_pages/merchant_details/{{merchant_id}}
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 Authorization: Basic {{auth_token}}
@@ -202,7 +257,8 @@ Authorization: Basic {{auth_token}}
 
 ### payment_page_set_receipt_details
 # Set receipt details for a payment page
-POST {{nca_personal_url}}/v1/payment_pages/{{page_id}}/receipt
+POST {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}/receipt
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 X-Dual-Write-State: nca_only
@@ -218,7 +274,8 @@ Content-Type: application/json
 
 ### payment_page_get_invoice_details
 # Get receipt/invoice details for a payment page
-GET {{nca_personal_url}}/v1/payment_pages/{{page_id}}/receipt
+GET {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}/receipt
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 Authorization: Basic {{auth_token}}
@@ -227,6 +284,7 @@ Authorization: Basic {{auth_token}}
 ### payment_page_save_receipt_for_payment
 # Save receipt for a completed payment
 POST {{nca_personal_url}}/v1/payment_pages/{{payment_id}}/save_receipt
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 Authorization: Basic {{auth_token}}
@@ -240,6 +298,7 @@ Content-Type: application/json
 ### payment_page_send_receipt
 # Send receipt to customer for a payment
 POST {{nca_personal_url}}/v1/payment_pages/{{payment_id}}/send_receipt
+rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
 Authorization: Basic {{auth_token}}
@@ -257,10 +316,10 @@ Content-Type: application/json
 ### payment_page_create_dashboard
 # Create payment page via dashboard
 POST https://dashboard.dev.razorpay.in/merchant/api/live/payment_pages
-X-Merchant-Id: {{merchant_id}}
-Content-Type: application/json
 rzpctx-dev-serve-user: {{devstack_label}}
+X-Merchant-Id: {{merchant_id}}
 X-NoCodeApps-Routing: nocodeapps
+Content-Type: application/json
 
 {
     "currency": "INR",
@@ -295,16 +354,15 @@ X-NoCodeApps-Routing: nocodeapps
 
 
 #============================================================
-# VARIABLES (to be defined)
+# NOTES
 #============================================================
 # 
-# Required variables:
-#   - nca_personal_url: NCA service URL (e.g., https://nca.dev.razorpay.in)
-#   - merchant_id: Razorpay merchant ID
-#   - auth_token: Base64 encoded API key:secret
-#   - page_id: Payment page ID (e.g., pl_xxxxx)
-#   - payment_id: Payment ID (e.g., pay_xxxxx)
-#   - devstack_label: Devstack label for routing (when using devstack)
+# All requests include: rzpctx-dev-serve-user: {{devstack_label}}
 #
-# For devstack testing, add header:
-#   rzpctx-dev-serve-user: {{devstack_label}}
+# To generate auth_token:
+#   echo -n "key_id:key_secret" | base64
+#
+# Variables to update before use:
+#   @devstack_label - your devstack label
+#   @auth_token - your base64 encoded credentials
+#   @payment_id - payment ID for receipt APIs
