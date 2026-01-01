@@ -8,39 +8,59 @@ This folder contains code documentation for Payment Pages APIs in NCA service.
 
 ## Index
 
+### NCA Code
+
 | API | File | Description |
 |-----|------|-------------|
-| `payment_page_create` | [pp-create.md](./pp-create.md) | `POST /payment_pages` - Create payment page |
+| `payment_page_create` | [pp-create.md](./pp-create.md) | `POST /payment_pages` - Create payment page (NCA) |
 | Proxying Logic | [proxying.md](./proxying.md) | How NCA proxies requests to monolith |
+
+### Monolith (API) Code
+
+| API | File | Description |
+|-----|------|-------------|
+| `payment_page_create` | [api-pp-create.md](./api-pp-create.md) | `POST /payment_pages` - Create payment page (Monolith) |
+| **Navigation Guide** | [monolith-navigation-guide.md](./monolith-navigation-guide.md) | How to navigate PHP monolith code (start here!) |
 
 ---
 
-## Code Organization (NCA)
+## Code Organization
+
+### NCA (no-code-apps repo)
 
 ```
-no-code-apps/
-├── internal/
-│   ├── router/                          # Route definitions
-│   │   └── payment_page_private_routes.go
-│   ├── controllers/
-│   │   └── payment_page.go              # HTTP handlers
-│   ├── modules/
-│   │   ├── payment_page/                # Payment Page module
-│   │   │   ├── core.go                  # Business logic
-│   │   │   ├── validation.go            # PP-specific validations
-│   │   │   ├── request.go               # Request structs
-│   │   │   ├── response.go              # Response structs
-│   │   │   ├── constants.go             # Proxy states, etc.
-│   │   │   └── repo.go                  # Database operations
-│   │   └── nocode/                      # Base nocode module
-│   │       ├── validation.go            # Base validations
-│   │       ├── request.go               # Base request struct
-│   │       └── settings.go              # Settings struct (goal_tracker, etc.)
-│   └── monolith_decomp/
-│       ├── dual_write_handlers/
-│       │   └── base.go                  # Dual write handler logic
-│       └── diffs/
-│           └── diff_checker.go          # Diff calculation logic
+no-code-apps/internal/
+├── router/payment_page_private_routes.go    # Route definitions
+├── controllers/payment_page.go              # HTTP handlers
+├── modules/
+│   ├── payment_page/                        # Payment Page module
+│   │   ├── core.go                          # Business logic
+│   │   ├── validation.go                    # PP-specific validations
+│   │   ├── request.go, response.go          # Request/Response structs
+│   │   └── constants.go                     # Proxy states
+│   └── nocode/                              # Base nocode module
+│       ├── validation.go                    # Base validations (TrackerType check!)
+│       └── settings.go                      # Settings struct
+└── monolith_decomp/
+    ├── dual_write_handlers/base.go          # Dual write logic
+    └── diffs/diff_checker.go                # Diff calculation
+```
+
+### Monolith (api repo)
+
+> **Note:** Code uses `PaymentLink` naming for legacy reasons. See [monolith-navigation-guide.md](./monolith-navigation-guide.md).
+
+```
+api/app/
+├── Http/
+│   ├── Route.php                            # Route definitions
+│   └── Controllers/PaymentLinkController.php
+└── Models/PaymentLink/                      # Payment Page model folder
+    ├── Service.php                          # Service layer
+    ├── Core.php                             # Business logic
+    ├── Validator.php                        # Validation rules (implicit!)
+    ├── Entity.php                           # Entity model
+    └── PaymentPageItem/                     # Line items
 ```
 
 ---

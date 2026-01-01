@@ -25,7 +25,8 @@ This project migrates Payment Pages functionality from the API monolith to the N
 ## Key Files
 
 - Architecture & APIs: `PAYMENT_PAGES_DECOMP.md`
-- **Code Reference (NCA):** `code/` folder - per-API code documentation
+- **Code Reference:** `code/` folder - per-API code documentation for both NCA and Monolith
+- **Monolith Navigation:** `code/monolith-navigation-guide.md` - how to navigate PHP code (read first!)
 - API Requests (.http): `payment-pages-api.http`
 - Task Tracking: `tasks/` folder
 - Failure Logs: `/pythonscripts/decomp-scripts/failure_logs/`
@@ -33,6 +34,10 @@ This project migrates Payment Pages functionality from the API monolith to the N
 ## Critical Rule
 
 **NCA code is written to exactly mimic monolith behavior.** Any mismatch between NCA and monolith responses is a bug. Monolith is the source of truth. Even if NCA behavior seems "correct", match monolith for now. Optimizations can be done later.
+
+## Monolith Code Caveat
+
+Monolith uses `PaymentLink` naming but it's actually Payment Pages (legacy). Validation happens implicitly via `build()` method. See `code/monolith-navigation-guide.md` for details.
 
 ## Index Maintenance Rule
 

@@ -55,7 +55,9 @@ Before starting, ensure:
 
 | Code Area | Reference |
 |-----------|-----------|
-| **payment_page_create code flow** | [/docs/projects/payment-pages-decomp/code/pp-create.md](/docs/projects/payment-pages-decomp/code/pp-create.md) |
+| **NCA code flow** | [/docs/projects/payment-pages-decomp/code/pp-create.md](/docs/projects/payment-pages-decomp/code/pp-create.md) |
+| **Monolith code flow** | [/docs/projects/payment-pages-decomp/code/api-pp-create.md](/docs/projects/payment-pages-decomp/code/api-pp-create.md) |
+| **Monolith navigation guide** | [/docs/projects/payment-pages-decomp/code/monolith-navigation-guide.md](/docs/projects/payment-pages-decomp/code/monolith-navigation-guide.md) |
 | **Proxying & dual write logic** | [/docs/projects/payment-pages-decomp/code/proxying.md](/docs/projects/payment-pages-decomp/code/proxying.md) |
 | **Code reference index** | [/docs/projects/payment-pages-decomp/code/_index.md](/docs/projects/payment-pages-decomp/code/_index.md) |
 
