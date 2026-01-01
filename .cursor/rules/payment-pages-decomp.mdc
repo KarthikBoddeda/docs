@@ -31,9 +31,49 @@ This project migrates Payment Pages functionality from the API monolith to the N
 - Task Tracking: `tasks/` folder
 - Failure Logs: `/pythonscripts/decomp-scripts/failure_logs/`
 
-## Critical Rule
+## Critical Rules
 
+### 1. NCA Must Match Monolith
 **NCA code is written to exactly mimic monolith behavior.** Any mismatch between NCA and monolith responses is a bug. Monolith is the source of truth. Even if NCA behavior seems "correct", match monolith for now. Optimizations can be done later.
+
+### 2. Status Code Diff Task - MANDATORY WORKFLOW
+
+**When working on `pp-create-status-code-diffs.md` or similar diff-fixing tasks:**
+
+> **🚨 DO NOT mark a subtask as 🟢 (Fixed) unless ALL verification columns are ✅**
+
+**Required Steps IN ORDER:**
+
+1. **DEPLOY DEVSTACK FIRST**
+   - Run `kubectl get pods -A -l name=pp-decomp-<label>` to verify
+   - If not running → deploy using `helmfile sync`
+   - ✅ Mark `Deployed` column
+
+2. **REPRODUCE THE DIFF BEFORE CODING**
+   - Get sample request from failure logs
+   - Hit devstack and confirm the diff occurs
+   - ✅ Mark `Reproduced` column
+   - If diff doesn't reproduce → mark as `🔵 Already Fixed`, move on
+
+3. **WRITE THE FIX** (only after reproducing)
+
+4. **TEST VIA HOT RELOAD** (mandatory before commit)
+   - Run `go mod tidy && go mod vendor`
+   - Run `devspace dev --no-warn`
+   - ✅ Mark `HotReload` column
+   - Hit the SAME request again
+   - Verify diff is GONE
+   - ✅ Mark `Tested` column
+
+5. **ONLY THEN COMMIT**
+   - Mark `Status` as 🟢
+   - Add commit hash to `Commit` column
+
+**⛔ NEVER:**
+- Skip reproduction step
+- Commit without testing via hot reload
+- Mark Status as 🟢 with any verification column unchecked
+- Add detailed root cause/fix info until fix is VERIFIED or FAILED after multiple attempts
 
 ## Monolith Code Caveat
 

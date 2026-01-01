@@ -38,7 +38,7 @@ Before starting, ensure:
 2. **Commits are known** for: NCA service, API service, Gimli service
 3. **Failure logs are accessible** at `/pythonscripts/decomp-scripts/failure_logs/pp_create_failures/`
 
-> **⚠️ STOP:** If you don't have the commits for all services, **ABORT** and ask the user for inputs.
+> **⚠️ STOP:** If you don't have the **NCA commit**, **ABORT** and ask the user. API and Gimli have defaults (see Devstack Configuration section).
 
 ---
 
@@ -69,83 +69,116 @@ Before starting, ensure:
 
 All mismatches need to be fixed. Work through them in order of occurrence count.
 
+> **🚨 CRITICAL: A subtask is NOT complete until ALL verification columns are ✅**  
+> **DO NOT mark Status as 🟢 unless Deployed, Reproduced, HotReload, and Tested are ALL checked.**
+
 ### Status Legend
 
 | Status | Meaning |
 |--------|---------|
 | ⬜ | Not started |
-| 🟡 | In progress |
-| 🟢 | Fixed (commit made) |
-| 🔵 | Already Fixed (doesn't reproduce - flag for user verification) |
+| 🟡 | In progress (code written, NOT yet tested) |
+| 🟢 | **VERIFIED FIXED** (deployed, reproduced, tested, working) |
+| 🔵 | Already Fixed (doesn't reproduce on devstack - user will verify) |
 | 🔴 | Blocked (needs user input) |
 
-| # | Diff Type | Count | Monolith | NCA | Status | Summary |
-|---|-----------|-------|----------|-----|--------|---------|
-| 1 | `validation failure: The tracker type field is required` | 13,345 | 200 | 400 | ⬜ | |
-| 2 | `description contains invalid characters` | 8,090 | 400 | 200 | ⬜ | |
-| 3 | `title contains invalid characters` | 676 | 400 | 200 | ⬜ | |
-| 4 | `validation failure: slug already exists` | 519 | 200 | 400 | ⬜ | |
-| 5 | `settings.payment_success_message contains invalid characters` | 339 | 400 | 200 | ⬜ | |
-| 6 | `terms contains invalid characters` | 317 | 400 | 200 | ⬜ | |
-| 7 | `min_purchase should be null or valid integer` | 140 | 400 | 200 | ⬜ | |
-| 8 | `Contact number should be at least 8 digits` | 45 | 400 | 200 | ⬜ | |
-| 9 | `The udf_schema may not have more than 15 items` | 40 | 400 | 200 | ⬜ | |
-| 10 | `dual write id extraction: item missing in payment page item response` | 21 | 200 | 400 | ⬜ | |
-| 11 | `Contact number contains invalid characters` | 20 | 400 | 200 | ⬜ | |
-| 12 | `validation failure: min_amount should be minimum 50 for USD` | 18 | 200 | 400 | ⬜ | |
-| 13 | `validation failure: support_contact is invalid` | 17 | 200 | 400 | ⬜ | |
-| 14 | `Price has to be a fixed amount` | 17 | 400 | 200 | ⬜ | |
-| 15 | `validation failure: Price has to be a fixed amount` | 13 | 200 | 400 | ⬜ | |
-| 16 | `validation failure: domain must be a valid domain` | 11 | 200 | 400 | ⬜ | |
-| 17 | `validation failure: the length must be no more than 20` | 11 | 200 | 400 | ⬜ | |
-| 18 | `We are facing some trouble completing your request` | 9 | 400 | 200 | ⬜ | |
-| 19 | `max amount exceeds maximum payment amount allowed` | 8 | 400 | 200 | ⬜ | |
-| 20 | `validation failure: support_contact invalid contact format` | 6 | 200 | 400 | ⬜ | |
-| 21 | `validation failure: terms length must be between 5 and 2000` | 6 | 200 | 400 | ⬜ | |
-| 22 | `Contact number should not be greater than 15 digits` | 6 | 400 | 200 | ⬜ | |
-| 23 | `validation failure: value length must be no more than 100` | 4 | 200 | 400 | ⬜ | |
-| 24 | `validation failure: amount should be minimum 50 for USD` | 3 | 200 | 400 | ⬜ | |
-| 25 | `internal error: validation failure ends_by must be in future` | 3 | 200 | 400 | ⬜ | |
-| 26 | `validation failure: the length must be between 4 and 30` | 3 | 200 | 400 | ⬜ | |
-| 27 | `slug required for page with custom domain` | 2 | 400 | 200 | ⬜ | |
-| 28 | `validation failure: must be a valid URL` | 2 | 200 | 400 | ⬜ | |
-| 29 | `internal error: validation failure available_units` | 2 | 200 | 400 | ⬜ | |
-| 30 | `The max amount must be valid integer` | 2 | 400 | 200 | ⬜ | |
-| 31 | `db error: Cannot execute statement in a READ ONLY transaction` | 1 | 200 | 400 | ⬜ | |
-| 32 | `The min purchase must be valid integer` | 1 | 400 | 200 | ⬜ | |
+### Verification Columns
+
+| Column | Meaning |
+|--------|---------|
+| **Deployed** | Devstack is running with required services |
+| **Reproduced** | Diff was reproduced on devstack BEFORE fix |
+| **HotReload** | Devspace hot-reload is set up and syncing |
+| **Tested** | Fix was tested via hot-reload on devstack |
+| **Commit** | Commit hash (only after testing passes) |
+
+| # | Diff Type | Count | M | N | Deployed | Reproduced | HotReload | Tested | Status | Commit |
+|---|-----------|-------|---|---|----------|------------|-----------|--------|--------|--------|
+| 1 | `tracker type field is required` | 13,345 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 2 | `description contains invalid characters` | 8,090 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 3 | `title contains invalid characters` | 676 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 4 | `slug already exists` | 519 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 5 | `payment_success_message invalid chars` | 339 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 6 | `terms contains invalid characters` | 317 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 7 | `min_purchase null or valid integer` | 140 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 8 | `Contact number at least 8 digits` | 45 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 9 | `udf_schema more than 15 items` | 40 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 10 | `item missing in pp_item response` | 21 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 11 | `Contact number invalid characters` | 20 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 12 | `min_amount minimum 50 for USD` | 18 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 13 | `support_contact is invalid` | 17 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 14 | `Price has to be a fixed amount` | 17 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 15 | `Price has to be a fixed amount (v2)` | 13 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 16 | `domain must be a valid domain` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 17 | `length must be no more than 20` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 18 | `trouble completing your request` | 9 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 19 | `max amount exceeds maximum` | 8 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 20 | `support_contact invalid format` | 6 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 21 | `terms length 5 and 2000` | 6 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 22 | `Contact number > 15 digits` | 6 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 23 | `value length no more than 100` | 4 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 24 | `amount minimum 50 for USD` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 25 | `ends_by must be in future` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 26 | `length between 4 and 30` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 27 | `slug required for custom domain` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 28 | `must be a valid URL` | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 29 | `available_units validation` | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 30 | `max amount must be valid integer` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 31 | `READ ONLY transaction` | 1 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
+| 32 | `min purchase must be valid integer` | 1 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | |
 
 ---
 
 ## Workflow for Each Subtask
 
-### Step 1: Deploy Infrastructure (if not already deployed)
+> **🚨 MANDATORY: Follow these steps IN ORDER. Do NOT skip steps. Do NOT mark complete without testing.**
+
+---
+
+### 🔲 STEP 1: DEPLOY DEVSTACK (Required First)
+
+**You MUST have a running devstack before proceeding.**
 
 ```bash
-# Check if devstack with pp-decomp prefix exists
+# CHECK: Is devstack already running?
 kubectl get pods -A -l name=pp-decomp-<label>
+```
 
-# If not, deploy following /docs/agent-actions/deploy-to-devstack.md
+**If NO pods found → Deploy now:**
+```bash
 cd ~/rzp/kube-manifests/helmfile
-# Update helmfile.yaml with:
-#   - devstack_label: pp-decomp-<your-label>
-#   - commits for: nca, api, gimli
+# Update helmfile.yaml with commits from Devstack Configuration section
 helmfile lint && helmfile sync
 ```
 
-> **⚠️ STOP:** If you don't know the commits to use, **ABORT** and ask the user.
+**Wait for pods to be ready:**
+```bash
+kubectl get pods -A -l name=pp-decomp-<label> -w
+# Wait until ALL pods show STATUS=Running and READY=1/1
+```
 
-### Step 2: Reproduce the Diff
+> **🛑 CHECKPOINT:** Run `kubectl get pods -A -l name=pp-decomp-<label>` and confirm pods are Running.  
+> **If not running → DO NOT PROCEED. Fix deployment first.**  
+> **✅ Once confirmed → Update subtask row: `Deployed` = ✅**
 
-1. Find sample logs in the categorized folder:
+---
+
+### 🔲 STEP 2: REPRODUCE THE DIFF (Required Before Coding)
+
+**You MUST reproduce the diff on devstack BEFORE writing any fix.**
+
+1. **Get sample request from logs:**
+   ```bash
+   # Find the categorized folder for this diff type
+   ls /Users/boddedakarthik.s/rzp/pythonscripts/decomp-scripts/failure_logs/pp_create_failures/categorized/
+   
+   # Read a recent log file
+   head -5 "<categorized_folder>/<recent_date>.csv"
    ```
-   /pythonscripts/decomp-scripts/failure_logs/pp_create_failures/categorized/<diff_folder>/<date>.csv
-   ```
 
-2. Use the sample request from `payment-pages-api.http` as template
+2. **Build the test request** using `payment-pages-api.http` as template
 
-3. Build the request body from the log data to replicate the exact failing request
-
-4. Hit the NCA endpoint on devstack:
+3. **Hit devstack and verify the diff exists:**
    ```bash
    curl -X POST "https://nca-<devstack-label>.dev.razorpay.in/v1/payment_pages" \
      -H "rzpctx-dev-serve-user: <devstack-label>" \
@@ -154,147 +187,166 @@ helmfile lint && helmfile sync
      -d '<request_body_from_log>'
    ```
 
-5. Check NCA diff logs to see the mismatch
+4. **Check response** - you should see the same error/diff as in logs
 
-**If the diff doesn't reproduce:** The fix may already be in master or the cherry-picked commits. Mark the subtask as `🔵 Already Fixed`, add a note in the Work Log, and move to the next subtask. User will verify these cases.
+> **🛑 CHECKPOINT:** Did you reproduce the diff?  
+> - **YES** → ✅ Update subtask row: `Reproduced` = ✅ → Proceed to Step 3  
+> - **NO (diff doesn't occur)** → Mark status as `🔵 Already Fixed`, add note in Work Log, move to next subtask
 
-### Step 3: Identify the Fix
+---
 
-- Analyze why NCA behaves differently from monolith
-- **Goal:** Make NCA match monolith behavior (monolith is source of truth)
+### 🔲 STEP 3: WRITE THE FIX
+
+**Only after reproducing the diff, analyze and write the fix.**
+
+- Compare NCA code vs Monolith code (see Code References)
+- **Goal:** Make NCA behave exactly like monolith
+- Write the fix in NCA code
 
 > **⚠️ IMPORTANT:** 
-> - **Prefer NCA changes** - we want NCA to match monolith
-> - **If monolith change is required** → **ABORT** and notify user
-> - Even if NCA behavior seems "correct", match monolith for now (optimize later)
+> - **ONLY change NCA code** - monolith is source of truth
+> - **If monolith change is required** → **ABORT** and ask user
+> - Even if NCA behavior seems "correct", match monolith for now
 
-### Step 4: Test the Fix
+---
 
-1. Ensure dependencies are up to date (required before devspace):
+### 🔲 STEP 4: TEST THE FIX VIA HOT RELOAD (Required Before Commit)
+
+**You MUST test your fix on devstack using hot reload. DO NOT commit untested code.**
+
+1. **Prepare dependencies:**
    ```bash
    cd ~/rzp/no-code-apps
    go mod tidy
    go mod vendor
    ```
 
-2. Apply code changes using hot reload (see [/docs/agent-actions/hot-reload-devspace.md](/docs/agent-actions/hot-reload-devspace.md))
+2. **Update devspace.yaml** with your devstack label
+
+3. **Start hot reload:**
    ```bash
-   # Update devspace.yaml with your devstack_label
    devspace dev --no-warn
    ```
+   
+   > This syncs your local code to the running pod. Wait for sync to complete.
 
-4. Wait for pod to be ready:
+4. **Verify pod is ready:**
    ```bash
-   kubectl get pods -n no-code-apps -l name=<devstack-label> -w
+   kubectl get pods -n no-code-apps -l name=<devstack-label>
+   # Should show Running and READY=1/1
    ```
-5. Hit the same request again
-6. Verify:
-   - Diff is gone
-   - Behavior matches monolith
-   - No new regressions
 
-### Step 5: Document and Commit
+> **🛑 CHECKPOINT:** Is devspace syncing and pod is running?  
+> **✅ Once confirmed → Update subtask row: `HotReload` = ✅**
 
-1. If fix is successful:
-   - Commit changes with descriptive message
-   - Update subtask status to 🟢
-   - Add summary and commit hash to Work Log
-   - Add proof of work (before/after response comparison)
+5. **TEST: Hit the SAME request that reproduced the diff:**
+   ```bash
+   curl -X POST "https://nca-<devstack-label>.dev.razorpay.in/v1/payment_pages" \
+     -H "rzpctx-dev-serve-user: <devstack-label>" \
+     -H "Authorization: Basic <auth_token>" \
+     -H "Content-Type: application/json" \
+     -d '<same_request_body>'
+   ```
 
-2. If fix not found:
-   - Keep status as ⬜
-   - Document findings in Work Log
-   - Move to next subtask
+6. **Verify fix works:**
+   - Diff is GONE
+   - NCA response matches monolith behavior
+   - No new errors
 
-### Step 6: Next Steps
+> **🛑 CHECKPOINT:** Did the fix work?  
+> - **YES** → ✅ Update subtask row: `Tested` = ✅ → Proceed to Step 5  
+> - **NO** → Debug, fix, repeat Step 4. DO NOT proceed until fix is verified.
+
+---
+
+### 🔲 STEP 5: COMMIT AND DOCUMENT (Only After Testing)
+
+> **🚨🚨🚨 DO NOT COMMIT UNTIL FIX IS TESTED AND WORKING 🚨🚨🚨**
+>
+> **You MUST have completed Step 4 and verified the fix works on devstack.**
+> **If `Tested` column is not ✅, DO NOT COMMIT.**
+
+1. **Commit the fix:**
+   ```bash
+   cd ~/rzp/no-code-apps
+   git add -A
+   git commit -m "fix: <descriptive message>"
+   ```
+
+2. **Update subtask table:**
+   - `Status` = 🟢
+   - `Commit` = `<commit_hash>`
+
+3. **Add Work Log entry** with:
+   - Root cause
+   - Fix description
+   - Proof of work (before/after responses)
+   - Commit hash
+
+---
+
+### 🔲 STEP 6: NEXT SUBTASK
 
 Based on user input or current progress:
-- Continue to next subtask, OR
+- Continue to next subtask (start from Step 2), OR
 - Hand control back to user
 
 ---
 
 ## Work Log
 
-### Template for Each Fix
-
-```markdown
-#### Subtask #X: <diff_type>
-
-**Date:** YYYY-MM-DD  
-**Status:** 🟢 Fixed / 🔵 Already Fixed / 🔴 Blocked / ⬜ Investigated  
-
-**Root Cause:**
-<description of why the diff occurs>
-
-**Fix:**
-<description of the fix>
-
-**Commit:** `<commit_hash>`
-
-**Files Changed:**
-- `path/to/file1.go`
-- `path/to/file2.go`
-
-**Proof of Work:**
-
-Before:
-```json
-// NCA response (400)
-{"error": {"code": "BAD_REQUEST", "description": "..."}}
-```
-
-After:
-```json
-// NCA response (200) - matches monolith
-{"id": "pp_xxx", ...}
-```
-
-**Notes:**
-<any additional notes>
-```
-
-### Template for Already Fixed
-
-```markdown
-#### Subtask #X: <diff_type>
-
-**Date:** YYYY-MM-DD  
-**Status:** 🔵 Already Fixed  
-
-**Reproduction Attempt:**
-- Devstack label: `pp-decomp-xxx`
-- Request body from: `<log_file_path>`
-- Result: No diff observed - NCA and monolith both return <status_code>
-
-**Likely Fixed In:** Master branch / Cherry-picked commits
-
-**User Verification Needed:** Yes
-```
-
----
+> **When to add detailed entries:**
+> 1. **Fix is VERIFIED and TESTED** → Add full details to Completed Fixes
+> 2. **Fix FAILED after multiple iterations** → Add debugging details to Investigation Notes
+> 3. **During investigation** → Keep notes minimal (just commit hash and pending steps)
 
 ### Completed Fixes
 
-*(Add entries here as subtasks are completed)*
+*(Add entries here ONLY after ALL verification columns are ✅)*
+
+**Template for verified fix:**
+```
+#### Subtask #X: <diff_type>
+**Date:** YYYY-MM-DD | **Commit:** `<hash>`
+**Root Cause:** <why the diff occurred>
+**Fix:** <what was changed>
+**Files:** <list of files>
+**Proof:** Before (NCA 400) → After (NCA 200 matches monolith)
+```
+
+### Already Fixed (User Verification Needed)
+
+*(Diffs that don't reproduce on devstack - likely fixed in master/cherry-picks)*
+
+**Template:**
+```
+#### Subtask #X: <diff_type>
+**Date:** YYYY-MM-DD | **Devstack:** `pp-decomp-xxx`
+**Result:** No diff observed - both return <status_code>
+```
 
 ---
 
 ### Investigation Notes
 
-*(Add notes for subtasks investigated but not fixed)*
+> **When to add details here:**
+> - Fix is verified and tested → add to Completed Fixes with full details
+> - Fix didn't work after multiple iterations → add details here for debugging
+> - Minimal notes only during investigation
+
+*(Empty - start fresh)*
 
 ---
 
 ## Devstack Configuration
 
-| Service | Commit | Label |
-|---------|--------|-------|
-| NCA | `<pending>` | `pp-decomp-<label>` |
-| API | `<pending>` | `pp-decomp-<label>` |
-| Gimli | `<pending>` | `pp-decomp-<label>` |
+| Service | Commit | Label | Notes |
+|---------|--------|-------|-------|
+| NCA | `609f32edd7bd63b9db1ac09ba32fafd6b3e73236` | `pp-decomp-<label>` | **User input required** - always ask for latest |
+| API | `d54e3b9afaf981785390805c70dde2b48761ae5c` | `pp-decomp-<label>` | Default (use unless specified) |
+| Gimli | `4bf1861181c41e61b7994bbc5658012b430a4530` | `pp-decomp-<label>` | Default (use unless specified) |
 
-> Update this section when devstack is deployed.
+> **⚠️ NCA commit is mandatory user input.** API and Gimli commits above are defaults - use them unless user specifies otherwise.
 
 ---
 
@@ -321,4 +373,17 @@ After:
 3. You're stuck and can't identify the root cause after investigation
 4. You're unsure whether a behavior difference is acceptable
 5. Test results are ambiguous or unexpected
+6. Devstack deployment fails
+7. You cannot reproduce the diff on devstack
+8. Hot reload setup fails
+
+---
+
+## ⛔ NEVER DO THIS
+
+1. **NEVER mark Status as 🟢 without ALL verification columns checked (✅)**
+2. **NEVER commit a fix without testing via hot reload on devstack**
+3. **NEVER skip the reproduction step** - you must see the diff before fixing it
+4. **NEVER assume a fix works** - always verify with actual requests
+5. **NEVER proceed to next subtask without completing current one properly**
 
