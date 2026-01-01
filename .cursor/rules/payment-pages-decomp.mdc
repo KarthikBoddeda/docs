@@ -25,9 +25,14 @@ This project migrates Payment Pages functionality from the API monolith to the N
 ## Key Files
 
 - Architecture & APIs: `PAYMENT_PAGES_DECOMP.md`
+- **Code Reference (NCA):** `code/` folder - per-API code documentation
 - API Requests (.http): `payment-pages-api.http`
 - Task Tracking: `tasks/` folder
 - Failure Logs: `/pythonscripts/decomp-scripts/failure_logs/`
+
+## Critical Rule
+
+**NCA code is written to exactly mimic monolith behavior.** Any mismatch between NCA and monolith responses is a bug. Monolith is the source of truth. Even if NCA behavior seems "correct", match monolith for now. Optimizations can be done later.
 
 ## Index Maintenance Rule
 
@@ -41,14 +46,18 @@ This project migrates Payment Pages functionality from the API monolith to the N
    - Update "Current Tasks" table
    - If task has its own file in `tasks/`, link to it
 
-3. **Making a decision:**
+3. **Adding code documentation:**
+   - Create file in `code/` folder (e.g., `code/pp-update.md`)
+   - Update `code/_index.md` index
+
+4. **Making a decision:**
    - Add entry to "Decision Log" with date and decision
 
-4. **Adding new API:**
+5. **Adding new API:**
    - Update `payment-pages-api.http`
    - Update API tables in `PAYMENT_PAGES_DECOMP.md`
 
-5. **Changing project status:**
+6. **Changing project status:**
    - Update "Quick Context" table (Stage field)
 
 ## Testing & Deployment

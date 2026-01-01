@@ -36,23 +36,36 @@ Migrating Payment Pages functionality from the API monolith to the NoCodeApp (NC
 | Architecture & Migration Flow | [PAYMENT_PAGES_DECOMP.md](./PAYMENT_PAGES_DECOMP.md) |
 | API List with Routes | [PAYMENT_PAGES_DECOMP.md#write-apis](./PAYMENT_PAGES_DECOMP.md#request-flow---writeread-apis) |
 | API Request Examples (.http) | [payment-pages-api.http](./payment-pages-api.http) |
+| **Code Reference (NCA)** | [code/](./code/) |
 | Task Tracking | [tasks/](./tasks/) |
 | Failure Logs & Analysis | `/pythonscripts/decomp-scripts/failure_logs/` |
 | Deployment Guide | [/docs/agent-actions/deploy-to-devstack.md](/docs/agent-actions/deploy-to-devstack.md) |
+| Hot Reload Guide | [/docs/agent-actions/hot-reload-devspace.md](/docs/agent-actions/hot-reload-devspace.md) |
 
 ---
 
 ## Key Files in Codebase
 
+> **⚠️ IMPORTANT:** NCA code is written to **exactly mimic monolith behavior**. Any mismatch is a bug.
+
+### NCA Service (no-code-apps repo)
+
+| Area | File | Purpose |
+|------|------|---------|
+| Routes | `internal/router/payment_page_private_routes.go` | Route definitions |
+| Controller | `internal/controllers/payment_page.go` | HTTP handlers |
+| Core Logic | `internal/modules/payment_page/core.go` | Business logic |
+| Validation | `internal/modules/payment_page/validation.go` | PP-specific validation |
+| Base Validation | `internal/modules/nocode/validation.go` | Base validation (TrackerType check here!) |
+| Dual Write | `internal/monolith_decomp/dual_write_handlers/base.go` | Proxy & diff logic |
+| Diff Checker | `internal/monolith_decomp/diffs/diff_checker.go` | Response comparison |
+
+> See [code/](./code/) for detailed code documentation
+
 ### API Monolith (api repo)
 - `app/Http/Controllers/PaymentPageController.php` - Main controller
 - `app/Models/PaymentPage.php` - Model
 - `app/Http/Routes/payment_pages.php` - Routes
-
-### NCA Service (no-code-apps repo)
-- `internal/paymentpage/` - Payment page handlers
-- `internal/proxy/` - Proxy logic for monolith calls
-- `internal/dualwrite/` - Dual write implementation
 
 ---
 

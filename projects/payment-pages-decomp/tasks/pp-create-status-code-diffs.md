@@ -24,6 +24,8 @@ When NCA proxies a request to monolith:
 - **Monolith 200, NCA 400/500**: NCA is rejecting requests that monolith accepts → fix NCA validation
 - **Monolith 400/500, NCA 200**: NCA is accepting requests that monolith rejects → fix NCA validation
 
+> **⚠️ IMPORTANT:** NCA code is written to **exactly mimic monolith behavior**. Monolith is the source of truth. Even if NCA behavior seems "correct", match monolith for now. Optimizations can be done later after NCA becomes reliable.
+
 ---
 
 ## Prerequisites
@@ -48,6 +50,14 @@ Before starting, ensure:
 | Failure logs location | `/pythonscripts/decomp-scripts/failure_logs/pp_create_failures/` |
 | Analysis report | `/pythonscripts/decomp-scripts/failure_logs/pp_create_failures/analysis.md` |
 | Migration architecture | [/docs/projects/payment-pages-decomp/PAYMENT_PAGES_DECOMP.md](/docs/projects/payment-pages-decomp/PAYMENT_PAGES_DECOMP.md) |
+
+### Code References
+
+| Code Area | Reference |
+|-----------|-----------|
+| **payment_page_create code flow** | [/docs/projects/payment-pages-decomp/code/pp-create.md](/docs/projects/payment-pages-decomp/code/pp-create.md) |
+| **Proxying & dual write logic** | [/docs/projects/payment-pages-decomp/code/proxying.md](/docs/projects/payment-pages-decomp/code/proxying.md) |
+| **Code reference index** | [/docs/projects/payment-pages-decomp/code/_index.md](/docs/projects/payment-pages-decomp/code/_index.md) |
 
 ---
 

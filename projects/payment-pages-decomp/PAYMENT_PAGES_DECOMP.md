@@ -2,6 +2,17 @@
 
 This document outlines the decomposition of **Payment Pages** functionality from the monolithic API service to the NoCodeApp (NCA) service, including current architecture, target state, migration flows, and implementation tasks.
 
+> **⚠️ IMPORTANT:** NCA code is written to **exactly mimic monolith behavior**. Any mismatch between NCA and monolith responses is a bug that needs fixing. **Monolith is the source of truth** until NCA becomes reliable. Optimizations and improvements can be done later, after NCA is proven to match monolith exactly.
+
+---
+
+## Code Reference
+
+For detailed code documentation, see:
+- [Code Reference Index](/docs/projects/payment-pages-decomp/code/_index.md)
+- [Proxying Logic](/docs/projects/payment-pages-decomp/code/proxying.md)
+- Individual API docs in `/docs/projects/payment-pages-decomp/code/`
+
 ---
 
 # Target State Architecture
