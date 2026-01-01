@@ -26,6 +26,8 @@ When NCA proxies a request to monolith:
 
 > **⚠️ IMPORTANT:** NCA code is written to **exactly mimic monolith behavior**. Monolith is the source of truth. Even if NCA behavior seems "correct", match monolith for now. Optimizations can be done later after NCA becomes reliable.
 
+> **📝 NOTE: Some diffs may already be fixed.** Master branch and cherry-picked commits may contain fixes for some diffs. If you try to reproduce a diff and it doesn't occur on devstack, mark the subtask as `🔵 Already Fixed` and move on. The user will double-check these cases.
+
 ---
 
 ## Prerequisites
@@ -66,6 +68,16 @@ Before starting, ensure:
 ## Subtasks (Ordered by Frequency)
 
 All mismatches need to be fixed. Work through them in order of occurrence count.
+
+### Status Legend
+
+| Status | Meaning |
+|--------|---------|
+| ⬜ | Not started |
+| 🟡 | In progress |
+| 🟢 | Fixed (commit made) |
+| 🔵 | Already Fixed (doesn't reproduce - flag for user verification) |
+| 🔴 | Blocked (needs user input) |
 
 | # | Diff Type | Count | Monolith | NCA | Status | Summary |
 |---|-----------|-------|----------|-----|--------|---------|
@@ -144,6 +156,8 @@ helmfile lint && helmfile sync
 
 5. Check NCA diff logs to see the mismatch
 
+**If the diff doesn't reproduce:** The fix may already be in master or the cherry-picked commits. Mark the subtask as `🔵 Already Fixed`, add a note in the Work Log, and move to the next subtask. User will verify these cases.
+
 ### Step 3: Identify the Fix
 
 - Analyze why NCA behaves differently from monolith
@@ -156,18 +170,25 @@ helmfile lint && helmfile sync
 
 ### Step 4: Test the Fix
 
-1. Apply code changes using hot reload (see [/docs/agent-actions/hot-reload-devspace.md](/docs/agent-actions/hot-reload-devspace.md))
+1. Ensure dependencies are up to date (required before devspace):
    ```bash
    cd ~/rzp/no-code-apps
+   go mod tidy
+   go mod vendor
+   ```
+
+2. Apply code changes using hot reload (see [/docs/agent-actions/hot-reload-devspace.md](/docs/agent-actions/hot-reload-devspace.md))
+   ```bash
    # Update devspace.yaml with your devstack_label
    devspace dev --no-warn
    ```
-2. Wait for pod to be ready:
+
+4. Wait for pod to be ready:
    ```bash
    kubectl get pods -n no-code-apps -l name=<devstack-label> -w
    ```
-3. Hit the same request again
-4. Verify:
+5. Hit the same request again
+6. Verify:
    - Diff is gone
    - Behavior matches monolith
    - No new regressions
@@ -201,7 +222,7 @@ Based on user input or current progress:
 #### Subtask #X: <diff_type>
 
 **Date:** YYYY-MM-DD  
-**Status:** 🟢 Fixed / 🔴 Blocked / ⬜ Investigated  
+**Status:** 🟢 Fixed / 🔵 Already Fixed / 🔴 Blocked / ⬜ Investigated  
 
 **Root Cause:**
 <description of why the diff occurs>
@@ -231,6 +252,24 @@ After:
 
 **Notes:**
 <any additional notes>
+```
+
+### Template for Already Fixed
+
+```markdown
+#### Subtask #X: <diff_type>
+
+**Date:** YYYY-MM-DD  
+**Status:** 🔵 Already Fixed  
+
+**Reproduction Attempt:**
+- Devstack label: `pp-decomp-xxx`
+- Request body from: `<log_file_path>`
+- Result: No diff observed - NCA and monolith both return <status_code>
+
+**Likely Fixed In:** Master branch / Cherry-picked commits
+
+**User Verification Needed:** Yes
 ```
 
 ---

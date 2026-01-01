@@ -54,10 +54,21 @@ dev:
 
 > **Why?** The generic `api_devstack` tag is only updated on merges to master. Using your commit's build ensures the base image is close to your local branch.
 
-### Step 2: Run Devspace Dev
+### Step 2: Prepare Dependencies (Go services)
+
+Before running devspace, ensure dependencies are up to date:
 
 ```bash
 cd ~/rzp/<service-repo>
+go mod tidy
+go mod vendor
+```
+
+> **Why?** Devspace syncs your local `vendor/` directory to the pod. If vendor is outdated, the pod build may fail or use stale dependencies.
+
+### Step 3: Run Devspace Dev
+
+```bash
 devspace dev --no-warn
 ```
 
@@ -67,7 +78,7 @@ devspace dev --no-warn
 3. Syncs your local files into the remote container
 4. Streams logs to your terminal
 
-### Step 3: Verify and Test
+### Step 4: Verify and Test
 
 ```bash
 # Check pod status (in another terminal)
@@ -98,8 +109,9 @@ kubectl logs <pod-name> -n <namespace> -f
 | Scenario | Action Required |
 |----------|-----------------|
 | Changed existing code | No action - auto syncs and rebuilds |
-| Added new dependency in `go.mod` | Push commit to GitHub to rebuild vendor packages |
-| Syncing vendor files | No action - vendor files sync automatically |
+| Added/changed dependency in `go.mod` | Run `go mod tidy && go mod vendor` before devspace |
+| First time running devspace | Run `go mod tidy && go mod vendor` to ensure vendor is up to date |
+| Syncing vendor files | No action - vendor files sync automatically after initial setup |
 
 ### Pod Sync Behavior
 

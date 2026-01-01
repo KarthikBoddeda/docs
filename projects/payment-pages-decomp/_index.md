@@ -48,6 +48,8 @@ Migrating Payment Pages functionality from the API monolith to the NoCodeApp (NC
 
 > **⚠️ IMPORTANT:** NCA code is written to **exactly mimic monolith behavior**. Any mismatch is a bug.
 
+> **📝 NOTE:** Some diffs may already be fixed in master or cherry-picked commits. If you encounter a diff that doesn't reproduce on devstack, flag it as `🔵 Already Fixed` and move to the next subtask. User will verify.
+
 ### NCA Service (no-code-apps repo)
 
 | Area | File | Purpose |
