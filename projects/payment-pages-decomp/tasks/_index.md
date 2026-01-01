@@ -25,7 +25,7 @@
 ## Related Resources
 
 - [Failure Logs Analysis](/pythonscripts/decomp-scripts/failure_logs/)
-- [Deployment Guide](/docs/agent-actions/deploy-to-devstack/overview.md)
+- [Deployment Guide](/docs/agent-actions/deploy-to-devstack.md)
 - [API Requests](/docs/projects/payment-pages-decomp/payment-pages-api.http)
 - [Project Overview](/docs/projects/payment-pages-decomp/PAYMENT_PAGES_DECOMP.md)
 

@@ -38,7 +38,7 @@ Migrating Payment Pages functionality from the API monolith to the NoCodeApp (NC
 | API Request Examples (.http) | [payment-pages-api.http](./payment-pages-api.http) |
 | Task Tracking | [tasks/](./tasks/) |
 | Failure Logs & Analysis | `/pythonscripts/decomp-scripts/failure_logs/` |
-| Deployment Guide | [/docs/agent-actions/deploy-to-devstack/overview.md](/docs/agent-actions/deploy-to-devstack/overview.md) |
+| Deployment Guide | [/docs/agent-actions/deploy-to-devstack.md](/docs/agent-actions/deploy-to-devstack.md) |
 
 ---
 

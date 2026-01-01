@@ -42,7 +42,7 @@ Before starting, ensure:
 
 | Action | Reference |
 |--------|-----------|
-| Deploy to devstack | [/docs/agent-actions/deploy-to-devstack/overview.md](/docs/agent-actions/deploy-to-devstack/overview.md) |
+| Deploy to devstack | [/docs/agent-actions/deploy-to-devstack.md](/docs/agent-actions/deploy-to-devstack.md) |
 | Sample API requests | [/docs/projects/payment-pages-decomp/payment-pages-api.http](/docs/projects/payment-pages-decomp/payment-pages-api.http) |
 | Failure logs location | `/pythonscripts/decomp-scripts/failure_logs/pp_create_failures/` |
 | Analysis report | `/pythonscripts/decomp-scripts/failure_logs/pp_create_failures/analysis.md` |
@@ -99,7 +99,7 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 # Check if devstack with pp-decomp prefix exists
 kubectl get pods -A -l name=pp-decomp-<label>
 
-# If not, deploy following /docs/agent-actions/deploy-to-devstack/overview.md
+# If not, deploy following /docs/agent-actions/deploy-to-devstack.md
 cd ~/rzp/kube-manifests/helmfile
 # Update helmfile.yaml with:
 #   - devstack_label: pp-decomp-<your-label>

@@ -53,7 +53,7 @@ This project migrates Payment Pages functionality from the API monolith to the N
 
 ## Testing & Deployment
 
-For deployment, follow: `/docs/agent-actions/deploy-to-devstack/overview.md`
+For deployment, follow: `/docs/agent-actions/deploy-to-devstack.md`
 
 Required headers for devstack:
 ```
