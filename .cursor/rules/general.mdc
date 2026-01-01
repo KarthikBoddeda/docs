@@ -1,0 +1,49 @@
+---
+description: General rules for all tasks in this workspace
+alwaysApply: true
+---
+
+# General Rules
+
+These rules apply to ALL tasks in this workspace.
+
+## 1. When to ABORT and Ask for Clarification
+
+When running a long list of tasks or subtasks:
+- If user input is vague or ambiguous → **ABORT** and ask for more details
+- If you're unsure whether to proceed to the next step → **ABORT** and confirm with user
+- If prerequisites are missing or unclear → **ABORT** and ask for inputs
+- If the task outcome is uncertain → **ABORT** and verify expected behavior
+
+**Never assume.** When in doubt, ask.
+
+## 2. File Path References
+
+When referring to a file or document in any documentation:
+- **Always use the complete path relative to the workspace root**
+- Use absolute paths starting from the repo root (e.g., `/docs/agent-actions/deploy-to-devstack.md`)
+- Never use relative paths like `../` or `./` in documentation
+
+**Examples:**
+- ✅ Good: `/docs/projects/payment-pages-decomp/_index.md`
+- ✅ Good: `/pythonscripts/decomp-scripts/failure_logs/`
+- ❌ Bad: `../_index.md`
+- ❌ Bad: `./tasks/`
+
+## 3. Updating References When Renaming/Moving Files
+
+When a file path, file name, or folder name is updated:
+1. **Search for all references** to the old path across the workspace
+2. **Update every file** that references the old path
+3. **Verify no broken links** remain
+
+**Use grep to find all references:**
+```bash
+grep -r "old-file-name" /path/to/docs/
+```
+
+**Common places to check:**
+- `_index.md` files
+- `.cursor/rules/*.mdc` files
+- Other documentation files
+- README files
