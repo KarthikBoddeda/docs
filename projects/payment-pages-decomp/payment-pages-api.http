@@ -3,6 +3,12 @@
 # 
 # Usage: Use REST Client extension in VS Code, or convert to curl commands
 # Note: All requests include devstack routing header
+#
+# ⚠️ IMPORTANT FOR TESTING:
+# - Use test merchant ID (LJ3P0FyFtOULha) - NOT production IDs from failure logs!
+# - Failure logs contain production merchant IDs which don't exist on devstack
+# - DON'T kubectl exec into pods to test - hit URLs directly with headers
+# - Auth bypass must be applied in NCA code (see _index.md)
 
 
 #============================================================
@@ -10,7 +16,8 @@
 #============================================================
 
 # NCA Service URLs
-@nca_personal_url = https://nca-dev-cahn.dev.razorpay.in
+# For devstack: https://nca.dev.razorpay.in with rzpctx-dev-serve-user header
+@nca_personal_url = https://nca.dev.razorpay.in
 
 # API Monolith URLs
 @api_monolith_base_url = https://api-web-usa.dev.razorpay.in
@@ -19,9 +26,11 @@
 @api_dashboard_url = https://api-dashboard-merchant.dev.razorpay.in/v1/payment_pages
 
 # Merchant Details
+# ⚠️ Use this test merchant ID - NOT production IDs from failure logs!
 @merchant_id = LJ3P0FyFtOULha
 @merchant_proxy_auth_key = rzp_live_LJ3P0FyFtOULha
 @payment_page_id = pl_PAWIUa4XRsfNlC
+@mode = live
 
 # Auth (Base64 encode key:secret for Basic auth)
 @nca_user = RANDOM_NCA_USER
@@ -39,8 +48,11 @@
 @internal_auth_live = rzp_live
 
 # ⚠️ UPDATE THESE WITH YOUR VALUES
-@devstack_label = your-devstack-label
+@devstack_label = pp-decomp-fix1
 @payment_id = pay_xxxxx
+# For testing fixes: dual_write_shadow_read_no_external (compares NCA vs Monolith)
+# For nca-only (no comparison): nca_only
+@dual_write_state = dual_write_shadow_read_no_external
 
 # Auth token = base64(nca_user:nca_password)
 @auth_token = UkFORE9NX05DQV9VU0VSOlJBTkRPTV9OQ0FfUEFTU1dPUkQ=
@@ -80,11 +92,12 @@ rzpctx-dev-serve-user: {{devstack_label}}
 
 ### payment_page_create
 # Create a new payment page
+# ⚠️ Use test merchant ID LJ3P0FyFtOULha - NOT production IDs from failure logs!
 POST {{nca_personal_url}}/v1/payment_pages
 rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
-X-Razorpay-Mode: live
-X-Dual-Write-State: nca_only
+X-Razorpay-Mode: {{mode}}
+X-Proxy-State: {{dual_write_state}}
 Authorization: Basic {{auth_token}}
 Content-Type: application/json
 
@@ -107,7 +120,7 @@ Content-Type: application/json
             "phone": "phone"
         }
     },
-    "view_type": "button",
+    "view_type": "page",
     "payment_page_items": [
         {
             "item": {

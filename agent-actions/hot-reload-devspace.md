@@ -60,11 +60,14 @@ Before running devspace, ensure dependencies are up to date:
 
 ```bash
 cd ~/rzp/<service-repo>
+export GOPRIVATE="github.com/razorpay/*"  # Required for private Razorpay modules
 go mod tidy
 go mod vendor
 ```
 
 > **Why?** Devspace syncs your local `vendor/` directory to the pod. If vendor is outdated, the pod build may fail or use stale dependencies.
+>
+> **Note:** `GOPRIVATE` must be set to access private Razorpay Go modules.
 
 ### Step 3: Run Devspace Dev
 
@@ -81,13 +84,17 @@ devspace dev --no-warn
 ### Step 4: Verify and Test
 
 ```bash
-# Check pod status (in another terminal)
-kubectl get pods -n <namespace> -l name=<devstack-label>
+# Check ALL pods for your devstack (single command!)
+kubectl get pods -A -l name=<devstack-label>
+# Example: kubectl get pods -A -l name=pp-decomp-fix1
 
 # Wait until STATUS is Running and READY is 1/1
 ```
 
-Once ready, test your changes by hitting your endpoints.
+> **⚠️ DON'T `kubectl exec` into pods to test!** Hit the URL directly with appropriate headers.
+
+Once ready, test your changes by hitting your endpoints directly:
+
 
 ---
 

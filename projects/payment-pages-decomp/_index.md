@@ -81,20 +81,30 @@ Migrating Payment Pages functionality from the API monolith to the NoCodeApp (NC
 
 ---
 
-## API Variables for Testing
+## Testing on Devstack
+
+### Test Merchant ID
+
+> **⚠️ CRITICAL:** Use the **devstack test merchant ID**, NOT production merchant IDs from failure logs!
+>
+> Failure logs contain production merchant IDs which don't exist on devstack. Always use:
+> - **Test Merchant ID:** `LJ3P0FyFtOULha`
+> - **Mode:** `live` (or `test` as needed)
+
+### API Variables for Testing
 
 When using `payment-pages-api.http`:
 
 ```
-nca_personal_url = https://nca.dev.razorpay.in  (or devstack URL)
-merchant_id = <your-merchant-id>
-auth_token = <base64-encoded-key:secret>
-page_id = pl_xxxxx
-payment_id = pay_xxxxx
+nca_personal_url = https://nca.dev.razorpay.in
+merchant_id = LJ3P0FyFtOULha  # <-- Use this test merchant, NOT prod IDs from logs!
+auth_token = UkFORE9NX05DQV9VU0VSOlJBTkRPTV9OQ0FfUEFTU1dPUkQ=
 devstack_label = <your-devstack-label>
 ```
 
-For devstack, add header: `rzpctx-dev-serve-user: {{devstack_label}}`
+**After fix is applied:** Look for `DIFF_CHECKER_NO_DIFFS_FOUND` in NCA logs to confirm fix works.
+
+> **Note:** Add fields from failure logs to the body to reproduce specific diffs (e.g., `"settings": { "goal_tracker": {} }`)
 
 ---
 
@@ -124,6 +134,8 @@ func (a *PaymentPageRoutes) GetMiddlewares() []gin.HandlerFunc {
 
 Apply this change via hot reload before testing. See [hot-reload-devspace.md](/docs/agent-actions/hot-reload-devspace.md).
 
+> **⚠️ DO NOT COMMIT this change.** Keep it uncommitted throughout testing. Only commit your actual bug fixes.
+
 **Tip:** Hot reload only works while `devspace dev` is running. No need to run `devspace purge` between tasks - just run `devspace dev` again if you closed the terminal.
 
 ---
@@ -135,14 +147,30 @@ Apply this change via hot reload before testing. See [hot-reload-devspace.md](/d
 cd ~/rzp/kube-manifests/helmfile
 helmfile lint && helmfile sync
 
-# Check pods
-kubectl get pods -A -l name=<devstack-label>
+# Check ALL pods for your devstack (single command!)
+kubectl get pods -A -l name=pp-decomp-fix1
+# Shows pods from all namespaces (api, no-code-apps, gimli) matching your label
+
+# Check specific namespace
+kubectl get pods -n no-code-apps -l name=pp-decomp-fix1
 
 # View logs
 kubectl logs <pod-name> -n <namespace> -f
+```
 
-# Test API with devstack header
-curl -H "rzpctx-dev-serve-user: <label>" https://api.dev.razorpay.in/v1/payment_pages
+### Testing APIs
+
+> **⚠️ DON'T `kubectl exec` into pods to test!** Hit the URL directly with headers.
+
+```bash
+# Hit NCA directly with devstack routing
+curl -X POST 'https://nca.dev.razorpay.in/v1/payment_pages' \
+  -H 'X-Razorpay-Merchant-Id: LJ3P0FyFtOULha' \
+  -H 'X-Razorpay-Mode: live' \
+  -H 'rzpctx-dev-serve-user: pp-decomp-fix1' \
+  -H 'Authorization: Basic UkFORE9NX05DQV9VU0VSOlJBTkRPTV9OQ0FfUEFTU1dPUkQ=' \
+  -H 'Content-Type: application/json' \
+  -d '{"currency":"INR","title":"Test",...}'
 ```
 
 ---

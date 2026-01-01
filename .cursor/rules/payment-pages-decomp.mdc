@@ -51,17 +51,21 @@ This project migrates Payment Pages functionality from the API monolith to the N
 
 2. **REPRODUCE THE DIFF BEFORE CODING**
    - Get sample request from failure logs
+   - **Use test merchant ID `LJ3P0FyFtOULha`** - NOT production IDs from logs!
    - Hit devstack and confirm the diff occurs
    - ✅ Mark `Reproduced` column
    - If diff doesn't reproduce → mark as `🔵 Already Fixed`, move on
 
-3. **WRITE THE FIX** (only after reproducing)
+3. **ANALYZE CODE & WRITE THE FIX** (only after reproducing)
+   - Find monolith code that handles the logic (document file:line)
+   - Find NCA code with the bug (document file:line)
+   - ✅ Mark `CodeEvidence` column before writing fix
 
 4. **TEST VIA HOT RELOAD** (mandatory before commit)
-   - Run `go mod tidy && go mod vendor`
+   - Run `export GOPRIVATE="github.com/razorpay/*" && go mod tidy && go mod vendor`
    - Run `devspace dev --no-warn`
    - ✅ Mark `HotReload` column
-   - Hit the SAME request again
+   - Hit the SAME request again (use URL directly, DON'T `kubectl exec` into pods!)
    - Verify diff is GONE
    - ✅ Mark `Tested` column
 
@@ -73,7 +77,13 @@ This project migrates Payment Pages functionality from the API monolith to the N
 - Skip reproduction step
 - Commit without testing via hot reload
 - Mark Status as 🟢 with any verification column unchecked
+- Touch the `Review` column - it's **MANUAL ONLY** (user marks it)
 - Add detailed root cause/fix info until fix is VERIFIED or FAILED after multiple attempts
+- Use production merchant IDs from failure logs (use test merchant `LJ3P0FyFtOULha` instead)
+- Use `kubectl exec` to test inside pods (hit URLs directly with headers!)
+- Commit the auth bypass middleware change (keep it uncommitted!)
+
+> **Task is NOT complete until user marks `Review` = ✅**
 
 ## Monolith Code Caveat
 
@@ -134,6 +144,8 @@ func (a *PaymentPageRoutes) GetMiddlewares() []gin.HandlerFunc {
 ```
 
 Apply this via hot reload before testing. See task doc for full workflow.
+
+> **⚠️ DO NOT COMMIT the auth bypass change.** Keep it uncommitted throughout testing. Only commit your actual bug fixes.
 
 ### Hot Reload Tips
 
