@@ -58,11 +58,11 @@ Migrating Payment Pages functionality from the API monolith to the NoCodeApp (NC
 
 ## Current Tasks
 
-| Task | Status | Priority |
-|------|--------|----------|
-| TBD | - | - |
+| Task | Status | Priority | File |
+|------|--------|----------|------|
+| Fix payment_page_create status code diffs | 🟡 In Progress | P0 | [tasks/pp-create-status-code-diffs.md](./tasks/pp-create-status-code-diffs.md) |
 
-> Add tasks to `tasks/` folder as separate files for complex tasks
+> See [tasks/_index.md](./tasks/_index.md) for full task list and status tracking
 
 ---
 
