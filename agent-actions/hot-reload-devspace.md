@@ -136,6 +136,27 @@ kubectl logs <pod-name> -n <namespace> -f
 - If you closed the terminal, just run `devspace dev --no-warn` again
 - No need to purge - the pod continues running and you can reconnect
 
+### After Fresh Helmfile Sync (New Deployment)
+
+**After a fresh `helmfile sync`, check if there's a stale old devspace pod:**
+
+```bash
+kubectl get pods -A -l devstack_label=<your-label>
+# Example: kubectl get pods -A -l devstack_label=pp-decomp-fix1
+```
+
+**If you see an OLD devspace pod (e.g., 11h old) alongside NEW deployment pods (e.g., 2m old):**
+
+```bash
+# Purge the stale devspace pod first
+devspace purge
+
+# Then start fresh
+devspace dev --no-warn
+```
+
+**Why?** If you skip this, devspace might sync to the old stale pod instead of your new deployment, causing confusion and wasted time.
+
 ### Full Cleanup (Tearing Down Devstack)
 
 Only run `devspace purge` when you're completely done and want to tear down the devstack:

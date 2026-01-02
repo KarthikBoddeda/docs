@@ -27,9 +27,18 @@ This project migrates Payment Pages functionality from the API monolith to the N
 - Architecture & APIs: `PAYMENT_PAGES_DECOMP.md`
 - **Code Reference:** `code/` folder - per-API code documentation for both NCA and Monolith
 - **Monolith Navigation:** `code/monolith-navigation-guide.md` - how to navigate PHP code (read first!)
+- **NCA Navigation:** `code/guide-to-navigate-nca-code.md` - Go patterns, datatypes, debug tips (read first!)
 - API Requests (.http): `payment-pages-api.http`
 - Task Tracking: `tasks/` folder
 - Failure Logs: `/pythonscripts/decomp-scripts/failure_logs/`
+
+## ⚠️ BEFORE WRITING ANY CODE
+
+**You MUST read these guides first:**
+1. `code/guide-to-navigate-nca-code.md` - NCA patterns, numeric types, debugging
+2. `code/monolith-navigation-guide.md` - PHP magic functions, validation patterns
+
+These cover common gotchas that cause bugs. Don't skip them!
 
 ## Critical Rules
 
@@ -45,12 +54,21 @@ This project migrates Payment Pages functionality from the API monolith to the N
 **Required Steps IN ORDER:**
 
 1. **DEPLOY DEVSTACK FIRST**
-   - Run `kubectl get pods -A -l name=pp-decomp-<label>` to verify
-   - If not running → deploy using `helmfile sync`
+   - Run `kubectl get pods -A -l devstack_label=pp-decomp-<label>` to verify
+   - You should see 3 pods running: `api`, `gimli`, and `no-code-apps`
+   - If any are missing → deploy using `helmfile sync`
    - ✅ Mark `Deployed` column
 
 2. **REPRODUCE THE DIFF BEFORE CODING**
-   - Get sample request from failure logs
+   - Get `razorpay_request_id` from failure log CSV files
+   - **🔴 USE CORALOGIX MCP** to get the actual request:
+     - Query: `"PAYMENT_PAGE_CREATE_REQUEST" AND "<request_id>"`
+     - Application: `no-code-apps`
+     - For recent logs: `relative_hours: 48`
+     - For older logs: Use `start_time` + `end_time` (RFC3339 format)
+   - ✅ Mark `ReqFound` column
+   - **Note:** Coralogix has 2-3 months retention
+   - **🔴 USE THE HTTP FILE:** `docs/projects/payment-pages-decomp/payment-pages-api.http`
    - **Use test merchant ID `LJ3P0FyFtOULha`** - NOT production IDs from logs!
    - Hit devstack and confirm the diff occurs
    - ✅ Mark `Reproduced` column
@@ -65,9 +83,13 @@ This project migrates Payment Pages functionality from the API monolith to the N
    - Run `export GOPRIVATE="github.com/razorpay/*" && go mod tidy && go mod vendor`
    - Run `devspace dev --no-warn`
    - ✅ Mark `HotReload` column
-   - Hit the SAME request again (use URL directly, DON'T `kubectl exec` into pods!)
-   - Verify diff is GONE
-   - ✅ Mark `Tested` column
+   - **Run at least 4 test cases:**
+     - `TC1`: Request from this diff type (e.g., `2025-12-29.csv`)
+     - `TC2`: DIFFERENT request from same diff type (e.g., `2025-12-28.csv`)
+     - `TC3`: ANOTHER request from same diff type (different date/entry)
+     - `TC4`: Standard request from `payment-pages-api.http` (regression test)
+   - Verify `DIFF_CHECKER_NO_DIFFS_FOUND` for ALL test cases
+   - ✅ Mark `TC1`, `TC2`, `TC3`, `TC4`, `DiffCheck` columns
 
 5. **ONLY THEN COMMIT**
    - Mark `Status` as 🟢
@@ -82,6 +104,12 @@ This project migrates Payment Pages functionality from the API monolith to the N
 - Use production merchant IDs from failure logs (use test merchant `LJ3P0FyFtOULha` instead)
 - Use `kubectl exec` to test inside pods (hit URLs directly with headers!)
 - Commit the auth bypass middleware change (keep it uncommitted!)
+- Build curl commands from scratch - use the `.http` file templates instead!
+- Guess request bodies - always fetch actual request from Coralogix using `razorpay_request_id`!
+
+**✅ ALWAYS (when adding fixes):**
+- Add unit tests for new utility functions/types (e.g., `datatypes.Numeric*Value`)
+- Run existing tests to ensure no regressions: `go test ./...`
 
 > **Task is NOT complete until user marks `Review` = ✅**
 
@@ -152,7 +180,23 @@ Apply this via hot reload before testing. See task doc for full workflow.
 - **Hot reload only works while `devspace dev` is running**
 - If you closed the terminal, run `devspace dev --no-warn` again to reconnect
 - No need to run `devspace purge` between tasks - the pod continues running
-- Only run `devspace purge` when completely tearing down the devstack
+- **When to run `devspace purge`:**
+  - After a fresh `helmfile sync` deployment, check pods: `kubectl get pods -A -l devstack_label=pp-decomp-<label>`
+  - If you see an OLD devspace pod (e.g., 11h old) alongside NEW deployment pods (e.g., 2m old), run `devspace purge` first
+  - Then run `devspace dev --no-warn` to create a fresh hot-reload pod
+  - This ensures hot-reload syncs to the new deployment, not the stale old pod
+
+### Debug Logging
+
+When debugging, add `fmt.Println` or `fmt.Printf` statements to trace values:
+
+```go
+import "fmt"
+
+fmt.Printf("DEBUG: value = %+v, nil = %v\n", myVar, myVar == nil)
+```
+
+**⚠️ CRITICAL:** Always remove debug logs before committing! They pollute production logs.
 
 ## When Stuck
 

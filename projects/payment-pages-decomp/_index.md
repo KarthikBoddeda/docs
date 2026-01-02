@@ -35,12 +35,17 @@ Migrating Payment Pages functionality from the API monolith to the NoCodeApp (NC
 |------|----------|
 | Architecture & Migration Flow | [PAYMENT_PAGES_DECOMP.md](./PAYMENT_PAGES_DECOMP.md) |
 | API List with Routes | [PAYMENT_PAGES_DECOMP.md#write-apis](./PAYMENT_PAGES_DECOMP.md#request-flow---writeread-apis) |
-| API Request Examples (.http) | [payment-pages-api.http](./payment-pages-api.http) |
+| **🔴 API Request Templates** | **[payment-pages-api.http](./payment-pages-api.http)** ← USE THIS FOR TESTING! |
 | **Code Reference (NCA)** | [code/](./code/) |
 | Task Tracking | [tasks/](./tasks/) |
 | Failure Logs & Analysis | `/pythonscripts/decomp-scripts/failure_logs/` |
 | Deployment Guide | [/docs/agent-actions/deploy-to-devstack.md](/docs/agent-actions/deploy-to-devstack.md) |
 | Hot Reload Guide | [/docs/agent-actions/hot-reload-devspace.md](/docs/agent-actions/hot-reload-devspace.md) |
+
+> **🔴 FOR ALL TESTING:** Use `payment-pages-api.http` as your request template!
+> - All headers, auth, and variables are pre-configured
+> - Just modify the request body to trigger specific diffs
+> - DON'T build curl commands from scratch!
 
 ---
 
@@ -137,6 +142,36 @@ Apply this change via hot reload before testing. See [hot-reload-devspace.md](/d
 > **⚠️ DO NOT COMMIT this change.** Keep it uncommitted throughout testing. Only commit your actual bug fixes.
 
 **Tip:** Hot reload only works while `devspace dev` is running. No need to run `devspace purge` between tasks - just run `devspace dev` again if you closed the terminal.
+
+---
+
+## Getting Actual Request Bodies from Coralogix
+
+**🔴 Don't guess request bodies - fetch the actual ones!**
+
+### How to Fetch Request Body
+
+1. Get `razorpay_request_id` from failure log CSV file
+2. Use Coralogix MCP to search for the request:
+
+| Route | Query Pattern |
+|-------|--------------|
+| `payment_page_create` | `"PAYMENT_PAGE_CREATE_REQUEST" AND "<request_id>"` |
+| `payment_page_update` | `"PAYMENT_PAGE_UPDATE_REQUEST" AND "<request_id>"` |
+
+**MCP Tool:** `mcp_razorpay-cora-mcp-server_search_logs`
+- `applicationName`: `no-code-apps`
+- **For recent logs:** Use `relative_hours` (e.g., `48`)
+- **For older logs:** Use `start_time` + `end_time` in RFC3339 format (e.g., `2025-12-29T00:00:00Z`)
+
+### Time Range Options
+
+| Option | Usage | Example |
+|--------|-------|---------|
+| `relative_hours` | Recent logs (last N hours) | `relative_hours: 48` |
+| `start_time` + `end_time` | Historical logs (any date within retention) | `start_time: 2025-12-29T00:00:00Z`, `end_time: 2025-12-30T00:00:00Z` |
+
+> **Note:** Coralogix has 2-3 months retention. Choose log files within this retention period.
 
 ---
 

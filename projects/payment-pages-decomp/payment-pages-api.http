@@ -144,7 +144,7 @@ PATCH {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}
 rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
-X-Dual-Write-State: nca_only
+X-Proxy-State: nca_only
 Authorization: Basic {{auth_token}}
 Content-Type: application/json
 
@@ -274,7 +274,7 @@ POST {{nca_personal_url}}/v1/payment_pages/{{payment_page_id}}/receipt
 rzpctx-dev-serve-user: {{devstack_label}}
 X-Razorpay-Merchant-Id: {{merchant_id}}
 X-Razorpay-Mode: live
-X-Dual-Write-State: nca_only
+X-Proxy-State: nca_only
 Authorization: Basic {{auth_token}}
 Content-Type: application/json
 

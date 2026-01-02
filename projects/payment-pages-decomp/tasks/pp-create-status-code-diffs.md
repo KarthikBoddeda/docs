@@ -63,6 +63,18 @@ Before starting, ensure:
 | **Proxying & dual write logic** | [/docs/projects/payment-pages-decomp/code/proxying.md](/docs/projects/payment-pages-decomp/code/proxying.md) |
 | **Code reference index** | [/docs/projects/payment-pages-decomp/code/_index.md](/docs/projects/payment-pages-decomp/code/_index.md) |
 
+### Coralogix Log Search Patterns
+
+To fetch actual request bodies from Coralogix MCP, use these log message patterns:
+
+| Route | Coralogix Query Pattern | Application |
+|-------|------------------------|-------------|
+| `payment_page_create` | `"PAYMENT_PAGE_CREATE_REQUEST" AND "<razorpay_request_id>"` | `no-code-apps` |
+| `payment_page_update` | `"PAYMENT_PAGE_UPDATE_REQUEST" AND "<razorpay_request_id>"` | `no-code-apps` |
+| Other routes | *(Update this table as new tasks are added)* | `no-code-apps` |
+
+> **Note:** Look for `razorpay_request_id` in the failure log CSV files, then use it to fetch the actual request from Coralogix.
+
 ---
 
 ## Subtasks (Ordered by Frequency)
@@ -92,53 +104,59 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 | Column | Meaning |
 |--------|---------|
 | **Deployed** | Devstack is running with required services |
+| **ReqFound** | Actual request body retrieved from Coralogix logs |
 | **Reproduced** | Diff was reproduced on devstack BEFORE fix |
 | **CodeEvidence** | Code comparison done - monolith vs NCA behavior documented |
 | **HotReload** | Devspace hot-reload is set up and syncing |
-| **Tested** | Fix was tested via hot-reload on devstack |
-| **DiffCheck** | `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` log seen |
-| **Commit** | Commit hash (only after testing passes) |
+| **TC1** | Test Case 1: Request from this diff type (one date/entry) |
+| **TC2** | Test Case 2: Different request from SAME diff type (another date/entry) |
+| **TC3** | Test Case 3: Another request from SAME diff type (yet another date/entry) |
+| **TC4** | Test Case 4: Standard request from `payment-pages-api.http` (regression) |
+| **DiffCheck** | `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` log seen for ALL test cases |
+| **Commit** | Commit hash (only after ALL testing passes) |
 | **Review** | ⚠️ **MANUAL ONLY** - User verification required. Task NOT done until ✅ |
+
+> **🧪 TEST CASES REQUIRED:** You MUST test at least 3 different scenarios before marking as fixed!
 
 > **⚠️ CRITICAL:** You MUST use `X-Proxy-State: dual_write_shadow_read_no_external` for testing!
 > - ⚠️ Header is `X-Proxy-State` NOT `X-Dual-Write-State`!
 > - `dual_write_shadow_read_no_external` proxies to monolith AND compares responses
 > - You MUST see `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` log to confirm fix works
 
-| # | Diff Type | Count | M | N | Deployed | Reproduced | CodeEvidence | HotReload | Tested | DiffCheck | Status | Commit | Review |
-|---|-----------|-------|---|---|----------|------------|--------------|-----------|--------|-----------|--------|--------|--------|
-| 1 | `tracker type field is required` | 13,345 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `ce81003` | |
-| 2 | `description contains invalid characters` | 8,090 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 3 | `title contains invalid characters` | 676 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 4 | `slug already exists` | 519 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 5 | `payment_success_message invalid chars` | 339 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 6 | `terms contains invalid characters` | 317 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 7 | `min_purchase null or valid integer` | 140 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 8 | `Contact number at least 8 digits` | 45 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 9 | `udf_schema more than 15 items` | 40 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 10 | `item missing in pp_item response` | 21 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 11 | `Contact number invalid characters` | 20 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 12 | `min_amount minimum 50 for USD` | 18 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 13 | `support_contact is invalid` | 17 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 14 | `Price has to be a fixed amount` | 17 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 15 | `Price has to be a fixed amount (v2)` | 13 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 16 | `domain must be a valid domain` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 17 | `length must be no more than 20` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 18 | `trouble completing your request` | 9 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 19 | `max amount exceeds maximum` | 8 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 20 | `support_contact invalid format` | 6 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 21 | `terms length 5 and 2000` | 6 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 22 | `Contact number > 15 digits` | 6 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 23 | `value length no more than 100` | 4 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 24 | `amount minimum 50 for USD` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 25 | `ends_by must be in future` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 26 | `length between 4 and 30` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 27 | `slug required for custom domain` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 28 | `must be a valid URL` | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 29 | `available_units validation` | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 30 | `max amount must be valid integer` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 31 | `READ ONLY transaction` | 1 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 32 | `min purchase must be valid integer` | 1 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| # | Diff Type | Count | M | N | Deployed | ReqFound | Reproduced | CodeEvidence | HotReload | TC1 | TC2 | TC3 | TC4 | DiffCheck | Status | Commit | Review |
+|---|-----------|-------|---|---|----------|----------|------------|--------------|-----------|-----|-----|-----|-----|-----------|--------|--------|--------|
+| 1 | `tracker type field is required` | 13,345 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `ce81003` | |
+| 2 | `description contains invalid characters` | 8,090 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 3 | `title contains invalid characters` | 676 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 4 | `slug already exists` | 519 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 5 | `payment_success_message invalid chars` | 339 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 6 | `terms contains invalid characters` | 317 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 7 | `min_purchase null or valid integer` | 140 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 8 | `Contact number at least 8 digits` | 45 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 9 | `udf_schema more than 15 items` | 40 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 10 | `item missing in pp_item response` | 21 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 11 | `Contact number invalid characters` | 20 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 12 | `min_amount minimum 50 for USD` | 18 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 13 | `support_contact is invalid` | 17 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 14 | `Price has to be a fixed amount` | 17 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 15 | `Price has to be a fixed amount (v2)` | 13 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 16 | `domain must be a valid domain` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 17 | `length must be no more than 20` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 18 | `trouble completing your request` | 9 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 19 | `max amount exceeds maximum` | 8 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 20 | `support_contact invalid format` | 6 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 21 | `terms length 5 and 2000` | 6 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 22 | `Contact number > 15 digits` | 6 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 23 | `value length no more than 100` | 4 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 24 | `amount minimum 50 for USD` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 25 | `ends_by must be in future` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 26 | `length between 4 and 30` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 27 | `slug required for custom domain` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 28 | `must be a valid URL` | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 29 | `available_units validation` | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 30 | `max amount must be valid integer` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 31 | `READ ONLY transaction` | 1 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 32 | `min purchase must be valid integer` | 1 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
 
 ---
 
@@ -154,10 +172,11 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 
 ```bash
 # CHECK: Is devstack already running?
-kubectl get pods -A -l name=pp-decomp-<label>
+kubectl get pods -A -l devstack_label=pp-decomp-<label>
+# You should see 3 pods running: api, gimli, no-code-apps
 ```
 
-**If NO pods found → Deploy now:**
+**If any pods missing → Deploy now:**
 ```bash
 cd ~/rzp/kube-manifests/helmfile
 # Update helmfile.yaml with commits from Devstack Configuration section
@@ -166,12 +185,12 @@ helmfile lint && helmfile sync
 
 **Check if pods are ready (single command!):**
 ```bash
-kubectl get pods -A -l name=pp-decomp-fix1
-# Shows pods from all namespaces (api, no-code-apps, gimli) matching your label
+kubectl get pods -A -l devstack_label=pp-decomp-fix1
+# You should see 3 pods: api-web-*, gimli-*, no-code-apps-*
 # Wait until ALL pods show STATUS=Running and READY=1/1
 ```
 
-> **🛑 CHECKPOINT:** Run `kubectl get pods -A -l name=pp-decomp-fix1` and confirm pods are Running.  
+> **🛑 CHECKPOINT:** Run `kubectl get pods -A -l devstack_label=pp-decomp-fix1` and confirm ALL 3 pods are Running.  
 > **If not running → DO NOT PROCEED. Fix deployment first.**  
 > **✅ Once confirmed → Update subtask row: `Deployed` = ✅**
 
@@ -221,29 +240,76 @@ kubectl get pods -A -l name=pp-decomp-fix1
 
 > **📝 NOTE:** You can reuse the same hot reload session for multiple subtasks. Just close the terminal when done - no need to run `devspace purge` between tasks.
 
+> **⚠️ WHEN TO PURGE:** After a fresh `helmfile sync`, check if there's a stale old devspace pod:
+> ```bash
+> kubectl get pods -A -l devstack_label=pp-decomp-fix1
+> # If you see an OLD pod (e.g., 11h) alongside NEW pods (e.g., 2m), run:
+> devspace purge
+> # Then start fresh:
+> devspace dev --no-warn
+> ```
+
 ---
 
 ### 🔲 STEP 2: REPRODUCE THE DIFF (Required Before Coding)
 
 **You MUST reproduce the diff on devstack BEFORE writing any fix.**
 
-1. **Get sample request from logs:**
+1. **Get `razorpay_request_id` from failure logs:**
    ```bash
    # Find the categorized folder for this diff type
    ls /Users/boddedakarthik.s/rzp/pythonscripts/decomp-scripts/failure_logs/pp_create_failures/categorized/
    
-   # Read a recent log file
+   # Read a recent log file and extract razorpay_request_id
    head -5 "<categorized_folder>/<recent_date>.csv"
+   # Look for: "razorpay_request_id":"<uuid>"
    ```
 
-2. **Build the test request:**
+2. **Get ACTUAL request body from Coralogix (MCP):**
+   
+   > **🔴 IMPORTANT: Don't guess the request - fetch the actual one!**
+   
+   Use `mcp_razorpay-cora-mcp-server_search_logs` with:
+   - `search_string`: `"PAYMENT_PAGE_CREATE_REQUEST" AND "<razorpay_request_id>"`
+   - `applicationName`: `no-code-apps`
+   - **For recent logs:** `relative_hours`: `48`
+   - **For older logs:** Use `start_time` + `end_time` (RFC3339 format)
+   
+   **Example queries:**
+   ```
+   # Recent logs (last 48 hours)
+   search_string: "PAYMENT_PAGE_CREATE_REQUEST" AND "fc3302ff-a3d0-4116-ab54-d069daffab65"
+   relative_hours: 48
+   
+   # Historical logs (specific date)
+   search_string: "PAYMENT_PAGE_CREATE_REQUEST" AND "fc3302ff-a3d0-4116-ab54-d069daffab65"
+   start_time: "2025-12-29T00:00:00Z"
+   end_time: "2025-12-30T00:00:00Z"
+   ```
+   
+   The log will contain the full request body that caused the diff.
+   
+   > ✅ Mark `ReqFound` column once you have the actual request body
+   
+   > **Note:** Coralogix has 2-3 months retention. Choose log files within this retention period.
+
+3. **Build the test request:**
+
+   > **🔴 USE THE HTTP FILE! 🔴**
+   > 
+   > **Template requests are in:** `docs/projects/payment-pages-decomp/payment-pages-api.http`
+   > 
+   > - Open the file in VS Code with REST Client extension
+   > - Use `payment_page_create` request as base template
+   > - All headers, auth, and variables are already configured!
+   > - Just modify the request body to trigger the specific diff
 
    > **⚠️ CRITICAL:** 
    > - Use test merchant ID `LJ3P0FyFtOULha` - NOT production IDs from logs!
-   > - Use `X-Dual-Write-State: dual_write_shadow_read_no_external` to enable comparison!
+   > - Use `X-Proxy-State: dual_write_shadow_read_no_external` to enable comparison!
    > - DON'T `kubectl exec` into pods - hit URL directly!
 
-   **Working test request:**
+   **If using curl directly (not recommended):**
    ```bash
    curl --location 'https://nca.dev.razorpay.in/v1/payment_pages' \
      --header 'X-Razorpay-Merchant-Id: LJ3P0FyFtOULha' \
@@ -257,7 +323,7 @@ kubectl get pods -A -l name=pp-decomp-fix1
 
    **Modify the body** to include the field that triggers the diff (e.g., `"settings": { "goal_tracker": {} }`)
 
-3. **Check logs for diff:**
+4. **Check logs for diff:**
    - Look for `DIFF_CHECKER_*` logs in NCA pod logs
    - You should see a status code diff logged (e.g., `status_code_diff`)
    - This confirms the diff exists and comparison is working
@@ -272,16 +338,27 @@ kubectl get pods -A -l name=pp-decomp-fix1
 
 **Only after reproducing the diff, analyze and write the fix.**
 
+> **📚 BEFORE CODING:** Read the navigation guides first!
+> - `code/guide-to-navigate-nca-code.md` - NCA patterns, numeric types, debugging
+> - `code/monolith-navigation-guide.md` - PHP magic functions, validation patterns
+
 1. **Find the monolith code** that handles this validation/logic
    - Navigate using `code/monolith-navigation-guide.md`
    - Document the exact file, function, and line numbers
    - Understand WHY monolith behaves the way it does
 
 2. **Find the NCA code** that handles the same logic
+   - Navigate using `code/guide-to-navigate-nca-code.md`
    - Document the exact file, function, and line numbers
    - Identify the DIFFERENCE in behavior
 
 3. **Write the fix** in NCA code to match monolith
+
+4. **Add debug logs if needed** (to trace values during testing):
+   ```go
+   fmt.Printf("DEBUG: value = %+v, nil = %v\n", myVar, myVar == nil)
+   ```
+   **⚠️ Remove debug logs before committing!**
 
 > **🛑 CHECKPOINT:** Do you have code evidence from BOTH monolith and NCA?
 > - ✅ Document the monolith code (file:line, key logic)
@@ -315,32 +392,53 @@ But the devspace pod must already be running right now, so this time devspace de
    go mod tidy && go mod vendor
    ```
 
-4. **TEST: Hit the SAME request with shadowing enabled:**
+4. **TEST: Run at least 3 different test cases:**
+
+   > **🔴 USE THE HTTP FILE!**
+   > 
+   > **Template:** `docs/projects/payment-pages-decomp/payment-pages-api.http`
+   > - Use `payment_page_create` request as base
+   > - All headers/auth are pre-configured!
+   > - Ensure `@dual_write_state = dual_write_shadow_read_no_external` (for comparison)
 
    > **⚠️ CRITICAL:**
-   > - Use `X-Dual-Write-State: dual_write_shadow_read_no_external` - NOT `nca_only`!
+   > - Use `X-Proxy-State: dual_write_shadow_read_no_external` - NOT `nca_only`!
    > - `nca_only` does NOT compare with monolith - useless for verifying fixes
    > - DON'T `kubectl exec` into pods - hit URL directly!
 
+   **🧪 REQUIRED TEST CASES (minimum 4):**
+   
+   | Test Case | Description | Purpose |
+   |-----------|-------------|---------|
+   | **TC1** | Request from this diff type (e.g., `2025-12-29.csv`) | Confirms the fix works |
+   | **TC2** | DIFFERENT request from same diff type (e.g., `2025-12-28.csv`) | Ensures fix is robust |
+   | **TC3** | ANOTHER request from same diff type (e.g., different entry) | Additional validation |
+   | **TC4** | Standard request from `payment-pages-api.http` | Regression test - normal flow works |
+   
+   > **🔴 IMPORTANT:** 
+   > - TC1-TC3: Must be ACTUAL requests from failure logs (different dates/entries)
+   > - TC4: Use the standard request from `payment-pages-api.http` (regression check)
+
+   **If using curl (not recommended - use .http file instead):**
    ```bash
    curl --location 'https://nca.dev.razorpay.in/v1/payment_pages' \
      --header 'X-Razorpay-Merchant-Id: LJ3P0FyFtOULha' \
      --header 'X-Razorpay-Mode: live' \
-     --header 'X-Dual-Write-State: dual_write_shadow_read_no_external' \
+     --header 'X-Proxy-State: dual_write_shadow_read_no_external' \
      --header 'rzpctx-dev-serve-user: <devstack-label>' \
      --header 'Content-Type: application/json' \
      --header 'Authorization: Basic UkFORE9NX05DQV9VU0VSOlJBTkRPTV9OQ0FfUEFTU1dPUkQ=' \
      --data-raw '<same_request_body_with_diff_trigger>'
    ```
 
-5. **Verify fix works - CHECK LOGS:**
+5. **Verify fix works for ALL test cases - CHECK LOGS:**
    - Look for `DIFF_CHECKER_NO_DIFFS_FOUND` in NCA pod logs → **✅ Fix works!**
    - If you still see diff logs → Fix didn't work, debug and retry
    - Also verify: `MONOLITH_PROXYING_RESPONSE` log shows API was called
 
-> **🛑 CHECKPOINT:** Did the fix work?  
-> - **YES (see `DIFF_CHECKER_NO_DIFFS_FOUND`)** → ✅ Update subtask: `Tested` = ✅, `DiffCheck` = ✅ → Proceed to Step 5  
-> - **NO (still see diff logs)** → Debug, fix, repeat. DO NOT proceed until `DIFF_CHECKER_NO_DIFFS_FOUND` is seen.
+> **🛑 CHECKPOINT:** Did ALL test cases pass?  
+> - **YES (see `DIFF_CHECKER_NO_DIFFS_FOUND` for all 4)** → ✅ Update subtask: `TC1` = ✅, `TC2` = ✅, `TC3` = ✅, `TC4` = ✅, `DiffCheck` = ✅ → Proceed to Step 5  
+> - **NO (any test case fails)** → Debug, fix, repeat. DO NOT proceed until ALL test cases pass.
 
 ---
 
@@ -349,7 +447,7 @@ But the devspace pod must already be running right now, so this time devspace de
 > **🚨🚨🚨 DO NOT COMMIT UNTIL FIX IS TESTED AND WORKING 🚨🚨🚨**
 >
 > **You MUST have completed Step 4 and verified the fix works on devstack.**
-> **If `Tested` column is not ✅, DO NOT COMMIT.**
+> **If `TC1`, `TC2`, `TC3`, `TC4`, and `DiffCheck` columns are not ALL ✅, DO NOT COMMIT.**
 
 1. **Commit the fix:**
    ```bash
@@ -395,7 +493,7 @@ Based on user input or current progress:
 **Log Reference:**
 - File: `pp_create_failures/categorized/200_400_validation_failure_The_tracker_type_field_is_required./2025-12-29.csv`
 - Sample: `merchant_id: D7GcDxYIcgAiXF`, `monolith_status_code: 200`, `shadow_status_code: 400`
-- Note: Logs contain response bodies only, not original request. Request body inferred from error message.
+- Note: Request inferred from error message. **For future tasks:** Use Coralogix MCP with `razorpay_request_id` to get actual request.
 
 **Trigger Condition:**
 When request contains `"settings": {"goal_tracker": {}}` (empty object), NCA returns 400, Monolith returns 200.
@@ -462,6 +560,17 @@ func (g *GoalTracker) IsEmpty() bool {
 **Additional Fixes (Nil Pointer Panics):**
 1. `request.go:381` - `MonolithItemSettings` can be nil when `settings` not provided in item
 2. `core.go:2649-2680` - `GoalTracker.MetaData` can be nil, need nil checks before accessing fields
+
+**Additional Fix (GoalEndTimestamp Type Mismatch):**
+During testing with a FULL `goal_tracker` object (from actual Coralogix production logs), the validation still failed with "tracker type field is required" even though the JSON clearly had `tracker_type` set. Root cause:
+- `GoalTrackerMetaData.GoalEndTimestamp` was defined as `*int64` in Go struct
+- Monolith accepts it as a string (`"1768501799"`), and production traffic sends it as a string
+- `json.Unmarshal` silently fails when trying to unmarshal string into int64, causing the entire `GoalTracker` struct to be partially parsed (only `IsActive` survives because it's `*string`)
+- Fix: Changed `GoalEndTimestamp` to use `*datatypes.NumericInt64Value` in `settings.go:74`
+- The `NumericInt64Value` type (from `pkg/datatypes/numeric.go`) handles both string and int JSON values automatically
+- Updated `core.go:1813` and `core.go:2670` to access `.Value` directly
+
+> **See:** `code/guide-to-navigate-nca-code.md` for details on numeric types and other NCA patterns
 
 ---
 
