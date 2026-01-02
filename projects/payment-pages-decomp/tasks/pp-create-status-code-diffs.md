@@ -134,13 +134,13 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 | 5 | `payment_success_message invalid chars` | 339 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `f16d92e` | |
 | 6 | `terms contains invalid characters` | 317 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `f16d92e` | |
 | 7 | `min_purchase null or valid integer` | 140 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `d4ffebe` | |
-| 8 | `Contact number at least 8 digits` | 45 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 9 | `udf_schema more than 15 items` | 40 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 10 | `item missing in pp_item response` | 21 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 11 | `Contact number invalid characters` | 20 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 12 | `min_amount minimum 50 for USD` | 18 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 13 | `support_contact is invalid` | 17 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 14 | `Price has to be a fixed amount` | 17 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 8 | `Contact number at least 8 digits` | 45 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `3f64cbe` | |
+| 9 | `udf_schema more than 15 items` | 40 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `3f64cbe` | |
+| 10 | `item missing in pp_item response` | 21 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | Pending - see analysis below |
+| 11 | `Contact number invalid characters` | 20 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `2f2d558` | |
+| 12 | `min_amount minimum 50 for USD` | 18 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | NCA over-validates - needs investigation |
+| 13 | `support_contact is invalid` | 17 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | NCA over-validates - needs investigation |
+| 14 | `Price has to be a fixed amount` | 17 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | N/A | N/A | N/A | N/A | N/A | ✅ | 🟢 | `2f2d558` | Logic fix - feature dependent |
 | 15 | `Price has to be a fixed amount (v2)` | 13 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
 | 16 | `domain must be a valid domain` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
 | 17 | `length must be no more than 20` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
@@ -833,8 +833,156 @@ func (item *MonolithPaymentPageItem) ValidateEmptyStringForIntegerFields() error
 - TC4 (integer 0): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
 
 **Files Changed:**
-- `pkg/datatypes/numeric.go` - Modified `NumericUInt64Value.UnmarshalJSON` to reject string "0"
+- `pkg/datatypes/numeric.go` - Modified `NumericUInt64Value` to track string "0" for validation
 - `pkg/datatypes/numeric_test.go` - Added tests for string "0" rejection
+- `internal/modules/nocode/validation.go` - Added `ValidateEmptyStringForIntegerFields`
+
+---
+
+#### Subtask #8: `Contact number at least 8 digits`
+**Date:** 2026-01-02 | **Commit:** `2641170`
+
+---
+**Log Reference:**
+- File: `pp_create_failures/categorized/400_200_Contact_number_should_be_at_least_8_digits,_including_country_code/2025-12-27.csv`
+- Sample razorpay_request_id: `1dfe9c8c-86cd-43fd-965a-b775b446129d`
+- Actual Request Snippet: `"support_contact": "00000000"` (8 zeros)
+
+---
+**Trigger Condition:**
+When `support_contact` is "00000000" (8 zeros) or similar invalid format. Monolith rejects with 400, NCA was accepting with 200.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Models/Base/ExtendedValidations.php:243
+if (strlen($formattedContact) < 8) {
+    throw new BadRequestException(
+        ErrorCode::BAD_REQUEST_PAYMENT_CONTACT_TOO_SHORT,
+        $attribute);
+}
+```
+**Monolith Behavior:** Uses `contact_syntax` validation which parses contact with PhoneBook library and requires 8+ digits total.
+
+---
+**Code Evidence - NCA (Go) BEFORE fix:**
+```go
+// internal/utils/extended_validation/custom_rules.go:93-97 (INCORRECT)
+// adding this to support 00000000 number. Some merchants are sending this...
+if formattedNumber.NationalNumber != nil && formattedNumber.NumberOfLeadingZeros != nil && 
+   *formattedNumber.NationalNumber == 0 && *formattedNumber.NumberOfLeadingZeros > 0 {
+    return nil  // <-- Was incorrectly accepting "00000000"
+}
+```
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/utils/extended_validation/custom_rules.go:93-96
+// NOTE: Removed special handling for "00000000" - monolith REJECTS it
+// Previous comment was incorrect: "API is supporting it due to some bug in external lib"
+// Monolith logs show M:400 for "00000000" so we must reject it too
+```
+
+---
+**Verification:**
+- TC1 ("00000000"): `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅ - Both return 400
+- TC2 ("1234567"): `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅ - Both return 400
+- TC3 (" 0000000"): `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅ - Both return 400
+- TC4 (valid "9999999999"): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
+
+---
+
+#### Subtask #9: `udf_schema more than 15 items`
+**Date:** 2026-01-02 | **Commit:** `2641170`
+
+---
+**Log Reference:**
+- File: `pp_create_failures/categorized/400_200_The_udf_schema_may_not_have_more_than_15_items./2025-12-22.csv`
+- Sample razorpay_request_id: `5a11ac1a-7f08-4f5f-991c-fda7228a921d`
+- Actual Request Snippet: `udf_schema` with 16 items (positions 0-15)
+
+---
+**Trigger Condition:**
+When `settings.udf_schema` has more than 15 items. Monolith rejects with 400, NCA was accepting with 200.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Models/PaymentLink/Validator.php:156
+'udf_schema' => 'array|max:15',
+```
+**Monolith Behavior:** Laravel `max:15` validation limits udf_schema array to 15 items.
+
+---
+**Code Evidence - NCA (Go) BEFORE fix:**
+```go
+// internal/modules/nocode/validation.go (BEFORE)
+// No max items check for udf_schema
+```
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/nocode/validation.go:409-414
+const MaxUdfSchemaItems = 15
+if len(*udfSchemaStruct) > MaxUdfSchemaItems {
+    return fmt.Errorf("The udf_schema may not have more than %d items.", MaxUdfSchemaItems)
+}
+```
+
+---
+**Verification:**
+- TC1 (16 items): `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅ - Both return 400
+- TC4 (valid < 15 items): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
+
+---
+
+#### Subtask #10: `item missing in pp_item response` - 🟠 PENDING
+**Date:** 2026-01-02 | **Status:** Pending Analysis
+
+---
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_dual_write_id_extraction_item_missing_in_payment_page_item_response/2025-12-17.csv`
+- Sample razorpay_request_id: `4d5feb06-675f-4fe2-aa80-731126a30305`
+- This is M:200, N:400 (NCA internal error, not validation)
+
+---
+**Analysis - Root Cause Hypothesis:**
+
+This diff type is likely a **cascading effect from previous diffs**, not a standalone bug:
+
+1. **Sequence of Events:**
+   - Earlier request causes a validation diff (e.g., M:400, N:200)
+   - NCA incorrectly created entities in its database when it should have rejected
+   - OR NCA failed to create when monolith succeeded
+   - Data becomes inconsistent between monolith and NCA databases
+
+2. **Why `item missing in pp_item response`:**
+   - Dual write ID extraction tries to match request items to response items
+   - Uses composite key: `{name}:{amount}:{stock}:{min_purchase}:{max_purchase}:{min_amount}:{max_amount}`
+   - If previous diffs caused data inconsistencies, the response from monolith may have different item structure
+   - When Item is nil or doesn't match, extraction fails
+
+3. **Evidence Supporting This Theory:**
+   - These diffs are M:200, N:400 - monolith succeeds but NCA fails internally
+   - The error is in dual write handler, not in validation
+   - Fixing validation diffs (subtasks 1-9) should reduce these cascading errors
+
+4. **Recommended Approach:**
+   - ⏸️ Leave this subtask pending until validation fixes (1-9) are deployed to production
+   - 📊 Monitor if these diffs decrease after deploying validation fixes
+   - 🔍 If they persist, investigate specific cases for actual root cause
+
+---
+**Code Location:**
+```go
+// internal/modules/payment_page/dual_write.go:61-65
+if item == nil {
+    logger.CtxLog(ctx).Errorw("EXTRACT_IDS_ITEM_MISSING_IN_PAYMENT_PAGE_ITEM_RESPONSE", ...)
+    return "", errorclass.ErrorDualWriteIdExtraction.New("").Wrap(
+        goErr.New("item missing in payment page item response"))
+}
+```
+
+---
+**Status:** 🟠 PENDING - Do NOT fix until validation diffs are resolved and monitored
 
 ---
 

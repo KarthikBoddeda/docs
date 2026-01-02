@@ -203,6 +203,43 @@ fmt.Printf("DEBUG: value = %+v, nil = %v\n", myVar, myVar == nil)
 
 **⚠️ CRITICAL:** Always remove debug logs before committing! They pollute production logs.
 
+## Parallel Subtask Handling (3 at once)
+
+When handling multiple subtasks simultaneously, use these optimizations:
+
+### 1. Batch Coralogix Queries
+Call MCP tools for all subtasks in a single parallel invocation (not sequentially):
+- Extract request IDs from log files for all subtasks first
+- Call all Coralogix searches in ONE tool call batch
+- Similarly batch grep calls for monolith code evidence
+
+### 2. Batch Grep Calls
+Search monolith code for all validations at once:
+- Search for all validation patterns in parallel
+- E.g., `contact_syntax`, `udf_schema.*15`, `item missing` in one batch
+
+### 3. Write All Fixes Before Testing
+- Analyze all issues first (from Coralogix + grep results)
+- Write all code fixes before any testing
+- Run `go build` once to verify all changes compile
+- Then test all fixes in sequence
+
+### 4. Batch Test Requests
+- Run TC1 for all subtasks
+- Check diff logs once for all
+- Then TC2, TC3, TC4 similarly
+
+### 5. Single Commit for Related Fixes
+- Group similar fixes in one commit (e.g., all validation fixes)
+- Update task document once at the end
+
+### Capacity Guidelines
+| Subtask Count | Best For |
+|--------------|----------|
+| 1-2 | Complex/deep investigation |
+| **3** | **Optimal for distinct issues** |
+| 4-5 | Only if fixes are very similar |
+
 ## When Stuck
 
 - Ask user for clarification if context is missing
