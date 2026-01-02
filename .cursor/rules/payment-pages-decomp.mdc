@@ -96,6 +96,8 @@ These cover common gotchas that cause bugs. Don't skip them!
    - Add commit hash to `Commit` column
 
 **⛔ NEVER:**
+- Skip ANY verification column - every column MUST be ✅ before marking subtask as done
+- Skip the `ReqFound` step - ALWAYS fetch actual request from Coralogix before testing
 - Skip reproduction step
 - Commit without testing via hot reload
 - Mark Status as 🟢 with any verification column unchecked
@@ -106,6 +108,9 @@ These cover common gotchas that cause bugs. Don't skip them!
 - Commit the auth bypass middleware change (keep it uncommitted!)
 - Build curl commands from scratch - use the `.http` file templates instead!
 - Guess request bodies - always fetch actual request from Coralogix using `razorpay_request_id`!
+
+> **🚨 CRITICAL: A subtask cannot be marked as complete unless EVERY verification column is ✅**
+> **This includes: Deployed, ReqFound, Reproduced, CodeEvidence, HotReload, TC1, TC2, TC3, TC4, DiffCheck**
 
 **✅ ALWAYS (when adding fixes):**
 - Add unit tests for new utility functions/types (e.g., `datatypes.Numeric*Value`)
