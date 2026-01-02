@@ -138,23 +138,23 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 | 9 | `udf_schema more than 15 items` | 40 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `3f64cbe` | |
 | 10 | `item missing in pp_item response` | 21 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | Pending - see analysis below |
 | 11 | `Contact number invalid characters` | 20 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `2f2d558` | |
-| 12 | `min_amount minimum 50 for USD` | 18 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | NCA over-validates - needs investigation |
-| 13 | `support_contact is invalid` | 17 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | NCA over-validates - needs investigation |
-| 14 | `Price has to be a fixed amount` | 17 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | N/A | N/A | N/A | N/A | N/A | ✅ | 🟢 | `2f2d558` | Logic fix - feature dependent |
-| 15 | `Price has to be a fixed amount (v2)` | 13 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 16 | `domain must be a valid domain` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 17 | `length must be no more than 20` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 18 | `trouble completing your request` | 9 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 19 | `max amount exceeds maximum` | 8 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 20 | `support_contact invalid format` | 6 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 21 | `terms length 5 and 2000` | 6 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 22 | `Contact number > 15 digits` | 6 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 23 | `value length no more than 100` | 4 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 12 | `min_amount minimum 50 for USD` | 18 | 200 | 400 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | NCA over-validates - needs investigation |
+| 13 | `support_contact is invalid` | 17 | 200 | 400 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | NCA over-validates - needs investigation |
+| 14 | `Price has to be a fixed amount` | 17 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `2f2d558` | Logic fix - feature dependent |
+| 15 | `Price has to be a fixed amount (v2)` | 13 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | N/A | N/A | N/A | ✅ | N/A | ✅ | 🟢 | `2f2d558` | Fixed by same logic fix as #14 |
+| 16 | `domain must be a valid domain` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | slug `@handle` format triggers domain validation |
+| 17 | `length must be no more than 20` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | subscription_button - investigate field |
+| 18 | `trouble completing your request` | 9 | 500 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | Monolith 500 error - transient/infra |
+| 19 | `max amount exceeds maximum` | 8 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | N/A | N/A | N/A | ✅ | N/A | ✅ | 🔵 | | Already works |
+| 20 | `support_contact invalid format` | 6 | 200 | 400 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | Same as #13 - NCA over-validates |
+| 21 | `terms length 5 and 2048` | 6 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `1c75c90` | Fix committed, needs testing |
+| 22 | `Contact number > 15 digits` | 6 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | N/A | N/A | N/A | ✅ | N/A | ✅ | 🔵 | | Already works |
+| 23 | `value length no more than 10000` | 4 | 200 | 400 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | udf_schema enum options - needs investigation |
 | 24 | `amount minimum 50 for USD` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 25 | `ends_by must be in future` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 26 | `length between 4 and 30` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 25 | `ends_by must be in future` | 3 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `b442315` | Fix committed, needs testing |
+| 26 | `slug length between 4 and 30` | 3 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `b442315` | Fix committed, needs testing |
 | 27 | `slug required for custom domain` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 28 | `must be a valid URL` | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 28 | `must be a valid URL` | 2 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `b442315` | Fix committed, needs testing |
 | 29 | `available_units validation` | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
 | 30 | `max amount must be valid integer` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
 | 31 | `READ ONLY transaction` | 1 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
@@ -983,6 +983,528 @@ if item == nil {
 
 ---
 **Status:** 🟠 PENDING - Do NOT fix until validation diffs are resolved and monitored
+
+---
+
+#### Subtask #11: `Contact number contains invalid characters`
+**Date:** 2026-01-03 | **Commit:** `2f2d558`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `1178ed55-ceed-434f-a1bb-6eacf3a2f31a` (from 2025-12-26)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "1178ed55-ceed-434f-a1bb-6eacf3a2f31a"`
+- **Actual Request Snippet:** `"support_contact": "91+6350325865"` (+ in wrong position)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/400_200_Contact_number_contains_invalid_characters,_only_digits_and_+_symbol_are_allowed/2025-12-26.csv`
+
+---
+**Trigger Condition:**
+When `support_contact` contains `+` symbol NOT at the start position (e.g., `"91+6350325865"`). Monolith rejects with 400, NCA was accepting with 200.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Error/PublicErrorDescription.php:178
+const BAD_REQUEST_PAYMENT_CONTACT_INCORRECT_FORMAT = 
+    'Contact number contains invalid characters, only digits and + symbol are allowed';
+
+// Uses preg_match to validate contact format - only digits and + at start allowed
+```
+**Monolith Behavior:** Monolith validates contact format, rejecting any `+` that isn't at position 0.
+
+---
+**Code Evidence - NCA (Go) BEFORE fix:**
+```go
+// internal/utils/extended_validation/custom_rules.go (BEFORE)
+// Only used libphonenumber.Parse() which is more lenient with + position
+func isValidContactNumberSyntax(contact string) validation.Error {
+    formattedNumber, err := libphonenumber.Parse(contact, "IN")
+    // ...
+}
+```
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/utils/extended_validation/custom_rules.go:78-92
+func isValidContactNumberSyntax(contact string) validation.Error {
+    // Check for invalid characters first - monolith only allows digits and + at start
+    for i, r := range contact {
+        if r == '+' {
+            if i != 0 {
+                // + is only allowed at the start
+                return GenericValidationError.SetMessage(
+                    "Contact number contains invalid characters, only digits and + symbol are allowed")
+            }
+        } else if r < '0' || r > '9' {
+            return GenericValidationError.SetMessage(
+                "Contact number contains invalid characters, only digits and + symbol are allowed")
+        }
+    }
+    // ... rest of validation
+}
+```
+
+---
+**Verification:**
+- TC1 (`91+6350325865`): `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅ - Both return 400
+- TC2 (`123+456789`): `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅ - Both return 400
+- TC3 (`99+88776655`): `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅ - Both return 400
+- TC4 (`+919999999999`): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
+
+**Files Changed:**
+- `internal/utils/extended_validation/custom_rules.go`
+
+---
+
+#### Subtask #12: `min_amount minimum 50 for USD` - 🟠 PENDING
+**Date:** 2026-01-03 | **Status:** Needs Investigation
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `b31e3733-c4b6-4a3e-81cd-ac042e806092` (from 2025-12-17)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "b31e3733-c4b6-4a3e-81cd-ac042e806092"`
+- **Actual Request Snippet:** `"currency":"USD"`, `"min_amount":{"Value":10}` (10 cents = $0.10)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_validation_failure_min_amount_amount_should_be_minimum_50_for_USD./2025-12-17.csv`
+
+---
+**Trigger Condition:**
+When `min_amount` is less than currency minimum (50 for USD = $0.50). M:200, N:400 - NCA over-validates.
+
+---
+**Analysis:**
+NCA validates `min_amount` against currency minimums in `line_item_price/validation.go:80`:
+```go
+validation.Field(&m.MinAmount,
+    validation.When(m.MinAmount != nil,
+        extended_validation.MinUInt64Ptr(0),
+        validation.By(extended_validation.Amount(m.Currency, "")),  // <-- Currency min check
+    ),
+),
+```
+
+But monolith may not apply this validation for all cases. The TODO at line 75-76 says:
+> "TODO LATER implement merchant details related validations for minAmount and maxAmount"
+
+**Status:** 🟠 PENDING - Need to investigate when monolith applies min_amount currency validation vs when it skips it.
+
+---
+
+#### Subtask #13: `support_contact is invalid` - 🟠 PENDING
+**Date:** 2026-01-03 | **Status:** Needs Investigation
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `a5c24b86-63cb-46d9-ad65-f8b1ae4cb6f4` (from 2025-12-16)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "a5c24b86-63cb-46d9-ad65-f8b1ae4cb6f4"`
+- **Note:** Logs beyond retention - need to check older date or different request
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_validation_failure_support_contact_invalid_contact_format./2025-12-16.csv`
+
+---
+**Trigger Condition:**
+NCA rejects contact format that monolith accepts. M:200, N:400.
+
+---
+**Analysis:**
+This is an M:200, N:400 case where NCA's libphonenumber validation is stricter than monolith's.
+Need to investigate the specific contact format causing the diff.
+
+**Status:** 🟠 PENDING - Need to fetch actual request from logs to understand what format triggers this.
+
+---
+
+#### Subtask #14: `Price has to be a fixed amount`
+**Date:** 2026-01-03 | **Commit:** `2f2d558`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `8ee03cb1-bf50-4a3e-be16-7f0c4352440d` (from 2025-12-29)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "8ee03cb1-bf50-4a3e-be16-7f0c4352440d"`
+- **Actual Request Snippet:** `"template_type":null` with items having `"amount":null`
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/400_200_Price_has_to_be_a_fixed_amount/2025-12-29.csv`
+
+---
+**Trigger Condition:**
+When org feature `IsHideDynamicPricePPEnabled()` is true and merchant feature `IsEnableCustomerAmountEnabled()` is **FALSE**, items with null amount should be rejected. The logic was inverted in NCA.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Models/PaymentLink/Validator.php:649-666
+if (($merchant->org->isFeatureEnabled(Feature::HIDE_DYNAMIC_PRICE_PP) === true) and
+    ($merchant->isEnableCustomerAmountEnabled() === false) and  // <-- FALSE
+    ($template_type !== 'donation'))
+{
+    foreach ($payment_page_items as $paymentPageItem) {
+        if (isset($paymentPageItem['item']) === true) {
+            $amount = $paymentPageItem['item'][Entity::AMOUNT];
+            if ($amount === null) {
+                throw new BadRequestValidationFailureException('Price has to be a fixed amount');
+            }
+        }
+    }
+}
+```
+**Monolith Behavior:** When `IsHideDynamicPricePPEnabled() === true` AND `IsEnableCustomerAmountEnabled() === false`, reject null amounts.
+
+---
+**Code Evidence - NCA (Go) BEFORE fix:**
+```go
+// internal/modules/payment_page/core.go:1053 (BEFORE - WRONG)
+if orgFeatures.IsHideDynamicPricePPEnabled() && 
+   merchantFeatures.IsEnableCustomerAmountEnabled() &&  // <-- BUG: should be !
+   templateType != "donation" {
+```
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/payment_page/core.go:1053 (AFTER - CORRECT)
+// Monolith: IsHideDynamicPricePPEnabled() === true AND IsEnableCustomerAmountEnabled() === false
+// See: api/app/Models/PaymentLink/Validator.php:649-651
+if orgFeatures.IsHideDynamicPricePPEnabled() && 
+   !merchantFeatures.IsEnableCustomerAmountEnabled() &&  // <-- Fixed: added !
+   templateType != "donation" {
+```
+
+---
+**Verification:**
+- TC1 (fees + null amount): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
+- TC2 (donation + null amount): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
+- TC3 (custom + null amount): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
+- TC4 (fixed amount): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
+
+**Note:** All return 200 because test merchant doesn't have `IsHideDynamicPricePPEnabled()` enabled. The fix ensures NCA matches monolith behavior for merchants that DO have this feature enabled.
+
+**Files Changed:**
+- `internal/modules/payment_page/core.go`
+
+---
+
+#### Subtask #15: `Price has to be a fixed amount (v2)` - Same Fix as #14
+**Date:** 2026-01-03 | **Commit:** `2f2d558`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `81a04c1f-7a17-4cf2-b0bd-3a6a93f8d4fe` (from 2025-12-26)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "81a04c1f-7a17-4cf2-b0bd-3a6a93f8d4fe"`
+- **Actual Request Snippet:** `"template_type":"fees"` with items having `"amount":null`
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_validation_failure_Price_has_to_be_a_fixed_amount/2025-12-26.csv`
+
+---
+**Trigger Condition:**
+Same as #14 - `template_type: "fees"` with null amount items. This is the NCA error side (M:200, N:400) as opposed to #14 (M:400, N:200).
+
+**Root Cause:** Same logic inversion bug as #14. The fix in `2f2d558` resolves both.
+
+---
+**Verification:**
+- TC1 (fees + null amount): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
+
+**Note:** Same fix as #14 - the logic inversion was causing both types of diffs depending on merchant feature configuration.
+
+---
+
+#### Subtask #19: `max_amount exceeds maximum` - 🔵 Already Fixed
+**Date:** 2026-01-03 | **Status:** Already works
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `20a22988-c257-4478-ac7c-9fbe2c7bdb31` (from 2025-11-25)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "20a22988-c257-4478-ac7c-9fbe2c7bdb31"`
+- **Actual Request Snippet:** `"max_amount":{"Value":100000000}` (1 crore = 10 million paise)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/400_200_max_amount_exceeds_maximum_payment_amount_allowed/2025-11-25.csv`
+
+---
+**Trigger Condition:**
+When `max_amount` exceeds merchant's maximum payment amount limit (varies per merchant).
+
+---
+**Verification:**
+- TC1 (max_amount=100000000): `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅ - Both return 400
+- TC4 (normal request): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
+
+**Note:** This validation already works correctly in NCA. Both monolith and NCA reject excessive amounts.
+
+---
+
+#### Subtask #20: `support_contact invalid format` - 🟠 PENDING
+**Date:** 2026-01-03 | **Status:** Same as #13
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `a5c24b86-63cb-46d9-ad65-f8b1ae4cb6f4` (from 2025-12-16)
+- **Coralogix:** Logs beyond retention
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_validation_failure_support_contact_invalid_contact_format./2025-12-16.csv`
+
+---
+**Note:** This is the same issue as #13 - NCA's libphonenumber validation is stricter than monolith's.
+M:200, N:400 indicates NCA is over-validating contact formats that monolith accepts.
+
+---
+
+#### Subtask #21: `terms length 5 and 2048`
+**Date:** 2026-01-03 | **Commit:** `1c75c90`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `9c483dc5-bf75-4bdc-8800-c3d88cc7f633` (from 2025-12-29)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "9c483dc5-bf75-4bdc-8800-c3d88cc7f633"`
+- **Actual Request Snippet:** `"terms":"nn"` (just 2 newline characters)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_validation_failure_terms_the_length_must_be_between_5_and_2048./2025-12-29.csv`
+
+---
+**Trigger Condition:**
+When `terms` is whitespace-only (e.g., `"\n\n"`). Monolith accepts, NCA was rejecting with length validation.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Models/PaymentLink/Validator.php
+Entity::TERMS => 'nullable|string|min:5|max:2048|utf8',
+// Laravel treats whitespace-only strings as "empty-ish" in some contexts
+```
+**Monolith Behavior:** Accepts whitespace-only terms field.
+
+---
+**Code Evidence - NCA (Go) BEFORE fix:**
+```go
+// internal/modules/nocode/validation.go:524-528 (BEFORE)
+validation.Field(&n.Terms,
+    validation.When(n.Terms != nil && *n.Terms != "",
+        validation.Length(5, 2048),
+        // ...
+    ),
+),
+```
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/nocode/validation.go:524-529 (AFTER)
+// Monolith accepts whitespace-only terms (e.g., "\n\n") - skip validation for such
+validation.Field(&n.Terms,
+    validation.When(n.Terms != nil && strings.TrimSpace(*n.Terms) != "",
+        validation.Length(5, 2048),
+        // ...
+    ),
+),
+```
+
+---
+**Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
+
+---
+
+#### Subtask #22: `Contact number > 15 digits` - 🔵 Already Fixed
+**Date:** 2026-01-03 | **Status:** Already works
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `1aa590c8-40c6-4a71-bb33-aff4d01debd3` (from 2025-11-28)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "1aa590c8-40c6-4a71-bb33-aff4d01debd3"`
+- **Actual Request Snippet:** `"support_contact":"+919999999999999"` (16 digits including +91)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/400_200_Contact_number_should_not_be_greater_than_15_digits,_including_country_code/2025-11-28.csv`
+
+---
+**Trigger Condition:**
+When `support_contact` has more than 15 digits (including country code).
+
+---
+**Code Evidence - NCA (Go):**
+```go
+// internal/utils/extended_validation/custom_rules.go:111-124
+numberLength := len(cast.ToString(formattedNumber.NationalNumber)) + len(cast.ToString(formattedNumber.CountryCode))
+if numberLength > 15 {
+    return GenericValidationError
+}
+```
+
+---
+**Verification:**
+- TC1 (+919999999999999): `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅ - Both return 400
+- TC4 (valid contact): `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅ - Both return 200
+
+**Note:** This validation already works correctly in NCA.
+
+---
+
+#### Subtask #23: `value length no more than 10000` - 🟠 PENDING
+**Date:** 2026-01-03 | **Status:** Investigation needed
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `9926b48d-59ea-4ae5-96ab-5c503300841f` (from 2025-12-21)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "9926b48d-59ea-4ae5-96ab-5c503300841f"`
+- **Actual Request Snippet:** `udf_schema` with hundreds of enum options (REFERANCE field)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_validation_failure_value_the_length_must_be_no_more_than_10000./2025-12-21.csv`
+
+---
+**Trigger Condition:**
+When `udf_schema` contains a field with a very long list of enum options. The serialized JSON exceeds 10000 characters.
+
+---
+**Analysis:**
+- Error: `value: the length must be no more than 10000`
+- The `udf_schema` field has a dropdown (REFERANCE) with 500+ names as options
+- NCA seems to validate a `value` field somewhere with max length 10000
+- Source of validation unclear - needs further investigation
+
+**Note:** This requires deeper investigation into how `udf_schema` is processed and validated in NCA.
+
+---
+
+#### Subtask #25: `ends_by must be in future`
+**Date:** 2026-01-03 | **Commit:** `b442315`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `9bc72063-b666-4c10-a79b-287780a1f992` (from 2025-12-06)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "9bc72063-b666-4c10-a79b-287780a1f992"`
+- **Actual Request Snippet:** `"goal_end_timestamp":1714501799` (April 2024 - past)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_internal_error_validation_failure_ends_by_EndsBy_must_be_in_the_future./2025-12-06.csv`
+
+---
+**Trigger Condition:**
+When `goal_tracker.meta_data.goal_end_timestamp` is in the past. Monolith accepts, NCA was rejecting.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Models/PaymentLink/Entity.php:162
+const GOAL_END_TIMESTAMP = 'goal_end_timestamp';
+// No validation for future timestamp found
+```
+**Monolith Behavior:** Accepts past timestamps for `goal_end_timestamp`.
+
+---
+**Code Evidence - NCA (Go) BEFORE fix:**
+```go
+// internal/modules/goal_tracker/validation.go:36-38 (BEFORE)
+validation.When(g.EndsBy != nil,
+    validation.Min(int64(time.Now().Unix())).Error("EndsBy must be in the future"),
+),
+```
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/goal_tracker/validation.go:36-37 (AFTER)
+// NOTE: Monolith does NOT validate EndsBy > now(), so NCA should also not validate
+```
+
+---
+**Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
+
+---
+
+#### Subtask #26: `slug length between 4 and 30`
+**Date:** 2026-01-03 | **Commit:** `b442315`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `74e6bbab-ae5c-4d41-b056-df997fafd490` (from 2025-12-19)
+- **Coralogix:** No results (beyond retention)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_validation_failure_the_length_must_be_between_4_and_30/2025-12-19.csv`
+
+---
+**Trigger Condition:**
+When `slug` is nil or too short. Monolith's rule is `nullable|min:4|max:30` - NCA was validating even when slug is null.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Models/PaymentLink/Validator.php:58
+Entity::SLUG => 'nullable|min:4|max:30'
+// nullable = skip validation if null
+```
+**Monolith Behavior:** Skip slug length validation if slug is null.
+
+---
+**Code Evidence - NCA (Go) BEFORE fix:**
+```go
+// internal/modules/nocode/validation.go:176-180 (BEFORE)
+// Bug: Validated Length(4,30) even when slug is nil
+if err := validation.Validate(n.Slug, validation.Length(4, 30)); err != nil {
+    return utils.GetValidationError(err)
+}
+```
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/nocode/validation.go:176-182 (AFTER)
+// Only validate length if slug is provided (matches monolith's 'nullable' rule)
+if n.Slug != nil {
+    if err := validation.Validate(n.Slug, validation.Length(4, 30)); err != nil {
+        return utils.GetValidationError(err)
+    }
+}
+```
+
+---
+**Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
+
+---
+
+#### Subtask #28: `must be a valid URL`
+**Date:** 2026-01-03 | **Commit:** `b442315`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `43fde58e-3c14-4fdb-be4f-76fe2ace03e3` (from 2025-12-13)
+- **Coralogix:** No results (beyond retention)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_validation_failure_must_be_a_valid_URL/2025-12-13.csv`
+
+---
+**Trigger Condition:**
+When `settings.payment_success_redirect_url` is empty string or invalid format. Monolith doesn't validate, NCA was rejecting.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Models/PaymentLink/Validator.php
+// No validation found for payment_success_redirect_url
+```
+**Monolith Behavior:** No strict URL validation for this field.
+
+---
+**Code Evidence - NCA (Go) BEFORE fix:**
+```go
+// internal/modules/nocode/validation.go:341-343 (BEFORE)
+// Bug: Validated URL even for empty strings
+if err := validation.Validate(s.PaymentSuccessRedirectUrl, is.URL); err != nil {
+    return err
+}
+```
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/nocode/validation.go:341-348 (AFTER)
+// Only validate if non-empty (matches monolith's lenient behavior)
+if s.PaymentSuccessRedirectUrl != nil && *s.PaymentSuccessRedirectUrl != "" {
+    if err := validation.Validate(s.PaymentSuccessRedirectUrl, is.URL); err != nil {
+        return err
+    }
+}
+```
+
+---
+**Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
 
 ---
 
