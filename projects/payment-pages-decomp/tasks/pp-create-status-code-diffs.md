@@ -149,14 +149,14 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 | 20 | `support_contact invalid format` | 6 | 200 | 400 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | Same as #13 - NCA over-validates |
 | 21 | `terms length 5 and 2048` | 6 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `1c75c90` | Fix committed, needs testing |
 | 22 | `Contact number > 15 digits` | 6 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | N/A | N/A | N/A | ✅ | N/A | ✅ | 🔵 | | Already works |
-| 23 | `value length no more than 10000` | 4 | 200 | 400 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | udf_schema enum options - needs investigation |
-| 24 | `amount minimum 50 for USD` | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 23 | `value length no more than 10000` | 4 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `9597018` | Fix: Increased limit to 100000 |
+| 24 | `amount minimum 50 for USD` | 3 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `9597018` | Fix: Removed currency min from Amount |
 | 25 | `ends_by must be in future` | 3 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `b442315` | Fix committed, needs testing |
 | 26 | `slug length between 4 and 30` | 3 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `b442315` | Fix committed, needs testing |
-| 27 | `slug required for custom domain` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 27 | `slug required for custom domain` | 2 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `9597018` | Fix: Added slug requirement |
 | 28 | `must be a valid URL` | 2 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `b442315` | Fix committed, needs testing |
 | 29 | `available_units validation` | 2 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `4399464` | Fix committed, needs testing |
-| 30 | `max amount must be valid integer` | 2 | 400 | 200 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | Same as #7 - string "0" rejection |
+| 30 | `max amount must be valid integer` | 2 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `9597018` | Fix: Added uint32 max validation |
 | 31 | `READ ONLY transaction` | 1 | 200 | 400 | ✅ | ✅ | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 🔵 | | DB infra transient error |
 | 32 | `min purchase must be valid integer` | 1 | 400 | 200 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | Same as #7 - already fixed |
 
@@ -1578,8 +1578,147 @@ validation.Field(&g.AvailableUnits,
 **Trigger Condition:**
 Monolith rejects `max_amount` > 4294967295 (uint32 max), NCA accepts.
 
-**Note:** This is the reverse of #7. Monolith is stricter here. The value exceeds uint32 max (4,294,967,295).
-This should be handled by NCA's `NumericUInt64Value` type validation or a separate max check.
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/line_item_price/validation.go
+const MaxUInt32 uint64 = math.MaxUint32
+
+// Added validation:
+if m.MaxAmount != nil && *m.MaxAmount > MaxUInt32 {
+    return utils.GetValidationError(fmt.Errorf("The max_amount must be valid integer between 0 and %d.", MaxUInt32))
+}
+// ... similar for min_amount, amount, stock, min_purchase, max_purchase
+```
+
+---
+**Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
+
+---
+
+#### Subtask #23: `value length no more than 10000` - 🟡 Fix Committed
+**Date:** 2026-01-03 | **Commit:** `9597018`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `9926b48d-59ea-4ae5-96ab-5c503300841f` (from 2025-12-21)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "9926b48d-59ea-4ae5-96ab-5c503300841f"`
+- **Actual Request Snippet:** `udf_schema` has 500+ referral names in `enum` list
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_validation_failure_value_the_length_must_be_no_more_than_10000./2025-12-21.csv`
+
+---
+**Trigger Condition:**
+`udf_schema` contains dropdown fields with very large `enum` lists (500+ options). This exceeds the 10000 char limit on config `Value`.
+
+---
+**Code Evidence - Monolith (PHP):**
+Monolith has NO length limit on config value fields.
+
+---
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/config/validation.go:17
+// BEFORE: validation.Field(&nc.Value, extended_validation.Utf8, validation.Length(0, 10000)),
+// AFTER:
+validation.Field(&nc.Value, extended_validation.Utf8, validation.Length(0, 100000)),
+```
+
+---
+**Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
+
+---
+
+#### Subtask #24: `amount minimum 50 for USD` - 🟡 Fix Committed
+**Date:** 2026-01-03 | **Commit:** `9597018`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `4834e47e-79f7-4bd0-9c95-6c1ab2d46d3e` (from 2025-12-19)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "4834e47e-79f7-4bd0-9c95-6c1ab2d46d3e"`
+- **Actual Request Snippet:** `amount: 10`, `currency: "USD"` (10 cents)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_validation_failure_amount_amount_should_be_minimum_50_for_USD./2025-12-19.csv`
+
+---
+**Trigger Condition:**
+USD amount below 50 cents. NCA was enforcing currency minimum on item Amount, but monolith doesn't.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Models/PaymentLink/PaymentPageItem/Validator.php
+// Monolith only validates currency minimum for MIN_AMOUNT and MAX_AMOUNT
+// NOT for the main item AMOUNT during creation
+```
+
+---
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/line_item_price/validation.go:52-58
+// BEFORE: validation.Field(&m.Amount, validation.When(m.Amount != nil, validation.By(extended_validation.Amount(m.Currency, "")))),
+// AFTER:
+validation.Field(&m.Amount), // No currency minimum validation
+```
+
+---
+**Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
+
+---
+
+#### Subtask #27: `slug required for custom domain` - 🟡 Fix Committed
+**Date:** 2026-01-03 | **Commit:** `9597018`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `d89d1e84-1151-43df-a441-08fe3aea5d17` (from 2025-11-28)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "d89d1e84-1151-43df-a441-08fe3aea5d17"`
+- **Actual Request Snippet:** `custom_domain: "igvtseva.in"`, `slug: null`
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/400_200_slug_required_for_page_with_custom_domain./2025-11-28.csv`
+
+---
+**Trigger Condition:**
+Request has `custom_domain` set but `slug` is null. Monolith requires slug when custom_domain is present.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Models/PaymentLink/Validator.php:480-489
+public function validateCustomDomainSlug(string $attribute, ?string $value)
+{
+    if (is_null($value) === true)
+    {
+        throw new BadRequestValidationFailureException(
+            'slug required for page with custom domain.',
+            Entity::SLUG,
+            compact('value')
+        );
+    }
+}
+```
+
+---
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/nocode/validation.go:218-246
+func ValidateSlugWithCustomDomain(customDomainInf interface{}) validation.RuleFunc {
+    return func(slugInf interface{}) error {
+        if customDomain != "" {
+            if slugInf == nil {
+                return goErr.New("slug required for page with custom domain.")
+            }
+            // ... validate slug format
+        }
+        // ... rest of validation
+    }
+}
+```
+
+---
+**Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
 
 ---
 
