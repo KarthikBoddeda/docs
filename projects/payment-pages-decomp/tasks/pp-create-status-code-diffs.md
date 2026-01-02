@@ -155,10 +155,10 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 | 26 | `slug length between 4 and 30` | 3 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `b442315` | Fix committed, needs testing |
 | 27 | `slug required for custom domain` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
 | 28 | `must be a valid URL` | 2 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `b442315` | Fix committed, needs testing |
-| 29 | `available_units validation` | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 30 | `max amount must be valid integer` | 2 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 31 | `READ ONLY transaction` | 1 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 32 | `min purchase must be valid integer` | 1 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 29 | `available_units validation` | 2 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `4399464` | Fix committed, needs testing |
+| 30 | `max amount must be valid integer` | 2 | 400 | 200 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | Same as #7 - string "0" rejection |
+| 31 | `READ ONLY transaction` | 1 | 200 | 400 | ✅ | ✅ | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 🔵 | | DB infra transient error |
+| 32 | `min purchase must be valid integer` | 1 | 400 | 200 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | Same as #7 - already fixed |
 
 ---
 
@@ -1505,6 +1505,121 @@ if s.PaymentSuccessRedirectUrl != nil && *s.PaymentSuccessRedirectUrl != "" {
 
 ---
 **Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
+
+---
+
+#### Subtask #29: `available_units validation`
+**Date:** 2026-01-03 | **Commit:** `4399464`
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `2d5bc825-18cb-403b-8203-3978ef62d4fe` (from 2025-11-29)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "2d5bc825-18cb-403b-8203-3978ef62d4fe"`
+- **Actual Request Snippet:** `tracker_type: "donation_supporter_based"`, `available_units: ""`
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_internal_error_validation_failure_available_units_AvailableUnits_is_required_for/2025-11-29.csv`
+
+---
+**Trigger Condition:**
+When `tracker_type` is `donation_supporter_based` but `available_units` is empty. NCA was requiring AvailableUnits for supporter-based, monolith doesn't.
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/Models/PaymentLink/Validator.php:293
+Entity::META_DATA.'.'.Entity::AVALIABLE_UNITS => 'required_if:'.Entity::META_DATA.'.'.Entity::DISPLAY_AVAILABLE_UNITS.',1',
+// Only required when display_available_units='1', NOT when tracker_type is supporter-based
+```
+**Monolith Behavior:** Only requires `available_units` when `display_available_units='1'`.
+
+---
+**Code Evidence - NCA (Go) BEFORE fix:**
+```go
+// internal/modules/goal_tracker/validation.go:21-29 (BEFORE)
+validation.Field(&g.AvailableUnits,
+    validation.When(g.DisplayAvailableUnits == "1", ...),
+    validation.When(g.Type == "donation_supporter_based",  // BUG: extra validation
+        validation.Required.Error("AvailableUnits is required for supporter-based goal tracker"),
+    ),
+),
+```
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/modules/goal_tracker/validation.go:21-27 (AFTER)
+validation.Field(&g.AvailableUnits,
+    // Monolith only requires available_units when display_available_units is "1"
+    // NOT when tracker_type is donation_supporter_based
+    validation.When(g.DisplayAvailableUnits == "1",
+        validation.Required.Error("..."),
+        validation.Min(uint64(1)),
+    ),
+),
+```
+
+---
+**Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
+
+---
+
+#### Subtask #30: `max amount must be valid integer` - 🔵 Same as #7
+**Date:** 2026-01-03 | **Status:** Already fixed
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `8619d93e-8fe6-435d-9e31-87c8502dd36c` (from 2025-11-12)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "8619d93e-8fe6-435d-9e31-87c8502dd36c"`
+- **Actual Request Snippet:** `max_amount: 10000000000` (100 billion paise = 1 billion INR)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/400_200_The_max_amount_must_be_valid_integer_between_0_and_4294967295./2025-11-12.csv`
+
+---
+**Trigger Condition:**
+Monolith rejects `max_amount` > 4294967295 (uint32 max), NCA accepts.
+
+**Note:** This is the reverse of #7. Monolith is stricter here. The value exceeds uint32 max (4,294,967,295).
+This should be handled by NCA's `NumericUInt64Value` type validation or a separate max check.
+
+---
+
+#### Subtask #31: `READ ONLY transaction` - 🔵 DB Transient
+**Date:** 2026-01-03 | **Status:** Transient DB error
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `8f607140-f7dd-4fd4-8504-ad60f6c2351d` (from 2025-11-18)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "8f607140-f7dd-4fd4-8504-ad60f6c2351d"`
+- **Error:** `Error 1792 (25006): Cannot execute statement in a READ ONLY transaction.`
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/200_400_db_error_Error_1792_(25006)_Cannot_execute_statement_in_a_READ_ONLY_transaction./2025-11-18.csv`
+
+---
+**Trigger Condition:**
+DB replica failover or read-only state. This is infrastructure-related, not code.
+
+**Note:** Not actionable at code level. This is a transient DB infrastructure issue.
+
+---
+
+#### Subtask #32: `min purchase must be valid integer` - 🔵 Same as #7
+**Date:** 2026-01-03 | **Status:** Already fixed by #7
+
+---
+**ReqFound Details:**
+- **TC1 razorpay_request_id:** `29427df8-fb2b-4565-9a14-f1a51b2072b4` (from 2025-11-27)
+- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "29427df8-fb2b-4565-9a14-f1a51b2072b4"`
+- **Actual Request Snippet:** `min_purchase: {"Value":1}` (valid integer)
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/400_200_The_min_purchase_must_be_valid_integer_between_0_and_4294967295./2025-11-27.csv`
+
+---
+**Trigger Condition:**
+Same issue as #7 - monolith rejects string "0" for integer fields. NCA's `ValidateEmptyStringForIntegerFields` fix in #7 handles this.
+
+**Note:** Already fixed by commit `d4ffebe` in Subtask #7.
 
 ---
 
