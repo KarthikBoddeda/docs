@@ -126,9 +126,9 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 | # | Diff Type | Count | M | N | Deployed | ReqFound | Reproduced | CodeEvidence | HotReload | TC1 | TC2 | TC3 | TC4 | DiffCheck | Status | Commit | Review |
 |---|-----------|-------|---|---|----------|----------|------------|--------------|-----------|-----|-----|-----|-----|-----------|--------|--------|--------|
 | 1 | `tracker type field is required` | 13,345 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `ce81003` | |
-| 2 | `description contains invalid characters` | 8,090 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 3 | `title contains invalid characters` | 676 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
-| 4 | `slug already exists` | 519 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
+| 2 | `description contains invalid characters` | 8,090 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `7306449` | |
+| 3 | `title contains invalid characters` | 676 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `7306449` | |
+| 4 | `slug already exists` | 519 | 200 | 400 | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔴 | | |
 | 5 | `payment_success_message invalid chars` | 339 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
 | 6 | `terms contains invalid characters` | 317 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
 | 7 | `min_purchase null or valid integer` | 140 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | |
@@ -581,6 +581,112 @@ During testing with a FULL `goal_tracker` object (from actual Coralogix producti
 
 ---
 
+#### Subtask #2 & #3: `description/title contains invalid characters`
+**Date:** 2026-01-02 | **Commit:** `7306449`
+
+---
+
+**Log Reference:**
+- File: `pp_create_failures/categorized/400_200_description_contains_invalid_characters/2025-12-29.csv`
+- File: `pp_create_failures/categorized/400_200_title_contains_invalid_characters/2025-12-29.csv`
+- Sample razorpay_request_id (description): `856e7b98-d691-4b3e-b41a-fb14469573d1`
+- Sample razorpay_request_id (title): `423781ce-f6f1-4764-83c6-fd7188bd12b0`
+
+**Trigger Condition:**
+When title or description contains **utf8mb4 characters** (4-byte UTF-8 sequences like emojis 🚀 🔐 ✅), monolith rejects with 400, but NCA was accepting with 200.
+
+---
+
+**Code Evidence - Monolith (PHP):**
+
+```php
+// api/app/Models/PaymentLink/Validator.php:66-67
+Entity::TITLE           => 'required|string|min:3|max:80|utf8',
+Entity::DESCRIPTION     => 'string|max:65535|nullable|utf8|custom',
+
+// api/app/Models/Base/ExtendedValidations.php:511-523
+protected function validateUtf8(string $attribute, $value)
+{
+    if ((empty($value) === false) and (is_string($value) === true))
+    {
+        if (is_valid_utf8($value) === false)  // <-- KEY
+        {
+            throw new BadRequestValidationFailureException(
+                "$attribute contains invalid characters");
+        }
+    }
+}
+
+// api/app/lib/utility.php:592-595 - is_valid_utf8()
+function is_valid_utf8(String $string)
+{
+    return (max(array_map('ord', str_split($string))) < 240);  // <-- Rejects bytes >= 240 (utf8mb4)
+}
+```
+
+**Monolith Behavior:** Validates that title/description don't contain any byte >= 240 (utf8mb4 chars like emojis). The `utf8` rule doesn't allow utf8mb4 encoding.
+
+---
+
+**Code Evidence - NCA (Go) BEFORE fix:**
+
+```go
+// internal/utils/extended_validation/init.go
+Utf8 = validation.NewStringRuleWithError(utf8.ValidString, Utf8Err)  // <-- Uses Go's utf8.ValidString which ALLOWS emojis!
+```
+
+**NCA Behavior BEFORE:** Used Go's `utf8.ValidString` which accepts ANY valid UTF-8 including utf8mb4 (emojis).
+
+---
+
+**Code Evidence - NCA (Go) AFTER fix:**
+
+```go
+// internal/utils/extended_validation/init.go
+Utf8MB3  = validation.NewStringRuleWithError(IsValidUtf8MB3, Utf8MB3Err)
+
+// IsValidUtf8MB3 checks if a string is valid UTF-8 but NOT utf8mb4 (4-byte sequences).
+// This matches monolith's validation which rejects emojis and other 4-byte UTF-8 characters.
+// Any byte >= 240 indicates a 4-byte sequence which we don't support (utf8mb4).
+func IsValidUtf8MB3(s string) bool {
+    for i := 0; i < len(s); i++ {
+        if s[i] >= 240 {
+            return false
+        }
+    }
+    return true
+}
+
+// internal/modules/nocode/validation.go - ValidateForCreate()
+validation.Field(&n.Title,
+    validation.Required,
+    validation.Length(3, 80),
+    extended_validation.Utf8MB3.Error("title contains invalid characters"),
+),
+validation.Field(&n.Description,
+    validation.When(n.Description != "",
+        validation.Length(0, 65535),
+        extended_validation.Utf8MB3.Error("description contains invalid characters"),
+    ),
+),
+```
+
+**NCA Behavior AFTER:** `IsValidUtf8MB3` rejects bytes >= 240 just like monolith → both now return 400 for emojis.
+
+---
+
+**Verification:**
+- TC1 (description with 🚀): Both return 400 - `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅
+- TC1 (title with 🔐): Both return 400 - `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` ✅
+- TC4 (normal request): Both return 200 - `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` ✅
+
+**Files Changed:**
+- `internal/utils/extended_validation/constant.go` - Added `CodeValidationIsUtf8MB3`
+- `internal/utils/extended_validation/init.go` - Added `IsValidUtf8MB3` function and `Utf8MB3` rule
+- `internal/modules/nocode/validation.go` - Added title/description validation with `Utf8MB3`
+
+---
+
 **Template for verified fix:**
 ```markdown
 #### Subtask #X: <diff_type>
@@ -660,8 +766,8 @@ During testing with a FULL `goal_tracker` object (from actual Coralogix producti
 | Monolith 400/500, NCA 200 | 9,712 (40.5%) |
 | Timeouts | 250 (1.0%) |
 | Subtasks Total | 32 |
-| Subtasks Completed | 1 |
-| Subtasks Remaining | 31 |
+| Subtasks Completed | 3 |
+| Subtasks Remaining | 29 |
 
 ---
 
