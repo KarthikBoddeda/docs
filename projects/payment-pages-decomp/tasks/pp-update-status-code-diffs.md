@@ -28,8 +28,6 @@ When NCA proxies a request to monolith:
 
 > **📝 NOTE: Some diffs may already be fixed.** Master branch and cherry-picked commits may contain fixes for some diffs. If you try to reproduce a diff and it doesn't occur on devstack, mark the subtask as `🔵 Already Fixed` and move on. The user will double-check these cases.
 
-> **📝 NOTE: Many update diffs may be fixed by the create task.** The `pp-create-status-code-diffs.md` task addresses many validation issues (emojis, terms, min_purchase, etc.) that apply equally to updates. Check the create task for existing fixes before investigating.
-
 ---
 
 ## Prerequisites
@@ -128,56 +126,45 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 > - `dual_write_shadow_read_no_external` proxies to monolith AND compares responses
 > - You MUST see `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` log to confirm fix works
 
----
-
-### 🚨 NCA Failures (Monolith: 200, NCA: 400/500) - NCA Bugs
-
 | # | Diff Type | Count | M | N | Deployed | ReqFound | Reproduced | CodeEvidence | HotReload | TC1 | TC2 | TC3 | TC4 | DiffCheck | Status | Commit | Review | Notes |
 |---|-----------|-------|---|---|----------|----------|------------|--------------|-----------|-----|-----|-----|-----|-----------|--------|--------|--------|-------|
-| 1 | `ends_by field is required when display_days_left` | 4,370 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | Similar to create #1 |
-| 2 | `type cannot be blank` | 1,391 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | GoalTracker type validation |
-| 3 | `item count mismatch` (dual write) | 967 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | | Cascading from other diffs |
-| 4 | `invalid payment_page_item.settings` | 521 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
-| 5 | `notes is not an array` | 131 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
-| 6 | `slug already exists` | 86 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | | Complex slug uniqueness logic |
-| 7 | `length no more than 16` | 66 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | Unknown field |
-| 8 | `support_contact length 8-255` | 48 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | Similar to create #13 |
-| 9 | `original must be a valid URL` | 46 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
-| 10 | `terms length 5-2048` | 17 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #21 |
-| 11 | `AvailableUnits required for supporter-based` | 17 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #29 |
-| 12 | `READ ONLY transaction` (DB error) | 13 | 200 | 400 | ⬜ | ⬜ | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 🔵 | | | DB transient error |
-| 13 | `length no more than 20` | 12 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | button_label/text |
-| 14 | `amount minimum 50 for USD` | 9 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #24 |
-| 15 | `EndsBy must be in the future` | 8 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #25 |
-| 16 | `min_amount minimum 50 for USD` | 8 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #24 |
-| 17 | `value length no more than 10000` | 8 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #23 |
-| 18 | `must be a valid URL` | 4 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #28 |
-| 19 | `item missing in pp_item response` (dual write) | 4 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | | Cascading from other diffs |
-| 20 | `failed to unmarshal monolith response` (dual write) | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | | Investigate monolith response |
-| 21 | `length between 4 and 30` (slug) | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #26 |
-| 22 | `stock cannot be lesser than quantity sold` | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
-| 23 | `support_contact length 8-255` (v2) | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | Same as #8 |
-| 24 | `Duplicate entry` (DB error) | 1 | 200 | 400 | ⬜ | ⬜ | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 🔵 | | | DB transient error |
-| 25 | `expire_by atleast 900 seconds` | 1 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
-
----
-
-### ⚠️ Monolith Failures (Monolith: 400/500, NCA: 200) - Validation Diffs
-
-| # | Diff Type | Count | M | N | Deployed | ReqFound | Reproduced | CodeEvidence | HotReload | TC1 | TC2 | TC3 | TC4 | DiffCheck | Status | Commit | Review | Notes |
-|---|-----------|-------|---|---|----------|----------|------------|--------------|-----------|-----|-----|-----|-----|-----------|--------|--------|--------|-------|
-| 26 | `description contains invalid characters` | 3,288 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #2 |
-| 27 | `payment_success_message invalid chars` | 520 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #5 |
-| 28 | `min_purchase null or valid integer` | 263 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #7 |
-| 29 | `title contains invalid characters` | 144 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #3 |
-| 30 | `terms contains invalid characters` | 114 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #6 |
-| 31 | `udf_schema more than 15 items` | 110 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #9 |
-| 32 | `Mandatory field Expires By` | 21 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
-| 33 | `max_amount exceeds maximum` | 20 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #19 |
-| 34 | `max_amount valid integer 0-4294967295` | 8 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🔵 | | | Fixed by create #30 |
-| 35 | `min_amount exceeds maximum` | 5 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
-| 36 | `trouble completing your request` (500) | 4 | 500 | 200 | ⬜ | ⬜ | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 🔵 | | | Monolith 500 - transient |
-| 37 | `stock cannot be lesser than quantity sold` | 1 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 1 | `ends_by field is required when display_days_left` | 4,370 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 2 | `description contains invalid characters` | 3,288 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 3 | `type cannot be blank` | 1,391 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | GoalTracker type validation |
+| 4 | `item count mismatch` (dual write) | 967 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 5 | `invalid payment_page_item.settings` | 521 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 6 | `payment_success_message invalid chars` | 520 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 7 | `min_purchase null or valid integer` | 263 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 8 | `title contains invalid characters` | 144 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 9 | `notes is not an array` | 131 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 10 | `terms contains invalid characters` | 114 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 11 | `udf_schema more than 15 items` | 110 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 12 | `slug already exists` | 86 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 13 | `length no more than 16` | 66 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | Unknown field |
+| 14 | `support_contact length 8-255` | 48 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 15 | `original must be a valid URL` | 46 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 16 | `Mandatory field Expires By` | 21 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 17 | `max_amount exceeds maximum` | 20 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 18 | `terms length 5-2048` | 17 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 19 | `AvailableUnits required for supporter-based` | 17 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 20 | `READ ONLY transaction` (DB error) | 13 | 200 | 400 | ⬜ | ⬜ | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | ⬜ | | | DB transient error |
+| 21 | `length no more than 20` | 12 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | button_label/text |
+| 22 | `amount minimum 50 for USD` | 9 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 23 | `EndsBy must be in the future` | 8 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 24 | `min_amount minimum 50 for USD` | 8 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 25 | `value length no more than 10000` | 8 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 26 | `max_amount valid integer 0-4294967295` | 8 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 27 | `min_amount exceeds maximum` | 5 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 28 | `must be a valid URL` | 4 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 29 | `item missing in pp_item response` (dual write) | 4 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 30 | `trouble completing your request` (500) | 4 | 500 | 200 | ⬜ | ⬜ | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | ⬜ | | | Monolith 500 - transient |
+| 31 | `failed to unmarshal monolith response` (dual write) | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 32 | `length between 4 and 30` (slug) | 3 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 33 | `stock cannot be lesser than quantity sold` (NCA) | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 34 | `support_contact length 8-255` (v2) | 2 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | Same as #14 |
+| 35 | `Duplicate entry` (DB error) | 1 | 200 | 400 | ⬜ | ⬜ | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | ⬜ | | | DB transient error |
+| 36 | `expire_by atleast 900 seconds` | 1 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
+| 37 | `stock cannot be lesser than quantity sold` (Monolith) | 1 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
 | 38 | `goal_end_timestamp 30 minutes after current` | 1 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
 
 ---
@@ -500,31 +487,6 @@ Based on user input or current progress:
 
 ---
 
-### Already Fixed (From Create Task)
-
-Many update diffs share the same root cause as create diffs. These are likely already fixed:
-
-| Update Subtask | Create Subtask | Fix |
-|----------------|----------------|-----|
-| #26 (description invalid chars) | Create #2 | `7306449` - Utf8MB3 validation |
-| #27 (payment_success_message invalid chars) | Create #5 | `f16d92e` - Utf8MB3 validation |
-| #28 (min_purchase null/valid int) | Create #7 | `d4ffebe` - String "0" validation |
-| #29 (title invalid chars) | Create #3 | `7306449` - Utf8MB3 validation |
-| #30 (terms invalid chars) | Create #6 | `f16d92e` - Utf8MB3 validation |
-| #31 (udf_schema > 15 items) | Create #9 | `2641170` - Max items check |
-| #10 (terms length 5-2048) | Create #21 | `1c75c90` - Whitespace trimming |
-| #11 (AvailableUnits required) | Create #29 | `4399464` - display_available_units check |
-| #14 (amount min 50 USD) | Create #24 | `9597018` - Removed currency min |
-| #15 (EndsBy future) | Create #25 | `b442315` - Removed future check |
-| #16 (min_amount min 50 USD) | Create #24 | `9597018` - Removed currency min |
-| #17 (value > 10000) | Create #23 | `9597018` - Increased limit |
-| #18 (valid URL) | Create #28 | `b442315` - Empty string check |
-| #21 (slug length 4-30) | Create #26 | `b442315` - Nullable slug |
-| #33 (max_amount exceeds max) | Create #19 | Already works |
-| #34 (max_amount valid int) | Create #30 | `9597018` - uint32 max |
-
----
-
 ### Investigation Notes
 
 *(Empty - start fresh)*
@@ -548,12 +510,10 @@ Many update diffs share the same root cause as create diffs. These are likely al
 | Metric | Value |
 |--------|-------|
 | **Total Logs** | 13,034 |
-| 🚨 NCA Failures (M:200, N:400/500) | 7,738 (59.4%) |
-| ⚠️ Monolith Failures (M:400/500, N:200) | 4,499 (34.5%) |
-| ⏱️ Timeouts | 789 (6.1%) |
+| Monolith 200, NCA 400/500 | 7,738 (59.4%) |
+| Monolith 400/500, NCA 200 | 4,499 (34.5%) |
+| Timeouts | 789 (6.1%) |
 | **Subtasks Total** | 38 |
-| **Likely Already Fixed** | ~17 (from create task) |
-| **New Issues to Investigate** | ~21 |
 
 ---
 
@@ -579,5 +539,4 @@ Many update diffs share the same root cause as create diffs. These are likely al
 3. **NEVER skip the reproduction step** - you must see the diff before fixing it
 4. **NEVER assume a fix works** - always verify with actual requests
 5. **NEVER proceed to next subtask without completing current one properly**
-
-
+6. **NEVER assume a fix from create API works for update API** - always verify each API independently
