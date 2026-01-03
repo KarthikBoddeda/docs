@@ -139,7 +139,7 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 | 10 | `item missing in pp_item response` | 21 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | Pending - see analysis below |
 | 11 | `Contact number invalid characters` | 20 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `2f2d558` | |
 | 12 | `min_amount minimum 50 for USD` | 18 | 200 | 400 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | NCA over-validates - needs investigation |
-| 13 | `support_contact is invalid` | 17 | 200 | 400 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | NCA over-validates - needs investigation |
+| 13 | `support_contact is invalid` | 17 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | 🟡 | `606cbbe` | Fix: Use raw length for validation |
 | 14 | `Price has to be a fixed amount` | 17 | 400 | 200 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🟢 | `2f2d558` | Logic fix - feature dependent |
 | 15 | `Price has to be a fixed amount (v2)` | 13 | 200 | 400 | ✅ | ✅ | ✅ | ✅ | N/A | N/A | N/A | ✅ | N/A | ✅ | 🟢 | `2f2d558` | Fixed by same logic fix as #14 |
 | 16 | `domain must be a valid domain` | 11 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟠 | | slug `@handle` format triggers domain validation |
@@ -1091,17 +1091,65 @@ But monolith may not apply this validation for all cases. The TODO at line 75-76
 
 ---
 
-#### Subtask #13: `support_contact is invalid` - 🟠 PENDING
-**Date:** 2026-01-03 | **Status:** Needs Investigation
+#### Subtask #13: `support_contact is invalid` - 🟡 Fix Committed
+**Date:** 2026-01-04 | **Commit:** `606cbbe`
 
 ---
 **ReqFound Details:**
-- **TC1 razorpay_request_id:** `a5c24b86-63cb-46d9-ad65-f8b1ae4cb6f4` (from 2025-12-16)
-- **Coralogix Query:** `"PAYMENT_PAGE_CREATE_REQUEST" AND "a5c24b86-63cb-46d9-ad65-f8b1ae4cb6f4"`
-- **Note:** Logs beyond retention - need to check older date or different request
+- **TC1 razorpay_request_id:** `ca2d30d9-1c55-4fea-921b-44c29caefddc` (from 2025-12-16)
+- **Actual Request Snippet (from DIFF_CHECKER log):** `support_contact: "+9181********"` or `"18001800343412"` (14 digits)
 
 **Log Reference:**
-- File: `pp_create_failures/categorized/200_400_validation_failure_support_contact_invalid_contact_format./2025-12-16.csv`
+- File: `pp_create_failures/categorized/200_400_validation_failure_support_contact_is_invalid./2025-12-16.csv`
+- File: `pp_create_failures/categorized/200_400_validation_failure_support_contact_is_invalid./2025-10-10.csv` (has `support_contact: "18001800343412"`)
+
+---
+**Trigger Condition:**
+Phone numbers like `18001800343412` (14 digits, no `+`):
+- libphonenumber parses as: cc=91, nat=18001800343412 → len=16 > 15 → NCA rejects
+- Monolith uses raw `strlen("18001800343412")` = 14 < 15 → Monolith accepts
+
+---
+**Code Evidence - Monolith (PHP):**
+```php
+// api/app/lib/PhoneBook.php:195-203
+public function __toString()
+{
+    if ($this->isValidNumber() === true) {
+        return $this->format();  // E164 format
+    }
+    return $this->getRawInput();  // Raw input if not valid
+}
+
+// api/app/Models/Base/ExtendedValidations.php:232,256
+$formattedContact = (string) $number;  // Calls __toString()
+if (strlen($formattedContact) > 15) { ... }  // Uses strlen of formatted/raw
+```
+**Monolith Behavior:** Uses `strlen($formattedContact)` which is either E164 format or raw input. For `"18001800343412"`, it's raw input (14 chars), so 14 < 15 → accepts.
+
+---
+**Code Evidence - NCA (Go) BEFORE fix:**
+```go
+// internal/utils/extended_validation/custom_rules.go
+numberLength := len(cast.ToString(formattedNumber.NationalNumber)) + len(cast.ToString(formattedNumber.CountryCode))
+if numberLength > 15 {
+    return GenericValidationError  // "is invalid"
+}
+// For "18001800343412": cc=91 (2) + nat=18001800343412 (14) = 16 > 15 → REJECTS
+```
+
+**Code Evidence - NCA (Go) AFTER fix:**
+```go
+// internal/utils/extended_validation/custom_rules.go
+contactLength := len(contact)  // Use raw input length
+if contactLength < 8 { return error }
+// Only enforce >15 if BOTH libphonenumber length AND raw length exceed 15
+if numberLength > 15 && contactLength > 15 { return error }
+// For "18001800343412": contactLength=14 < 15 → ACCEPTS
+```
+
+---
+**Verification:** ⏳ Needs testing (fix committed, needs hot-reload or redeploy)
 
 ---
 **Trigger Condition:**
