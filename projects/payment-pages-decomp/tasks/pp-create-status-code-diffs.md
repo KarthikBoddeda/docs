@@ -38,7 +38,7 @@ Before starting, ensure:
 2. **Commits are known** for: NCA service, API service, Gimli service
 3. **Failure logs are accessible** at `/pythonscripts/decomp-scripts/failure_logs/pp_create_failures/`
 
-> **⚠️ STOP:** If you don't have the **NCA commit**, **ABORT** and ask the user. API and Gimli have defaults (see Devstack Configuration section).
+> **⚠️ AUTO-DEPLOY:** If devstack is not running, deploy it automatically using a base NCA image from the registry. Don't ask the user - just deploy. Use devspace for hot-reloading local code. API and Gimli have defaults (see Devstack Configuration section).
 
 ---
 

@@ -28,6 +28,8 @@ When NCA proxies a request to monolith:
 
 > **📝 NOTE: Some diffs may already be fixed.** Master branch and cherry-picked commits may contain fixes for some diffs. If you try to reproduce a diff and it doesn't occur on devstack, mark the subtask as `🔵 Already Fixed` and move on. The user will double-check these cases.
 
+> **📝 NOTE: Reuse pp-create fixes when applicable.** Many validation issues are shared between create and update APIs. When investigating a diff, check if a similar fix exists in `pp-create-status-code-diffs.md`. If the validation code is shared (e.g., `ValidateForCreate` vs `ValidateForUpdate` using same rules), the fix may already work. **However, you MUST still verify on devstack** - don't assume it works.
+
 ---
 
 ## Prerequisites
@@ -38,7 +40,7 @@ Before starting, ensure:
 2. **Commits are known** for: NCA service, API service, Gimli service
 3. **Failure logs are accessible** at `/pythonscripts/decomp-scripts/failure_logs/pp_update/`
 
-> **⚠️ STOP:** If you don't have the **NCA commit**, **ABORT** and ask the user. API and Gimli have defaults (see Devstack Configuration section).
+> **⚠️ AUTO-DEPLOY:** If devstack is not running, deploy it automatically using the NCA branch HEAD from the current working branch. Don't ask the user - just deploy. API and Gimli have defaults (see Devstack Configuration section).
 
 ---
 
@@ -128,9 +130,9 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 
 | # | Diff Type | Count | M | N | Deployed | ReqFound | Reproduced | CodeEvidence | HotReload | TC1 | TC2 | TC3 | TC4 | DiffCheck | Status | Commit | Review | Notes |
 |---|-----------|-------|---|---|----------|----------|------------|--------------|-----------|-----|-----|-----|-----|-----------|--------|--------|--------|-------|
-| 1 | `ends_by field is required when display_days_left` | 4,370 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
-| 2 | `description contains invalid characters` | 3,288 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
-| 3 | `type cannot be blank` | 1,391 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | GoalTracker type validation |
+| 1 | `ends_by field is required when display_days_left` | 4,370 | 200 | 400 | ✅ | ✅ | ⬜ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟡 | a1c789e | | Fetch existing GoalTracker before validation |
+| 2 | `description contains invalid characters` | 3,288 | 400 | 200 | ✅ | ⬜ | ⬜ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟡 | a1c789e | | Added UTF8MB3 to ValidateForUpdate |
+| 3 | `type cannot be blank` | 1,391 | 200 | 400 | ✅ | ✅ | ⬜ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | 🟡 | a1c789e | | Same fix as #1 |
 | 4 | `item count mismatch` (dual write) | 967 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
 | 5 | `invalid payment_page_item.settings` | 521 | 200 | 400 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
 | 6 | `payment_success_message invalid chars` | 520 | 400 | 200 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | |
@@ -497,7 +499,7 @@ Based on user input or current progress:
 
 | Service | Commit | Label | Notes |
 |---------|--------|-------|-------|
-| NCA | `<ask user>` | `pp-decomp-<label>` | **User input required** - always ask for latest |
+| NCA | `<current branch HEAD>` | `pp-decomp-<label>` | **Auto-deploy** - use current branch HEAD, don't ask |
 | API | `d54e3b9afaf981785390805c70dde2b48761ae5c` | `pp-decomp-<label>` | Default (use unless specified) |
 | Gimli | `4bf1861181c41e61b7994bbc5658012b430a4530` | `pp-decomp-<label>` | Default (use unless specified) |
 
