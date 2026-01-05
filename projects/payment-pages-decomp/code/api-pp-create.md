@@ -157,3 +157,4 @@ These are called when rule contains `custom`:
 3. **Trace execution:** Controller → Service → Core.php `create()` → `build()` → Validator
 4. **Settings validation:** Check dot-notation rules like `settings.goal_tracker`
 
+

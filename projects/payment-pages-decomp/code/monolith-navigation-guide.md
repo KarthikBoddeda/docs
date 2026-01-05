@@ -244,3 +244,4 @@ public function validateViewType($attribute, $value)
 | Constants | `app/Models/PaymentLink/Constants.php` |
 | Payment Page Items | `app/Models/PaymentLink/PaymentPageItem/` |
 
+

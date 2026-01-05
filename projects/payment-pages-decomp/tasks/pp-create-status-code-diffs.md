@@ -120,10 +120,30 @@ All mismatches need to be fixed. Work through them in order of occurrence count.
 
 > **🧪 TEST CASES REQUIRED:** You MUST test at least 3 different scenarios before marking as fixed!
 
-> **⚠️ CRITICAL:** You MUST use `X-Proxy-State: dual_write_shadow_read_no_external` for testing!
-> - ⚠️ Header is `X-Proxy-State` NOT `X-Dual-Write-State`!
-> - `dual_write_shadow_read_no_external` proxies to monolith AND compares responses
-> - You MUST see `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` log to confirm fix works
+---
+
+### ⛔ MANDATORY: DUAL-WRITE TESTING & DIFF LOG VERIFICATION
+
+**ALL testing MUST be done in `dual_write_shadow_read_no_external` mode. A fix is NOT verified until diff logs confirm it.**
+
+| Step | Action | Command/How |
+|------|--------|-------------|
+| 1️⃣ | Set proxy header | `X-Proxy-State: dual_write_shadow_read_no_external` |
+| 2️⃣ | Run ALL test cases (TC1-TC4) | Use `curl` or `.http` file |
+| 3️⃣ | Check pod logs for each test | `kubectl logs -n no-code-apps deployment/no-code-apps-<label> --tail=50 \| grep DIFF_CHECKER` |
+| 4️⃣ | Verify NO mismatches | Must see `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` or `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` |
+
+**❌ NEVER mark `DiffCheck` as ✅ without seeing these logs:**
+- `DIFF_CHECKER_NO_DIFFS_FOUND_FOR_THE_REQUEST` → Both returned 200, responses match
+- `DIFF_CHECKER_NO_DIFFS_FOUND_IN_FAILED_REQUEST` → Both returned 400, status codes match
+
+**🚫 If you see these, the fix FAILED:**
+- `DIFF_CHECKER_SHADOW_STATUS_CODE_MISMATCH` → Status codes differ (the bug we're fixing!)
+- `DIFF_CHECKER_SHADOW_DIFF_PATHS` → Response body diff (acceptable if status codes match)
+
+> **⚠️ Header is `X-Proxy-State` NOT `X-Dual-Write-State`!**
+
+---
 
 | # | Diff Type | Count | M | N | Deployed | ReqFound | Reproduced | CodeEvidence | HotReload | TC1 | TC2 | TC3 | TC4 | DiffCheck | Status | Commit | Review |
 |---|-----------|-------|---|---|----------|----------|------------|--------------|-----------|-----|-----|-----|-----|-----------|--------|--------|--------|

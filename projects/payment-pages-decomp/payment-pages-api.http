@@ -48,7 +48,7 @@
 @internal_auth_live = rzp_live
 
 # ⚠️ UPDATE THESE WITH YOUR VALUES
-@devstack_label = pp-decomp-fix1
+@devstack_label = pp-decomp-fix8
 @payment_id = pay_xxxxx
 # For testing fixes: dual_write_shadow_read_no_external (compares NCA vs Monolith)
 # For nca-only (no comparison): nca_only
