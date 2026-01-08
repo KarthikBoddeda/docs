@@ -158,3 +158,4 @@ These are called when rule contains `custom`:
 4. **Settings validation:** Check dot-notation rules like `settings.goal_tracker`
 
 
+
