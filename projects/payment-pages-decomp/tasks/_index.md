@@ -4,6 +4,7 @@
 
 | Task | Status | Priority | Subtasks | File |
 |------|--------|----------|----------|------|
+| **PR Review Action Items** | ⬜ Not Started | **P0** | 13 items | [pr-review-action-items.md](./pr-review-action-items.md) |
 | Fix payment_page_create status code diffs | 🟡 In Progress | P0 | 32 diff types | [pp-create-status-code-diffs.md](./pp-create-status-code-diffs.md) |
 | Fix payment_page_update status code diffs | 🟡 In Progress | P0 | 38 diff types | [pp-update-status-code-diffs.md](./pp-update-status-code-diffs.md) |
 | Fix payment_page_activate status code diffs | ⬜ Not Started | P1 | 7 diff types | [pp-activate-status-code-diffs.md](./pp-activate-status-code-diffs.md) |
