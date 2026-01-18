@@ -1,164 +1,144 @@
-# PR Review Action Items
+# PR Review Action Items - Payment Pages Decomp
 
-This task tracks all action items identified during PR review for the Payment Pages Decomposition changes.
-
-## Status Legend
-- ⬜ Not Started
-- 🟡 In Progress  
-- ✅ Completed
-- ❌ Won't Fix
+**PR Branch:** `pp-fixes` (no-code-apps)  
+**Proxy State:** `dual_write_shadow_read`  
+**Created:** 2026-01-10
 
 ---
 
 ## 🚨 CRITICAL - Must Remove Before Merge
 
-| # | Subtask | Status | Notes |
-|---|---------|--------|-------|
-| 1 | Remove currency validation bypass in `internal/modules/payment_page/core.go:1017-1021` | ⬜ | `ValidateCurrency` returns nil unconditionally - marked "DO NOT COMMIT" |
-| 2 | Restore `PassportPrivateAuth()` middleware in `internal/router/payment_page_private_routes.go` | ⬜ | Auth middleware commented out - marked "BYPASSED for devstack testing" |
+| # | Item | File | Status | Notes |
+|---|------|------|--------|-------|
+| 1 | **Currency Validation Bypass** - `ValidateCurrency` returns nil immediately | `internal/modules/payment_page/core.go` | ⚠️ PENDING | DO NOT COMMIT - remove bypass |
+| 2 | **Auth Middleware Bypass** - `PassportPrivateAuth()` commented out | `internal/router/payment_page_private_routes.go` | ⚠️ PENDING | Restore auth middleware |
 
 ---
 
-## ⚠️ Potential Nil Pointer Fix
+## ⚠️ Nil Pointer Fixes
 
-| # | Subtask | Status | Notes |
-|---|---------|--------|-------|
-| 3 | Fix `NocodeRequest.GetNotes()` panic risk in `internal/modules/nocode/request.go:390-406` | ⬜ | Final fallback `return n.Notes.(map[string]interface{})` can panic if Notes is unexpected type. Add default case returning nil. |
-
----
-
-## 🔍 Code Review Items
-
-| # | Subtask | Status | Notes |
-|---|---------|--------|-------|
-| 4 | Verify error class change impact: `ErrorNCANotSupported` and `ErrorSkippingDualWrite` changed from `RecoverableError` to `BadRequestError` | ⬜ | Check if this affects monitoring/alerting/metrics |
+| # | Item | File | Status | UT Status | Notes |
+|---|------|------|--------|-----------|-------|
+| 3 | `NocodeRequest.GetNotes()` final fallback | `internal/modules/nocode/request.go` | ✅ DONE | ✅ DONE | Added handling for `nil`, `map`, `[]interface{}` |
+| 4 | Ensure type assertion safety | Various | ✅ DONE | ✅ DONE | Covered in GetNotes tests |
 
 ---
 
-## 🧪 HIGH PRIORITY - Extensive Testing Required
+## 🔍 Code Review
 
-| # | Subtask | Status | Notes |
-|---|---------|--------|-------|
-| 5 | Test UTF8MB3 validation (emoji rejection) for title, description, terms, payment_success_message | ⬜ | Test: emojis (🚀,🔐) reject; Japanese/Chinese chars accept; ₹ symbol accept |
-| 6 | Test GoalTracker Create vs Update logic in `validateAndUpdateGoalTracker` | ⬜ | Test: update with/without existing goal_tracker; partial updates; goal_end_timestamp future validation |
-| 7 | Test String "0" validation (`IsStringZero()`) for min_amount, max_amount, min_purchase, max_purchase, stock | ⬜ | Test: int 0 accept; string "0" reject; string "5" accept; null accept |
-| 8 | Test `ValidateItemPrice` feature flag logic inversion | ⬜ | Changed from `IsEnableCustomerAmountEnabled()` to `!IsEnableCustomerAmountEnabled()` - verify matches monolith |
+| # | Item | File | Status | Notes |
+|---|------|------|--------|-------|
+| 5 | Error Class Changes - `ErrorNCANotSupported`, `ErrorSkippingDualWrite` changed from `RecoverableError` to `BadRequestError` | `pkg/errorclass/errors.go` | 🔍 REVIEW | Verify this doesn't impact monitoring/alerting |
 
 ---
 
-## 🧪 MEDIUM PRIORITY - Testing Required
+## 🧪 HIGH Priority Testing
 
-| # | Subtask | Status | Notes |
-|---|---------|--------|-------|
-| 9 | Test Notes as `interface{}` type (was `map[string]interface{}`) | ⬜ | Test: empty object `{}`; empty array `[]`; normal map; null |
-| 10 | Test `ValidateForUpdate` relaxation - removed settings.Validate(), terms length, support_contact validation | ⬜ | Test: short terms (<5 chars); invalid support_contact; settings that fail create validation |
-| 11 | Test slug validation with `wasSlugExplicitlyProvided()` | ⬜ | Test: update page with short existing slug (e.g., "eng") without changing; explicit new slug |
-| 12 | Test stock validation change - only validates when stock != 0 | ⬜ | Test: set stock to 0/null when items sold |
-| 13 | Test dual write ID extraction with nil items | ⬜ | Test: create PP where monolith returns items with `item: null` |
-
----
-
-## Test Case Details
-
-### 5. UTF8MB3 Validation Test Cases
-```http
-# Should REJECT - contains 4-byte UTF-8 (emojis)
-POST /payment_pages
-{"title": "Test 🚀"}
-{"title": "🔐 Secure Payment"}
-{"description": "Get access 🎉"}
-
-# Should ACCEPT - valid utf8mb3 (3-byte or less)
-POST /payment_pages
-{"title": "Test こんにちは"}
-{"title": "Price: ₹1,999"}
-{"title": "café résumé"}
-```
-
-### 6. GoalTracker Create vs Update Test Cases
-```http
-# TC1: Update page WITH existing goal_tracker - should UPDATE
-PATCH /payment_pages/{id}
-{"settings": {"goal_tracker": {"tracker_type": "donation_amount_based"}}}
-
-# TC2: Update page WITHOUT existing goal_tracker - should CREATE
-PATCH /payment_pages/{id}  # page has no goal_tracker
-{"settings": {"goal_tracker": {"tracker_type": "donation_amount_based", "meta_data": {"goal_amount": "10000"}}}}
-
-# TC3: Partial update preserving existing values
-PATCH /payment_pages/{id}
-{"settings": {"goal_tracker": {"is_active": "1"}}}
-
-# TC4: goal_end_timestamp must be in future when is_active="1"
-PATCH /payment_pages/{id}
-{"settings": {"goal_tracker": {"is_active": "1", "meta_data": {"goal_end_timestamp": "1609459200"}}}}  # past timestamp - should reject
-```
-
-### 7. String "0" Validation Test Cases
-```http
-# Should ACCEPT - integer 0
-POST /payment_pages
-{"payment_page_items": [{"min_purchase": 0}]}
-
-# Should REJECT - string "0"
-POST /payment_pages
-{"payment_page_items": [{"min_purchase": "0"}]}
-
-# Should ACCEPT - string "5"
-POST /payment_pages
-{"payment_page_items": [{"min_purchase": "5"}]}
-
-# Should ACCEPT - null
-POST /payment_pages
-{"payment_page_items": [{"min_purchase": null}]}
-```
-
-### 9. Notes as interface{} Test Cases
-```http
-# TC1: Empty object - should work
-POST /payment_pages/{id}/order
-{"notes": {}}
-
-# TC2: Empty array (monolith format) - should work
-POST /payment_pages/{id}/order
-{"notes": []}
-
-# TC3: Normal map - should work
-POST /payment_pages/{id}/order
-{"notes": {"key": "value"}}
-
-# TC4: Null - should work
-POST /payment_pages/{id}/order
-{"notes": null}
-```
+| # | Item | File | Status | UT Status | Notes |
+|---|------|------|--------|-----------|-------|
+| 6 | UTF8MB3 Validation - `IsValidUtf8MB3` function | `internal/utils/extended_validation/custom_rules.go` | ✅ DONE | ✅ DONE | 53+ test cases added |
+| 7 | GoalTracker Logic - `validateAndUpdateGoalTracker`, `HandleGoalTrackerCreation` | `internal/modules/payment_page/core.go` | ✅ DONE | ✅ DONE | 40+ test cases in `core_goal_tracker_test.go` |
+| 8 | String "0" Validation - `IsStringZero()` and `ValidateEmptyStringForIntegerFields()` | `pkg/datatypes/numeric.go`, `internal/modules/nocode/validation.go` | ✅ DONE | ✅ DONE | 21+ test cases |
+| 9 | ValidateItemPrice Feature Flag Logic | `internal/modules/payment_page/core.go` | ✅ DONE | ✅ DONE | 13 test cases in `core_unit_test.go` |
+| 10 | Notes as `interface{}` Type Handling | `internal/modules/nocode/request.go` | ✅ DONE | ✅ DONE | 15 test cases in `request_test.go` |
+| 11 | ValidateForUpdate Relaxations - Terms, SupportContact, Settings.Validate() | `internal/modules/nocode/validation.go` | ✅ DONE | ✅ DONE | 29 test cases in `validation_test.go` |
+| 12 | Settings.ValidateForUpdate() - Field-level validation matching monolith | `internal/modules/nocode/validation.go` | ✅ DONE | ✅ DONE | 45+ test cases in `settings_test.go` |
 
 ---
 
-## Files Modified in PR (Reference)
+## 🧪 MEDIUM Priority Testing
 
-- `internal/modules/payment_page/core.go`
-- `internal/modules/nocode/request.go`
-- `internal/modules/nocode/validation.go`
-- `internal/modules/nocode/settings.go`
-- `internal/router/payment_page_private_routes.go`
-- `internal/modules/line_item_price/validation.go`
-- `internal/modules/goal_tracker/validation.go`
-- `internal/utils/extended_validation/custom_rules.go`
-- `internal/utils/extended_validation/init.go`
-- `pkg/datatypes/numeric.go`
-- `pkg/errorclass/errors.go`
-- `internal/modules/payment_page/dual_write.go`
-- `internal/monolith_decomp/diffs/comparator.go`
-- `internal/monolith_decomp/diffs/configs.go`
+| # | Item | File | Status | UT Status | Notes |
+|---|------|------|--------|-----------|-------|
+| 13 | Slug Validation with `wasSlugExplicitlyProvided()` | `internal/modules/payment_page/core.go` | ⏳ PENDING | ⏳ PENDING | Test updating page with short existing slug |
+| 14 | Stock Validation Change | `internal/modules/payment_page/core.go` | ✅ DONE | ⚠️ API TEST | See stock validation notes below |
+| 15 | Dual Write ID Extraction with nil Items | `internal/modules/payment_page/dual_write.go` | ✅ DONE | ✅ DONE | 10 test cases in `dual_write_nil_items_test.go` |
 
 ---
 
-## Completion Checklist
+## Devstack Testing Summary (2026-01-10)
 
-- [ ] All CRITICAL items (1-2) resolved
-- [ ] Nil pointer fix (3) applied
-- [ ] Code review item (4) verified
-- [ ] HIGH priority tests (5-8) passed
-- [ ] MEDIUM priority tests (9-13) passed
-- [ ] PR approved
+**Devstack Label:** `pp-settings-val`
+- **API:** ad2b19c17fc974d9b42c393205173e252fc73bbd
+- **NCA:** 1cad8afc003aa5c2f5632f3dc814b39cb4dd9148
 
+### Settings Validation Tests ✅
+
+| Test | Input | Expected | Result |
+|------|-------|----------|--------|
+| Valid theme update | `theme: "dark"` | ✅ Success | ✅ PASS |
+| Invalid theme | `theme: "blue"` | ❌ Error | ✅ PASS |
+| button_text > 16 chars | 44 chars | ❌ Error | ✅ PASS |
+| button_label > 20 chars | 52 chars | ❌ Error | ✅ PASS |
+| Emoji in success_message | `...🎉` | ❌ Error (UTF8MB3) | ✅ PASS |
+| Invalid URL | `not-a-url` | ❌ Error | ✅ PASS |
+| Valid URL | `https://...` | ✅ Success | ✅ PASS |
+
+**Test Page:** `pl_S2D7S9KfYBprUg` (Merchant: `LJ3P0FyFtOULha`)
+
+---
+
+## Key Implementation Notes
+
+### ValidateForUpdate Relaxations
+The following validations are intentionally relaxed on update to match monolith's Laravel validation behavior:
+
+1. **Terms length validation (5, 2048)** - REMOVED on update
+   - Monolith: `'nullable|string|min:5|max:2048|utf8'` with `sometimes` rule
+   - NCA: Only validates UTF8MB3, not length
+
+2. **SupportContact validation** - REMOVED on update
+   - Monolith doesn't validate `support_contact` on update
+   - NCA: Skipped entirely
+
+3. **Settings.Validate()** - NOT called on update
+   - Would validate ALL settings fields including existing DB data
+   - NCA: Only validates fields explicitly present in request via `Settings.ValidateForUpdate()`
+
+### Stock Validation Test Results (Task 14)
+
+**Devstack Tests:**
+| Test | Expected | Actual | Status |
+|------|----------|--------|--------|
+| stock=null | ✅ Allowed | ✅ Allowed | ✅ PASS |
+| stock=5 | ✅ Allowed | ✅ Allowed | ✅ PASS |
+| stock=0 | ✅ Allowed (PHP empty()) | ❌ Rejected | ⚠️ INVESTIGATE |
+
+**Issue Found:** `stock=0` is rejected by `line_item_price/validation.go:64-68` which has `MinUInt64Ptr(1)` validation.
+The core.go stock validation (lines 744-755) correctly allows stock=0 due to PHP empty() behavior, but the entity validation rejects it.
+
+**Action Required:** Verify if monolith allows stock=0. If yes, the `MinUInt64Ptr(1)` validation needs to be removed or changed to `Min(0)`.
+
+### Dual Write Nil Items Test Results (Task 15)
+
+**Unit Tests Added:** `dual_write_nil_items_test.go` with 10 test cases:
+- `TestGetResponsePPItemKey_NilItem/nil_item_returns_empty_key` ✅
+- `TestGetResponsePPItemKey_NilItem/valid_item_returns_composite_key` ✅
+- `TestEmbedMonolithItemIdsInCreateItemRequests_NilItems/single_nil_item_in_response_skipped` ✅
+- `TestEmbedMonolithItemIdsInCreateItemRequests_NilItems/all_items_nil_causes_count_mismatch` ✅
+- `TestEmbedMonolithItemIdsInCreateItemRequests_NilItems/empty_request_with_nil_response_items_ok` ✅
+- `TestEmbedMonolithItemIdsInCreateItemRequests_NilItems/mixed_valid_and_nil_items_matched_correctly` ✅
+- `TestCountMismatchWithNilItems/request_count_exceeds_effective_response_count` ✅
+- `TestCountMismatchWithNilItems/request_count_equal_to_effective_response_count` ✅
+- `TestCountMismatchWithNilItems/request_count_less_than_effective_response_errors_for_leftover` ✅
+
+**Behavior Verified:**
+- When monolith returns items with `item: null`, they are skipped during ID extraction
+- Count mismatch is checked against "effective" response count (excluding nil items)
+- All response items must match request items (leftover items cause error)
+
+### Settings.ValidateForUpdate() Rules (matching monolith editRules)
+
+| Field | Rule |
+|-------|------|
+| `theme` | `in:light,dark` |
+| `udf_schema` | valid JSON, max 15 items |
+| `payment_success_redirect_url` | valid URL |
+| `payment_success_message` | min:5, max:2048, UTF8MB3 |
+| `payment_button_label` | max:20 |
+| `payment_button_text` | max:**16** (not 20!) |
+| `payment_button_theme` | max:32 |
+| `fb_pixel_tracking_id` | max:32 |
+| `ga_pixel_tracking_id` | max:32 |
+| boolean fields | `in:0,1` |
+| `support_email` | valid email |

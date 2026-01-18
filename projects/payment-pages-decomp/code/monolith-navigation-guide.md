@@ -247,3 +247,5 @@ public function validateViewType($attribute, $value)
 
 
 
+
+

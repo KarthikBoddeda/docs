@@ -5,6 +5,8 @@
 | Task | Status | Priority | Subtasks | File |
 |------|--------|----------|----------|------|
 | **PR Review Action Items** | ⬜ Not Started | **P0** | 13 items | [pr-review-action-items.md](./pr-review-action-items.md) |
+| **Unit Test Coverage Gaps** | 🟡 In Progress | **P1** | 10 items | [unit-test-coverage-gaps.md](./unit-test-coverage-gaps.md) |
+| **Fix NCA Unexpected Errors** | ⬜ Not Started | **P1** | 5 error types | [nca-unexpected-errors.md](./nca-unexpected-errors.md) |
 | Fix payment_page_create status code diffs | 🟡 In Progress | P0 | 32 diff types | [pp-create-status-code-diffs.md](./pp-create-status-code-diffs.md) |
 | Fix payment_page_update status code diffs | 🟡 In Progress | P0 | 38 diff types | [pp-update-status-code-diffs.md](./pp-update-status-code-diffs.md) |
 | Fix payment_page_activate status code diffs | ⬜ Not Started | P1 | 7 diff types | [pp-activate-status-code-diffs.md](./pp-activate-status-code-diffs.md) |
@@ -31,6 +33,7 @@
 ## Related Resources
 
 - [Failure Logs Analysis](/pythonscripts/decomp-scripts/failure_logs/)
+- [Unexpected Errors Logs](/pythonscripts/decomp-scripts/failure_logs/unexpected_errors/)
 - [Deployment Guide](/docs/agent-actions/deploy-to-devstack.md)
 - [API Requests](/docs/projects/payment-pages-decomp/payment-pages-api.http)
 - [Project Overview](/docs/projects/payment-pages-decomp/PAYMENT_PAGES_DECOMP.md)
