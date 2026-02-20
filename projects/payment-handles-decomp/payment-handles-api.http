@@ -1,0 +1,109 @@
+### Payment Handles API - Devstack Test Requests
+### Used for testing payment handle decomp on devstack
+
+@devstack_label = ph-decomp
+@nca_base_url = https://nca.dev.razorpay.in
+@api_base_url = https://api.dev.razorpay.in
+@merchant_id = LJ3P0FyFtOULha
+@mode = live
+# Authorization: base64("RANDOM_NCA_USER:RANDOM_NCA_PASSWORD")
+@nca_auth = Basic UkFORE9NX05DQV9VU0VSOlJBTkRPTV9OQ0FfUEFTU1dPUkQ=
+@dual_write_state = dual_write_no_reads_no_external
+@monolith_only_state = monolith_only
+
+###
+# ============================================================
+# payment_handle_create (POST /v1/payment_handle)
+# ============================================================
+
+### Create Payment Handle - monolith_only (pure proxy)
+POST {{nca_base_url}}/v1/payment_handle
+Content-Type: application/json
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+X-Proxy-State: {{monolith_only_state}}
+rzpctx-dev-serve-user: {{devstack_label}}
+Authorization: {{nca_auth}}
+
+{}
+
+###
+### Create Payment Handle - dual_write (proxy + NCA DB write)
+POST {{nca_base_url}}/v1/payment_handle
+Content-Type: application/json
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+X-Proxy-State: {{dual_write_state}}
+rzpctx-dev-serve-user: {{devstack_label}}
+Authorization: {{nca_auth}}
+
+{}
+
+###
+# ============================================================
+# payment_handle_update (PATCH /v1/payment_handle)
+# ============================================================
+
+### Update Payment Handle - monolith_only (pure proxy)
+PATCH {{nca_base_url}}/v1/payment_handle
+Content-Type: application/json
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+X-Proxy-State: {{monolith_only_state}}
+rzpctx-dev-serve-user: {{devstack_label}}
+Authorization: {{nca_auth}}
+
+{
+  "slug": "test-handle"
+}
+
+###
+### Update Payment Handle - dual_write (proxy + NCA DB update)
+PATCH {{nca_base_url}}/v1/payment_handle
+Content-Type: application/json
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+X-Proxy-State: {{dual_write_state}}
+rzpctx-dev-serve-user: {{devstack_label}}
+Authorization: {{nca_auth}}
+
+{
+  "slug": "updated-handle"
+}
+
+###
+# ============================================================
+# payment_page_create_order (for handle entity) 
+# - Tests routing to handle vs page experiment
+# ============================================================
+
+### Create Order for Handle Page - should use handle experiment
+# Replace <handle-page-id> with actual payment handle page ID (pl_xxx)
+POST {{nca_base_url}}/v1/payment_pages/<handle-page-id>/order
+Content-Type: application/json
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+X-Proxy-State: {{monolith_only_state}}
+rzpctx-dev-serve-user: {{devstack_label}}
+Authorization: {{nca_auth}}
+
+{
+  "amount": 100,
+  "currency": "INR"
+}
+
+###
+### Create Order for Regular Page - should use page experiment (regression)
+# Replace <page-id> with actual payment page ID
+POST {{nca_base_url}}/v1/payment_pages/<page-id>/order
+Content-Type: application/json
+X-Razorpay-Merchant-Id: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+X-Proxy-State: {{monolith_only_state}}
+rzpctx-dev-serve-user: {{devstack_label}}
+Authorization: {{nca_auth}}
+
+{
+  "amount": 1000,
+  "currency": "INR"
+}
