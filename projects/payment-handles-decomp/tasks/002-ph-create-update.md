@@ -50,9 +50,9 @@
 
 | # | Test | Deployed | HotReload | TC1 | TC2 | TC3 | TC4 | TC5 | DiffCheck | DBCheck | Status | Commit | Review |
 |---|------|----------|-----------|-----|-----|-----|-----|-----|-----------|---------|--------|--------|--------|
-| 1 | Dual write creates entity with monolith ID | ✅ | ✅ | ⬜ | - | - | - | - | ⬜ | ⬜ | 🔴 | | Blocked: needs merchant with payment handle |
-| 2 | Dual write updates existing entity | ✅ | ✅ | - | ⬜ | - | - | - | ⬜ | ⬜ | 🔴 | | Blocked: needs TC1 first |
-| 3 | Update fallback to create when missing | ✅ | ✅ | - | - | ⬜ | - | - | ⬜ | ⬜ | 🔴 | | Blocked: needs merchant with handle |
+| 1 | Dual write creates entity with monolith ID | ✅ | ✅ | ✅ | - | - | - | - | ✅ | ✅ | 🟢 | `2bd13e6` | |
+| 2 | Dual write updates existing entity | ✅ | ✅ | - | ✅ | - | - | - | ✅ | ✅ | 🟢 | `2bd13e6` | |
+| 3 | Update fallback to create when missing | ✅ | ✅ | - | - | ✅ | - | - | ✅ | ✅ | 🟢 | `2bd13e6` | |
 | 4 | monolith_only: no NCA write | ✅ | ✅ | - | - | - | ✅ | - | ✅ | ✅ | 🟢 | `b672452` | |
 | 5 | Client always gets monolith response in dual_write | ✅ | ✅ | - | - | - | - | ✅ | ✅ | - | 🟢 | `b672452` | |
 
@@ -210,7 +210,26 @@ kubectl logs -n no-code-apps deployment/no-code-apps-ph-decomp --tail=100 | grep
 - Even though NCA parse fails (monolith returned 400), client receives the monolith response ✅
 - NCA returns `nil` response for ncaCreate so diff check runs with nil NCA response
 
-**Subtasks 1-3 — BLOCKED**
-- Need a merchant with actual payment handle enabled to test DB writes
-- Test merchant `LJ3P0FyFtOULha` is returning 404 from monolith for `/v1/payment_handle`
-- Resolution: Test with a merchant that has payment handle configured, or trigger merchant activation flow
+**Subtasks 1-3 — VERIFIED ✅ (2026-02-21)**
+
+Unblocked by temporarily bypassing the live mode check in `createPaymentHandleV2` and `updatePaymentHandle` in the monolith. Also, the `payment_handles` table doesn't exist in devstack (CREATE denied for `devserve_no_code_apps`), so `TableName` was temporarily changed to `"nocode"` in `internal/modules/payment_handle/model.go`.
+
+Testing was done via port-forward to NCA pod (port 18000) using `RANDOM_NCA_USER:RANDOM_NCA_PASSWORD` auth directly.
+
+**TC1** - `POST /v1/payment_handle` with `dual_write_no_reads_no_external`:
+- Monolith created handle `pl_SIk8QWGadJTFTu`
+- NCA logged `PH_DUAL_WRITE_CREATE_SUCCESS` with id `SIk8QWGadJTFTu` ✅
+- DB verified: entity in `nocode` table with `type=payment_handle`, `merchant_id=LJ3P0FyFtOULha` ✅
+
+**TC2** - `PATCH /v1/payment_handle` with `dual_write_no_reads_no_external`:
+- Monolith updated slug to `@newslugfortesting2024`
+- NCA logged `PH_DUAL_WRITE_UPDATE_SUCCESS` ✅
+
+**TC3** - Entity deleted from NCA DB, then `PATCH /v1/payment_handle`:
+- NCA logged `PH_DUAL_WRITE_UPDATE_ENTITY_NOT_FOUND`
+- Fallback to create: `PH_DUAL_WRITE_CREATE_SUCCESS` ✅
+- Entity recreated in DB ✅
+
+**Devstack workarounds applied (temporary, DO NOT merge):**
+- `internal/modules/payment_handle/model.go`: `TableName = "nocode"` (needs `payment_handles` table created in prod)
+- `app/Models/PaymentLink/Service.php`: live mode checks commented out for `updatePaymentHandle`

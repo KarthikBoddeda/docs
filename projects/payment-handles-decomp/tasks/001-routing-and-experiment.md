@@ -1,7 +1,7 @@
 # Task 001: NCA Routing, Proxy Setup & Splitz Experiment Integration
 
 **Created:** 2026-02-20  
-**Status:** 🟡 In Progress  
+**Status:** 🟢 Completed  
 **Priority:** P0  
 **DevRev:** [ISS-1603951](https://app.devrev.ai/razorpay/works/ISS-1603951)  
 **PR:** [no-code-apps#1006](https://github.com/razorpay/no-code-apps/pull/1006)  
@@ -66,7 +66,7 @@
 | 2 | Route `PATCH /v1/payment_handle` proxied in `monolith_only` | ✅ | ✅ | - | ✅ | - | - | - | ✅ | 🟢 | `a397255` | |
 | 3 | Dual-write state: monolith + NCA both called | ✅ | ✅ | - | - | ✅ | - | - | ✅ | 🟢 | `a397255` | |
 | 4 | create_order entity-not-found → falls back to monolith_only | ✅ | ✅ | - | - | - | ✅ | - | ✅ | 🟢 | `a397255` | |
-| 5 | create_order for page/handle ID (with real data) | ✅ | ✅ | - | - | - | - | ⬜ | ⬜ | 🔴 | | Blocked: needs merchant with actual payment handle data |
+| 5 | create_order for page/handle ID (with real data) | ✅ | ✅ | - | - | - | - | ✅ | ✅ | 🟢 | `b672452` | |
 
 ---
 
@@ -239,5 +239,16 @@ During devstack testing, `POST /v1/payment_handle` returned `PROXY_ROUTE_NOT_FOU
   - NCA operation called after monolith (monolith 400 → NCA parse fails gracefully, no DB write - correct behavior)
 - **TC4** (create_order entity routing fallback): Without proxy header, NCA logs `PROXY_STATE_GETTER_ERROR_WHILE_FINDING_PAGE_FOR_ORDER_CREATE` and falls back to `monolith_only` ✅
 
-#### Blocked (TC5)
-TC5 requires a merchant with an actual payment handle to verify that handle entities use the handle experiment and page entities use the page experiment. Test merchant `LJ3P0FyFtOULha` has no payment handle configured in devstack.
+#### TC5 Verification (2026-02-21)
+
+Used the payment handle entity created in Task 002 testing (`pl_SIk8QWGadJTFTu` for merchant `LJ3P0FyFtOULha`, type `payment_handle` in NCA DB). Also used an existing payment page entity (`pl_Pcl2Y9PcFwUdeQ`, type `page` in NCA DB).
+
+**Handle entity** (`POST /v1/payment_pages/pl_SIk8QWGadJTFTu/order`):
+- NCA logs show `INVALID_PROXY_STATE_FROM_SPLITZ` called from `GetPaymentHandleProxyStateFromSplitzAndSetToRequestContext` (with `"experimentName":""` — the dummy handle experiment)
+- Stacktrace confirms `core.go:477` → `core.go:518` → `order_create_handler.go:15` → **handle experiment path** ✅
+- Falls back to `monolith_only` (expected, since experiment is dummy)
+
+**Page entity** (`POST /v1/payment_pages/pl_Pcl2Y9PcFwUdeQ/order`):
+- NCA logs show `proxy_state: "dual_write_read_external"` — page experiment returned a valid state
+- NO `experimentName` in logs → page experiment was called (not handle experiment) ✅
+- `REQUEST_VALIDATION_FAILURE` at NCA validation level (expected — page requires `line_items`)

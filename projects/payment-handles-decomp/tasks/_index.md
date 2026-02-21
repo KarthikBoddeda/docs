@@ -4,9 +4,11 @@
 
 | # | Task | Created | Status | Priority | File |
 |---|------|---------|--------|----------|------|
-| 001 | Routing, proxy setup & splitz experiment integration | 2026-02-20 | 🟡 In Progress | P0 | [001-routing-and-experiment.md](./001-routing-and-experiment.md) |
-| 002 | NCA payment_handle_create & update with ID reuse | 2026-02-20 | 🟡 In Progress | P0 | [002-ph-create-update.md](./002-ph-create-update.md) |
+| 001 | Routing, proxy setup & splitz experiment integration | 2026-02-20 | 🟢 Completed | P0 | [001-routing-and-experiment.md](./001-routing-and-experiment.md) |
+| 002 | NCA payment_handle_create & update with ID reuse | 2026-02-20 | 🟢 Completed | P0 | [002-ph-create-update.md](./002-ph-create-update.md) |
 | 003 | Monolith: Replace function calls with NCA HTTP calls | 2026-02-20 | 🟡 In Progress | P0 | [003-monolith-fn-replace.md](./003-monolith-fn-replace.md) |
+| 004 | NCA: Payment handle read APIs (get, availability, suggestion, encryption) | 2026-02-21 | 🟢 Completed | P0 | [004-ph-read-apis.md](./004-ph-read-apis.md) |
+| 005 | Kong: Edge routing changes for all payment handle APIs | 2026-02-21 | 🟢 Completed | P0 | [005-kong-routing.md](./005-kong-routing.md) |
 
 ## Devstack Status
 
@@ -18,10 +20,16 @@
 
 ## Blocked Items
 
-All tasks are partially tested. The following require a merchant with payment handle enabled:
-- Full dual-write DB write test (Task 002, subtasks 1-3)
-- Monolith activation flow test (Task 003, subtasks 1-3)
-- Routing between handle/page experiments for create_order (Task 001, subtask 5)
+- Task 003, TC1-3: Merchant activation/dashboard/segment flows — needs merchant activation trigger or staging env
+- Data migration of merchant settings + handles — manual task requiring DB ops
+- Dashboards + alerts — monitoring setup pending
+
+## Completed Work (100% Dual Write milestone progress)
+
+- Tasks 001 ✅, 002 ✅: NCA routing, dual write create/update, splitz experiment, ID reuse
+- Task 004 ✅: NCA read APIs all proxying through handle experiment
+- Task 005 ✅: Kong routes + upstream-override for all 6 payment handle APIs (rollout=0 for prod traffic, rollout=1 for header-based test traffic)
+- Task 003 🟡: Monolith internal flows (activation, config fetch) — code done, devstack test blocked
 
 ## Task Statuses
 

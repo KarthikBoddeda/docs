@@ -1,0 +1,30 @@
+Module,Name,Effort Days,Monitoring Days,Type,Owner,Status,Est Finish Date,Actual Finish Date,DevRev ID,PR Link
+,,,,,,,,,,
+,Onboarding and testing all the New Buttons APIs to be served via NCA: Payment Pages APIs to be proxied to monolith,,,,,,,,,
+,Edge changes to change routing to NCA instead of monolith +. testing,2,,Task,Karthik Boddeda,Done,2/21/2026,2/21/2026,"ISS-1604278","https://github.com/razorpay/terraform-kong/pull/8736"
+,Replace createPaymentHandle function calls with NCA API call in monoltih,1,,Task,Karthik Boddeda,In Progress,,,"ISS-1603953","https://github.com/razorpay/api/pull/64786"
+,Replace getPaymentHandleByMerchant function calls with NCA API call in monoltih,1,,Task,Karthik Boddeda,In Progress,,,"ISS-1603953","https://github.com/razorpay/api/pull/64786"
+,Dashboards + alerts for the handle APIs,1,,Task,Karthik Boddeda,ToDo,,,,
+,Implementing payment_handle_create,1,,Task,Karthik Boddeda,Done,2/21/2026,2/21/2026,"ISS-1603952","https://github.com/razorpay/no-code-apps/pull/1007"
+,Rolling out edge changes in parts,,2,Waiting,,ToDo,,,,
+,Implementing payment_handle_update,1,,Task,Karthik Boddeda,Done,2/21/2026,2/21/2026,"ISS-1603952","https://github.com/razorpay/no-code-apps/pull/1007"
+,payment handle experiment setup and changing proxy handle logic for all relevant routes(for the new routes - to be added and tested along with route impl),2,,Task,Karthik Boddeda,Done,2/21/2026,2/21/2026,"ISS-1603951","https://github.com/razorpay/no-code-apps/pull/1006"
+,"payment_handle_get, payment_handle_availability, payment_handle_suggestion, payment_handle_amount_encryption",2,,Task,Karthik Boddeda,Done,2/21/2026,2/21/2026,"ISS-1604277","https://github.com/razorpay/no-code-apps/pull/1008"
+,pages_view_by_slug - Migrating payment handle hosted page,2,,Task,Karthik Boddeda,Done,2/21/2026,2/21/2026,"ISS-1604277","https://github.com/razorpay/no-code-apps/pull/1008"
+,payment_page_set_merchant_details/payment_page_fetch_merchant_details,1,,Task,Karthik Boddeda,Done,2/21/2026,2/21/2026,"ISS-1604277","https://github.com/razorpay/no-code-apps/pull/1008"
+,reuse Ids for handles,1,,Task,Karthik Boddeda,Done,2/21/2026,2/21/2026,"ISS-1603952","https://github.com/razorpay/no-code-apps/pull/1007"
+,100% Dual write on all write APIs,,,Milestone,,In Progress,3/10/2026,,,
+,Data migration of merchant settings + handles,2,,Task,Karthik Boddeda,ToDo,,,,
+,100% Shadowing Reads,,,Milestone,,ToDo,3/11/2026,,,
+,Bugs/diff fixes after shadowing,2,,Task,Karthik Boddeda,ToDo,3/17/2026,,,
+,Monitoring shadowing reads,,2,Waiting,,ToDo,,,,
+,100% Reads from NCA,,,Milestone,,ToDo,3/23/2026,,,
+,Monitoring after 100% reads migration,,3,Waiting,,ToDo,,,,
+,changes to support reverse dual writes + stop dual write on nca_only proxy state,1,1,Task,Karthik Boddeda,ToDo,,,,
+,20% external entity creation ramp up + monitoring,,1,Waiting,,ToDo,,,,
+,50% external entity creation ramp up + monitoring,,1,Waiting,,ToDo,,,,
+,100% external entity creation ramp up + monitoring,,1,Waiting,,ToDo,,,,
+,nca_only 20% + monitoring,,1,Waiting,,ToDo,,,,
+,nca_only 50% + monitoring,,1,Waiting,,ToDo,,,,
+,nca_only 100% + monitoring,,1,Waiting,,ToDo,,,,
+,Decomp of payment handles done,,,Milestone,,ToDo,3/31/2026,,,
