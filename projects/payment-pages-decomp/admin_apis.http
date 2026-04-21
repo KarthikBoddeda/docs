@@ -1,0 +1,310 @@
+# Payment Pages Admin APIs — via POST /commit
+#
+# All admin operations go through a single endpoint: POST /commit
+# Protected by basic auth (username: dev, password: password)
+#
+# There are two ways to hit these:
+#   1. Direct devstack preview URL: https://nca-<devstack_label>.dev.razorpay.in/commit
+#   2. Shared URL + header:        https://nca.dev.razorpay.in/commit  (with rzpctx-dev-serve-user header)
+#
+# For production (concierge): https://nca.razorpay.com/commit  (VPN required)
+#
+# The "operation" field in the JSON body determines which handler is called.
+# All requests use: POST /commit with Content-Type: application/json + Basic Auth
+
+#============================================================
+# VARIABLES
+#============================================================
+
+@base_url = https://nca.razorpay.com
+@admin_username = dev
+@admin_password = password
+
+# For prod (concierge) — VPN required
+# @base_url = https://nca.razorpay.com
+# @admin_username = dev
+# @admin_password = password
+
+# Sample merchant context (needed for get_details, list)
+@merchant_id = LJ3P0FyFtOULha
+@mode = live
+
+# Sample payment page IDs
+@payment_page_id = pl_PAWIUa4XRsfNlC
+@payment_page_signed_id = pl_PAWIUa4XRsfNlC
+
+
+#============================================================
+# 1. DATA MIGRATION (operation: data_migration)
+#============================================================
+# Migrates payment page data from API monolith DB to NCA DB.
+# Accepts exclude_payment_link_ids to skip specific pages.
+
+### Data Migration — migrate all (excluding specific IDs)
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "data_migration",
+  "exclude_payment_link_ids": [
+    "pl_ExampleId1",
+    "pl_ExampleId2"
+  ]
+}
+
+### Data Migration — migrate all (no exclusions)
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "data_migration"
+}
+
+
+#============================================================
+# 2. TiDB DATA MIGRATION (operation: tidb_data_migration)
+#============================================================
+# Migrates specific payment page IDs from MySQL to TiDB.
+# Requires TiDB connection to be available.
+
+### TiDB Data Migration — specific IDs
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "tidb_data_migration",
+  "payment_link_ids": [
+    "pl_ExampleId1",
+    "pl_ExampleId2",
+    "pl_ExampleId3"
+  ]
+}
+
+
+#============================================================
+# 3. DELETE NOCODE ENTITIES BY IDS (operation: delete_nocode_entities_by_ids)
+#============================================================
+# Deletes nocode entities from NCA DB by their nocode IDs.
+# ⚠️ DESTRUCTIVE — use with caution.
+
+### Delete Nocode Entities
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "delete_nocode_entities_by_ids",
+  "nocode_ids": [
+    "nocode_id_1",
+    "nocode_id_2"
+  ]
+}
+
+
+#============================================================
+# 4. DATA PARITY (operation: data_parity)
+#============================================================
+# Checks data parity between API monolith and NCA for given payment page IDs.
+
+### Data Parity Check
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "data_parity",
+  "payment_link_ids": [
+    "pl_ExampleId1",
+    "pl_ExampleId2"
+  ]
+}
+
+
+#============================================================
+# 5. GET DETAILS (operation: get_details)
+#============================================================
+# Fetches payment page details by ID.
+# Requires merchant_id and mode to set merchant context.
+# The id can be a signed ID (e.g., pl_XXXXX) — it will be stripped automatically.
+
+### Get Payment Page Details
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "get_details",
+  "id": "{{payment_page_signed_id}}",
+  "merchant_id": "{{merchant_id}}",
+  "mode": "{{mode}}"
+}
+
+### Get Payment Page Details — with query params
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "get_details",
+  "id": "{{payment_page_signed_id}}",
+  "merchant_id": "{{merchant_id}}",
+  "mode": "{{mode}}",
+  "query_params": {
+    "expand[]": ["payments", "payments.card"]
+  }
+}
+
+
+#============================================================
+# 6. LIST PAYMENT PAGES (operation: list)
+#============================================================
+# Lists payment pages for a merchant with pagination.
+# Requires merchant_id and mode.
+# Optional: skip, count, view_type
+
+### List Payment Pages — default pagination
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "list",
+  "merchant_id": "{{merchant_id}}",
+  "mode": "{{mode}}"
+}
+
+### List Payment Pages — with pagination
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "list",
+  "merchant_id": "{{merchant_id}}",
+  "mode": "{{mode}}",
+  "skip": "0",
+  "count": "10"
+}
+
+### List Payment Pages — with view_type
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "list",
+  "merchant_id": "{{merchant_id}}",
+  "mode": "{{mode}}",
+  "skip": "0",
+  "count": "25",
+  "view_type": "all"
+}
+
+
+#============================================================
+# 7. HOSTED PAGE VIEW (operation: hosted_view)
+#============================================================
+# Returns the hosted payment page HTML wrapped in JSON: {"html": "<html>..."}
+# Only requires id. Merchant context is resolved internally from the entity.
+# query_params are optional (passed as URL query params to the hosted view).
+
+### Hosted Page View — basic
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "hosted_view",
+  "id": "{{payment_page_signed_id}}"
+}
+
+### Hosted Page View — with query params
+POST {{base_url}}/commit
+Content-Type: application/json
+Authorization: Basic {{admin_username}}:{{admin_password}}
+
+{
+  "operation": "hosted_view",
+  "id": "{{payment_page_signed_id}}",
+  "query_params": {
+    "view_type": ["button_view"]
+  }
+}
+
+
+#============================================================
+# CURL EQUIVALENTS (for quick copy-paste into scripts)
+#============================================================
+
+# --- data_migration ---
+# curl -X POST https://nca-nca-tidb-admin.dev.razorpay.in/commit \
+#   -u "dev:password" \
+#   -H "Content-Type: application/json" \
+#   -d '{"operation":"data_migration","exclude_payment_link_ids":["pl_ExampleId1"]}'
+
+# --- tidb_data_migration ---
+# curl -X POST https://nca-nca-tidb-admin.dev.razorpay.in/commit \
+#   -u "dev:password" \
+#   -H "Content-Type: application/json" \
+#   -d '{"operation":"tidb_data_migration","payment_link_ids":["pl_ExampleId1","pl_ExampleId2"]}'
+
+# --- delete_nocode_entities_by_ids ---
+# curl -X POST https://nca-nca-tidb-admin.dev.razorpay.in/commit \
+#   -u "dev:password" \
+#   -H "Content-Type: application/json" \
+#   -d '{"operation":"delete_nocode_entities_by_ids","nocode_ids":["nocode_id_1"]}'
+
+# --- data_parity ---
+# curl -X POST https://nca-nca-tidb-admin.dev.razorpay.in/commit \
+#   -u "dev:password" \
+#   -H "Content-Type: application/json" \
+#   -d '{"operation":"data_parity","payment_link_ids":["pl_ExampleId1"]}'
+
+# --- get_details ---
+# curl -X POST https://nca-nca-tidb-admin.dev.razorpay.in/commit \
+#   -u "dev:password" \
+#   -H "Content-Type: application/json" \
+#   -d '{"operation":"get_details","id":"pl_PAWIUa4XRsfNlC","merchant_id":"LJ3P0FyFtOULha","mode":"live"}'
+
+# --- list ---
+# curl -X POST https://nca-nca-tidb-admin.dev.razorpay.in/commit \
+#   -u "dev:password" \
+#   -H "Content-Type: application/json" \
+#   -d '{"operation":"list","merchant_id":"LJ3P0FyFtOULha","mode":"live","skip":"0","count":"10"}'
+
+# --- hosted_view ---
+# curl -X POST https://nca-nca-tidb-admin.dev.razorpay.in/commit \
+#   -u "dev:password" \
+#   -H "Content-Type: application/json" \
+#   -d '{"operation":"hosted_view","id":"pl_PAWIUa4XRsfNlC"}'
+
+
+#============================================================
+# LEGACY DIRECT ROUTES (still available, use WithAuth cron auth)
+#============================================================
+# These are the original routes under /v1/ with cron-level basic auth.
+# They still work but scripts should migrate to POST /commit.
+#
+# POST /v1/payment_pages/data_migration
+# POST /v1/payment_pages/tidb_data_migration
+# POST /v1/payment_pages/delete_by_ids
+# POST /v1/payment_pages/data_parity
+# POST /v1/payment_pages/admin  (same admin dispatch, different auth)
+
+
+#============================================================
+# OPERATIONS QUICK REFERENCE
+#============================================================
+#
+# | Operation                      | Required Fields                              | Optional Fields                  |
+# |--------------------------------|----------------------------------------------|----------------------------------|
+# | data_migration                 | (none)                                       | exclude_payment_link_ids         |
+# | tidb_data_migration            | payment_link_ids                             |                                  |
+# | delete_nocode_entities_by_ids  | nocode_ids                                   |                                  |
+# | data_parity                    | payment_link_ids                             |                                  |
+# | get_details                    | id, merchant_id, mode                        | query_params                     |
+# | list                           | merchant_id, mode                            | skip, count, view_type           |
+# | hosted_view                    | id                                           | query_params                     |

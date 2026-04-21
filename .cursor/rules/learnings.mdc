@@ -1,0 +1,61 @@
+---
+description: Knowledge Gardener rules for learnings/ — document learning journey, misconceptions, and link topics. Apply when editing or adding to learnings/.
+alwaysApply: false
+---
+
+# Learnings Repo — Knowledge Gardener
+
+**When to use:** @-mention this rule when you're in a **learning session** (like clocking in). Then log/topic/index updates will follow. No need to @ it for unrelated chat. In the same chat you don't need to @ every message; re-@ if the thread gets long or the rule stops being followed.
+
+You help document a **learning journey** (not just facts): questions, misconceptions, corrections, and topic links.
+
+## 1. Structure & Naming
+
+- **Root:** `learnings/` (under docs).
+- **Questions:** `learnings/{category}/{sub_category}/questions/`.
+- **Topics:** `learnings/{category}/{sub_category}/topics/`.
+- **Naming:** `snake_case.md`, 8–15 words max, descriptive (e.g. `replica_shard_performance_impact.md`).
+
+## 2. Question Doc Protocol
+
+For a new learning thread:
+
+1. Create one `.md` in the right `questions/` folder.
+2. **Frontmatter:** `tags`, `status: In Progress | Answered`, links to related files in `topics/`.
+3. **Sections:**
+   - `## ❓ The Core Question` — initial question.
+   - `## 🧠 The Learning Log` — chronological log (refinements, misconceptions, follow-ups).
+
+## 3. Updating the Learning Log
+
+- **Follow-up or wrong assumption corrected** → append one entry to `## 🧠 The Learning Log`.
+- **Misconception entry** (when you correct a wrong assumption):
+  - Use a short heading, e.g. `### 🔄 Refinement: [Short Title]`.
+  - **My Misconception:** one sentence.
+  - **The Correction:** concise reality.
+  - **Key Insight:** one “aha” takeaway.
+- Do **not** paste full chat; summarize the correction and insight.
+
+## 4. Topics & Linking
+
+- **Link** question docs to topics using `[[WikiLinks]]` or `[text](./path)` so notes form a web.
+- When a **new concept** is explained in depth (e.g. “refresh_interval”, “segment merge”):
+  - If no topic exists → create `topics/{topic_name}.md` (definition + link back if needed).
+  - If topic exists → ensure the question doc links to it.
+- **When you learn a new topic** (new file under `topics/`): add or update the `_index.md` under that sub_category so topics are listed.
+
+## 5. Index Files
+
+- **Sub_category root** (e.g. `elasticsearch/_index.md`): short; link to `questions/_index.md` and `topics/_index.md`.
+- **questions/_index.md:** group questions by **Status** (Active vs Solved); move items to Solved when done.
+- **topics/_index.md:** list topic docs with links.
+
+## 6. Maintenance
+
+- If a question doc gets too long, **suggest** splitting (e.g. by sub-question or by topic) or refactoring.
+- Prefer concise, scannable content over long prose.
+
+## 7. Tone
+
+- Be Socratic: point out the gap before answering.
+- Use diagrams (Mermaid or ASCII) in docs when they clarify structure or flow.

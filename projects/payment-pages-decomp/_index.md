@@ -33,11 +33,14 @@ Migrating Payment Pages functionality from the API monolith to the NoCodeApp (NC
 
 | Need | Location |
 |------|----------|
+| **🔴 Entity Mapping (CRITICAL)** | **[entity-mapping.md](./entity-mapping.md)** ← Monolith ↔ NCA schema mapping |
+| **Ignored Fields Analysis** | [ignored-fields-analysis.md](./ignored-fields-analysis.md) ← All fields ignored in diff checker |
 | Architecture & Migration Flow | [PAYMENT_PAGES_DECOMP.md](./PAYMENT_PAGES_DECOMP.md) |
 | API List with Routes | [PAYMENT_PAGES_DECOMP.md#write-apis](./PAYMENT_PAGES_DECOMP.md#request-flow---writeread-apis) |
 | **🔴 API Request Templates** | **[payment-pages-api.http](./payment-pages-api.http)** ← USE THIS FOR TESTING! |
 | **Code Reference (NCA)** | [code/](./code/) |
 | Task Tracking | [tasks/](./tasks/) |
+| **Data Migration Scripts** | [data-migration-scripts-guide.md](./data-migration-scripts-guide.md) |
 | Failure Logs & Analysis | `/pythonscripts/decomp-scripts/failure_logs/` |
 | Deployment Guide | [/docs/agent-actions/deploy-to-devstack.md](/docs/agent-actions/deploy-to-devstack.md) |
 | Hot Reload Guide | [/docs/agent-actions/hot-reload-devspace.md](/docs/agent-actions/hot-reload-devspace.md) |
@@ -80,6 +83,7 @@ Migrating Payment Pages functionality from the API monolith to the NoCodeApp (NC
 
 | Task | Status | Priority | File |
 |------|--------|----------|------|
+| Data Migration - Top 50 Merchants | ⬜ Not Started | P0 | [tasks/data-migration-top-50-merchants.md](./tasks/data-migration-top-50-merchants.md) |
 | Fix payment_page_create status code diffs | 🟡 In Progress | P0 | [tasks/pp-create-status-code-diffs.md](./tasks/pp-create-status-code-diffs.md) |
 
 > See [tasks/_index.md](./tasks/_index.md) for full task list and status tracking

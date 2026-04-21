@@ -4,6 +4,9 @@ globs: ["**/payment-pages-decomp/**"]
 alwaysApply: false
 ---
 
+# General Rules
+DO NOT Create docs unless explicity asked to.
+
 # Payment Pages Decomposition Project
 
 **Entry Point:** `/docs/projects/payment-pages-decomp/_index.md`
@@ -104,3 +107,7 @@ In `internal/router/payment_page_private_routes.go`:
 ## Index Maintenance
 
 When modifying files → update `_index.md` accordingly.
+
+
+- **Do not add** new queries or sections to `coralogix-queries.md` unless the user explicitly asks for it.
+- Do NOT CHANGE the rules file unless you are asked

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Razorpay Migration Timeline</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #1a1a2e;
+      color: #eee;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      color: #e0e0e0;
+      margin-bottom: 4px;
+    }
+    p.subtitle {
+      text-align: center;
+      color: #888;
+      margin-top: 0;
+    }
+    #gantt-container {
+      width: 100%;
+      overflow-x: auto;
+      background: #16213e;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+    .mermaid {
+      min-width: 1400px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Razorpay Detailed Migration Timeline</h1>
+  <p class="subtitle">Payment Pages &middot; Payment Handles &middot; Payment Buttons</p>
+  <div id="gantt-container">
+    <pre class="mermaid">
+gantt
+    title Razorpay Detailed Migration Timeline
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d-%b
+    excludes    weekends
+
+    section Payment Pages - Karthik
+    T1 Data Fixes 500 Merch             :active, pp_t1, 2026-02-17, 5d
+    T2 Fix Proxy Logic Bugs             :pp_t2, after pp_t1, 2d
+    T10 Create API Fixes                :pp_t10, after pp_t1, 3d
+    T3 Update API Fixes                 :pp_t3, after pp_t1, 3d
+    T6 Edge Proxy Hosted APIs           :pp_t6, after pp_t1, 4d
+    T5 Admin Dash Edge Proxy            :pp_t5, 2026-02-17, 4d
+    W1 WAIT Reverse Shadow 500          :crit, pp_w1, after pp_t3 pp_t2 pp_t1 pp_t5 pp_t6 pp_t10, 3d
+    T4 Fix Diffs Reverse Shadow         :pp_t4, after pp_w1, 2d
+    T7 Fix Write API Bugs               :pp_t7, after pp_w1, 1d
+    T8 Data Fixes All Merch             :pp_t8, after pp_t7 pp_t4, 2d
+    W3 WAIT Reverse Shadow All          :crit, pp_w3, after pp_t8, 3d
+    T9 Fix Diffs All Merch              :pp_t9, after pp_w3, 1d
+    M1 100 pct Reads                    :milestone, mil_m1, after pp_t9, 0d
+    T11 Line Items to Monolith          :pp_t11, after mil_m1, 1d
+    T12 Remove Validations              :pp_t12, after mil_m1, 2d
+    T13 Test Risk and Webhooks          :pp_t13, after mil_m1, 1d
+    T14 Test Payment Flow               :pp_t14, after mil_m1, 1d
+    W4 WAIT 500 Merch Dual Write        :crit, pp_w4, after pp_t11 pp_t12 pp_t13 pp_t14, 3d
+    T15 Fixes Dual Write 500            :pp_t15, after pp_w4, 2d
+    W5 WAIT All Merch Dual Write        :crit, pp_w5, after pp_t15, 3d
+    T16 Fixes Dual Write All            :pp_t16, after pp_w5, 1d
+    M2 Source of Truth                  :milestone, mil_m2, after pp_t16, 0d
+    T17 Remove Shadow Code              :pp_t17, after mil_m2, 2d
+    W6 WAIT Remove Shadow 500           :crit, pp_w6, after pp_t17, 2d
+    T18 Fixes Dual Write 500+           :pp_t18, after pp_w6, 2d
+    W7 WAIT Remove Shadow All           :crit, pp_w7, after pp_t18, 3d
+    M3 PP Decomp Complete               :milestone, mil_m3, after pp_w7, 0d
+
+    section Payment Handles - Mandeep
+    PH-T1 Handle Onboard and Test       :ph_t1, 2026-02-17, 2d
+    PH-T2 Edge Changes                  :ph_t2, 2026-02-17, 2d
+    PH-T5 Dashboards                    :ph_t5, 2026-02-17, 1d
+    PH-W1 WAIT Rollout Edge             :crit, ph_w1, after ph_t2 ph_t5 ph_t1, 2d
+    PH-T6 Impl Create                   :ph_t6, after ph_w1, 2d
+    PH-T7 Impl Update                   :ph_t7, after ph_w1, 2d
+    PH-T3 Replace Create Calls          :ph_t3, after ph_w1, 1d
+    PH-T4 Replace Get Calls             :ph_t4, after ph_w1, 1d
+    PH-T15 Reuse IDs                    :ph_t15, after ph_w1, 1d
+    PH-M1 Handles Dual Write            :milestone, ph_m1, after ph_t7 ph_t6 ph_t4 ph_t3 ph_w1 ph_t15, 0d
+    PH-T8 Handle Get                    :ph_t8, after ph_m1, 1d
+    PH-T9 Handle Availability           :ph_t9, after ph_m1, 1d
+    PH-T10 Handle Suggestion            :ph_t10, after ph_m1, 1d
+    PH-T11 Handle Encrypt               :ph_t11, after ph_m1, 1d
+    PH-T12 Migrate Hosted Page          :ph_t12, after ph_m1, 2d
+    PH-T13 Fetch Merch Details          :ph_t13, after ph_m1, 1d
+    PH-T16 Data Migration               :ph_t16, after ph_m1, 2d
+    PH-T14 Setup Experiments            :ph_t14, after ph_m1, 2d
+    PH-M2 100 pct Shadow                :milestone, ph_m2, after ph_t10 ph_t12 ph_t13 ph_t9 ph_t8 ph_t11 ph_t16 ph_t14, 0d
+    PH-T18 Bugs and Diffs Fixes         :ph_t18, after ph_m2, 3d
+    PH-W2 WAIT Monitor Shadow           :crit, ph_w2, after ph_t18, 2d
+    PH-M3 100 pct Reads                 :milestone, ph_m3, after ph_w2 mil_m3, 0d
+    PH-W3 WAIT Monitor Reads            :crit, ph_w3, after ph_m3, 4d
+    PH-T19 Reverse Dual Write           :ph_t19, after ph_w3, 1d
+    PH-W4 WAIT 20 pct Ramp              :crit, ph_w4, after ph_t19, 2d
+    PH-W5 WAIT 50 pct Ramp              :crit, ph_w5, after ph_w4, 2d
+    PH-W6 WAIT 100 pct Ramp             :crit, ph_w6, after ph_w5, 1d
+    PH-W7 WAIT NCA Only 20 pct          :crit, ph_w7, after ph_w6, 2d
+    PH-W8 WAIT NCA Only 50 pct          :crit, ph_w8, after ph_w7, 2d
+    PH-W9 WAIT NCA Only 100 pct         :crit, ph_w9, after ph_w8, 1d
+
+    section Payment Buttons
+    PB-T1 Button Onboard                :pb_t1, 2026-02-17, 2d
+    PB-T2 Create and Update Changes     :pb_t2, 2026-02-17, 1d
+    PB-M1 Dual Write                    :milestone, pb_m1, after pb_t1 pb_t2 ph_w1, 0d
+    PB-T4 Hosted Button Prefs           :pb_t4, after pb_m1, 1d
+    PB-T5 Hosted Button Details         :pb_t5, after pb_m1, 1d
+    PB-T3 Hosted View                   :pb_t3, after pb_m1, 2d
+    PB-T6 Consume New Params            :pb_t6, after pb_m1, 1d
+    PB-T7 Data Migration                :pb_t7, after pb_m1, 2d
+    PB-T8 Exp Setup                     :pb_t8, after pb_m1, 2d
+    PB-M2 Shadow Reads                  :milestone, pb_m2, after pb_t4 pb_t5 pb_t3 pb_t6 pb_t7 pb_t8, 0d
+    PB-T10 Bugs and Diffs Fixes         :pb_t10, after pb_m2, 3d
+    PB-W1 WAIT Monitor Shadow           :crit, pb_w1, after pb_t10, 4d
+    PB-M3 100 pct Reads                 :milestone, pb_m3, after pb_w1 mil_m3, 0d
+    PB-W2 WAIT Monitor Reads            :crit, pb_w2, after pb_m3, 4d
+    PB-T11 Reverse Dual Write           :pb_t11, after pb_w2, 1d
+    PB-W3 WAIT 20 pct Ramp              :crit, pb_w3, after pb_t11, 2d
+    PB-W4 WAIT 50 pct Ramp              :crit, pb_w4, after pb_w3, 2d
+    PB-W5 WAIT 100 pct Ramp             :crit, pb_w5, after pb_w4, 2d
+    PB-W6 WAIT NCA Only 20 pct          :crit, pb_w6, after pb_w5, 2d
+    PB-W7 WAIT NCA Only 50 pct          :crit, pb_w7, after pb_w6, 1d
+    PB-W8 WAIT NCA Only 100 pct         :crit, pb_w8, after pb_w7, 2d
+    </pre>
+  </div>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      gantt: {
+        titleTopMargin: 15,
+        barHeight: 24,
+        barGap: 6,
+        topPadding: 60,
+        leftPadding: 200,
+        gridLineStartPadding: 20,
+        fontSize: 13,
+        sectionFontSize: 15,
+        numberSectionStyles: 4,
+        useWidth: 1800,
+      }
+    });
+  </script>
+</body>
+</html>

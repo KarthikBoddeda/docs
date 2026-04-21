@@ -1,0 +1,570 @@
+{
+	"info": {
+		"_postman_id": "payment-links-dashboard-apis",
+		"name": "Payment Links - Dashboard APIs",
+		"description": "Dashboard APIs for Payment Links Service\n\n## Setup Instructions\n\n1. Import this collection into Postman\n2. Create an environment with the following variables:\n   - `base_url`: `https://payment-links.dev.razorpay.in` or `https://payment-links-<label>.dev.razorpay.in`\n   - `merchant_id`: `LJ3P0FyFtOULha`\n   - `mode`: `live` or `test`\n   - `devstack_label`: Your devstack label (or remove header if using base service)\n   - `auth_token`: `ZGV2OmRldi1wYXNzd29yZA==`\n   - `payment_link_id`: ID of a payment link to test (create one first!)\n\n## Auth\n\nBasic Auth with credentials: `dev:dev-password`\nBase64 encoded: `ZGV2OmRldi1wYXNzd29yZA==`\n\n---\n\n## ⚠️ KNOWN ISSUES & CAVEATS\n\n### 1. List API May Return Empty Results (Elasticsearch Issue)\n\nThe **List Payment Links** API (`GET /v1/payment_links`) queries **Elasticsearch**, not the database directly.\n\n**Problem:** Newly created payment links take time to be indexed in Elasticsearch. You may see empty results even after creating links.\n\n**Workaround:** Use the **Get Payment Link** API (`GET /v1/payment_links/:id`) instead - it queries the database directly and works immediately.\n\n### 2. Mode Mismatch (live vs test)\n\nPayment links are **mode-specific**:\n- Links created with `X-Razorpay-Mode: live` will NOT appear when querying with `X-Razorpay-Mode: test`\n- Links created with `X-Razorpay-Mode: test` will NOT appear when querying with `X-Razorpay-Mode: live`\n\n**Fix:** Ensure you use the SAME mode for creating and querying links.\n\n### 3. Devstack Routing (Links are Devstack-Specific)\n\nPayment links are **devstack-specific**:\n- Links created on devstack `label-A` will NOT exist on devstack `label-B`\n- Links created on the BASE service (no devstack header) will NOT exist on your custom devstack\n\n**Fix:** \n- Always create links on the SAME devstack where you'll query them\n- If using a custom devstack, ensure `rzpctx-dev-serve-user` header is set consistently\n- If testing on BASE service, remove the `rzpctx-dev-serve-user` header entirely\n\n### 4. Cancel API Fails on Devstack (AWS SQS Issue)\n\nThe **Cancel Payment Link** API may return:\n```json\n{\"error\":{\"code\":\"QUEUE_ENQUEUE_FAILURE\",\"description\":\"NoCredentialProviders: no valid providers in chain...\"}}\n```\n\n**Cause:** AWS SQS credentials are not configured on devstack.\n\n**This is an infrastructure issue, not an API bug.** The API works correctly in production.\n\n### 5. Payment Link ID Format\n\n- V2 API (`/v1/payment_links`): Returns IDs with prefix `plink_` (e.g., `plink_S6V25H32jGELIO`)\n- V1 API (`/v1/invoices`): Returns IDs with prefix `inv_` (e.g., `inv_S6V25H32jGELIO`)\n\nUse the correct ID format for the API you're calling.\n\n---\n\n## Testing Workflow\n\n1. **Create a link first** using the Create API\n2. **Copy the `id`** from the response (e.g., `plink_xxxxx`)\n3. **Update `payment_link_id` variable** with the copied ID\n4. **Test Get, Update, Cancel APIs** with the same mode and devstack settings",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Dashboard APIs",
+			"item": [
+				{
+					"name": "1. Create Payment Link",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}",
+								"description": "Devstack routing header"
+							},
+							{
+								"key": "X-Razorpay-MerchantId",
+								"value": "{{merchant_id}}"
+							},
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "{{mode}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 100,\n    \"currency\": \"INR\",\n    \"description\": \"Test payment link from API\",\n    \"customer\": {\n        \"name\": \"Test Customer\",\n        \"contact\": \"+918861672025\",\n        \"email\": \"test@example.com\"\n    },\n    \"expire_by\": 1776923817,\n    \"notify\": {\n        \"email\": false,\n        \"sms\": true,\n        \"whatsapp\": false\n    },\n    \"notes\": {\n        \"purpose\": \"testing\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/payment_links",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payment_links"
+							]
+						},
+						"description": "Creates a new payment link.\n\n**Required Fields:**\n- `amount`: Amount in smallest currency unit (e.g., paise for INR)\n\n**Optional Fields:**\n- `currency`: Currency code (default: INR)\n- `description`: Description of the payment link\n- `customer`: Customer details (name, contact, email)\n- `expire_by`: Unix timestamp for expiry\n- `notify`: Notification preferences\n- `notes`: Key-value pairs for metadata\n- `reference_id`: Your reference ID\n- `callback_url`: URL to redirect after payment\n- `callback_method`: HTTP method for callback (get/post)\n- `accept_partial`: Allow partial payments\n- `first_min_partial_amount`: Minimum first partial payment amount"
+					},
+					"response": []
+				},
+				{
+					"name": "2. List Payment Links",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							},
+							{
+								"key": "X-Razorpay-MerchantId",
+								"value": "{{merchant_id}}"
+							},
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "{{mode}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/payment_links?skip=0&count=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payment_links"
+							],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0",
+									"description": "Number of records to skip"
+								},
+								{
+									"key": "count",
+									"value": "10",
+									"description": "Number of records to fetch"
+								}
+							]
+						},
+						"description": "Lists all payment links for the merchant.\n\n**Query Parameters:**\n- `skip`: Number of records to skip (pagination)\n- `count`: Number of records to return (max: 100)"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get Payment Link",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							},
+							{
+								"key": "X-Razorpay-MerchantId",
+								"value": "{{merchant_id}}"
+							},
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "{{mode}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/payment_links/{{payment_link_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payment_links",
+								"{{payment_link_id}}"
+							]
+						},
+						"description": "Gets a specific payment link by ID.\n\n**Path Parameters:**\n- `id`: Payment link ID (e.g., plink_xxxxx)"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Update Payment Link",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							},
+							{
+								"key": "X-Razorpay-MerchantId",
+								"value": "{{merchant_id}}"
+							},
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "{{mode}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reference_id\": \"updated-ref-123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/payment_links/{{payment_link_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payment_links",
+								"{{payment_link_id}}"
+							]
+						},
+						"description": "Updates an existing payment link.\n\n**Updatable Fields:**\n- `reference_id`: Your reference ID\n- `expire_by`: Unix timestamp for expiry\n- `accept_partial`: Allow partial payments\n- `first_min_partial_amount`: Minimum first partial payment amount"
+					},
+					"response": []
+				},
+				{
+					"name": "5. Cancel Payment Link",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							},
+							{
+								"key": "X-Razorpay-MerchantId",
+								"value": "{{merchant_id}}"
+							},
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "{{mode}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/payment_links/{{payment_link_id}}/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payment_links",
+								"{{payment_link_id}}",
+								"cancel"
+							]
+						},
+						"description": "Cancels a payment link.\n\n**Note:** Only payment links in `created` status can be cancelled."
+					},
+					"response": []
+				}
+			],
+			"description": "Core Dashboard APIs for Payment Links"
+		},
+		{
+			"name": "Additional APIs",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Commit",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/commit.txt",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"commit.txt"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Expire Payment Link",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							},
+							{
+								"key": "X-Razorpay-MerchantId",
+								"value": "{{merchant_id}}"
+							},
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "{{mode}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/payment_links/{{payment_link_id}}/expire",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payment_links",
+								"{{payment_link_id}}",
+								"expire"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Notify by SMS",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							},
+							{
+								"key": "X-Razorpay-MerchantId",
+								"value": "{{merchant_id}}"
+							},
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "{{mode}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/payment_links/{{payment_link_id}}/notify_by/sms",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payment_links",
+								"{{payment_link_id}}",
+								"notify_by",
+								"sms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Notify by Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							},
+							{
+								"key": "X-Razorpay-MerchantId",
+								"value": "{{merchant_id}}"
+							},
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "{{mode}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/payment_links/{{payment_link_id}}/notify_by/email",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payment_links",
+								"{{payment_link_id}}",
+								"notify_by",
+								"email"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Additional APIs not exposed via Dashboard"
+		},
+		{
+			"name": "Examples",
+			"item": [
+				{
+					"name": "Create Link - Full Example",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							},
+							{
+								"key": "X-Razorpay-MerchantId",
+								"value": "{{merchant_id}}"
+							},
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "{{mode}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 50000,\n    \"currency\": \"INR\",\n    \"description\": \"Payment for Order #12345\",\n    \"customer\": {\n        \"name\": \"John Doe\",\n        \"contact\": \"+919876543210\",\n        \"email\": \"john.doe@example.com\"\n    },\n    \"expire_by\": 1776923817,\n    \"reference_id\": \"order-12345\",\n    \"notify\": {\n        \"email\": true,\n        \"sms\": true,\n        \"whatsapp\": false\n    },\n    \"reminder_enable\": true,\n    \"notes\": {\n        \"order_id\": \"12345\",\n        \"source\": \"dashboard\"\n    },\n    \"callback_url\": \"https://example.com/callback\",\n    \"callback_method\": \"get\",\n    \"accept_partial\": true,\n    \"first_min_partial_amount\": 10000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/payment_links",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payment_links"
+							]
+						},
+						"description": "Creates a payment link with all optional fields populated."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Link - Minimal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "rzpctx-dev-serve-user",
+								"value": "{{devstack_label}}"
+							},
+							{
+								"key": "X-Razorpay-MerchantId",
+								"value": "{{merchant_id}}"
+							},
+							{
+								"key": "X-Razorpay-Mode",
+								"value": "{{mode}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 100\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/payment_links",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payment_links"
+							]
+						},
+						"description": "Creates a payment link with only the required field (amount)."
+					},
+					"response": []
+				}
+			],
+			"description": "Example requests with various configurations"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://payment-links.dev.razorpay.in",
+			"type": "string"
+		},
+		{
+			"key": "merchant_id",
+			"value": "LJ3P0FyFtOULha",
+			"type": "string"
+		},
+		{
+			"key": "mode",
+			"value": "live",
+			"type": "string"
+		},
+		{
+			"key": "devstack_label",
+			"value": "pl-dashboard-test",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "ZGV2OmRldi1wYXNzd29yZA==",
+			"type": "string"
+		},
+		{
+			"key": "payment_link_id",
+			"value": "plink_S6V25H32jGELIO",
+			"type": "string"
+		}
+	]
+}

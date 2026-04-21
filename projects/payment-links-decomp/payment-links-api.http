@@ -1,0 +1,253 @@
+# Payment Links API Collection
+# Dashboard APIs for Payment Links Service
+# 
+# Usage: Use REST Client extension in VS Code, or convert to curl commands
+# Note: All requests include devstack routing header
+#
+# ⚠️ IMPORTANT FOR TESTING:
+# - Use test merchant ID (LJ3P0FyFtOULha) - NOT production IDs!
+# - DON'T kubectl exec into pods to test - hit URLs directly with headers
+#
+# ============================================================
+# ⚠️ KNOWN ISSUES & CAVEATS
+# ============================================================
+#
+# 1. LIST API MAY RETURN EMPTY (Elasticsearch Issue)
+#    - List API queries Elasticsearch, NOT the database
+#    - Newly created links take time to be indexed
+#    - Workaround: Use GET by ID instead (queries DB directly)
+#
+# 2. MODE MISMATCH (live vs test)
+#    - Links created in `live` mode WON'T appear in `test` mode queries
+#    - Always use SAME mode for create and query
+#
+# 3. DEVSTACK ROUTING (Links are devstack-specific)
+#    - Links created on devstack A won't exist on devstack B
+#    - Links on BASE service won't exist on your custom devstack
+#    - Fix: Create links on SAME devstack where you query them
+#    - To use BASE service: Remove rzpctx-dev-serve-user header
+#
+# 4. CANCEL API FAILS ON DEVSTACK (AWS SQS Issue)
+#    - Returns QUEUE_ENQUEUE_FAILURE error
+#    - Cause: AWS SQS credentials not configured on devstack
+#    - This is infra issue, not API bug
+#
+# 5. TESTING WORKFLOW:
+#    a) Create a link first (POST /v1/payment_links)
+#    b) Copy the `id` from response (e.g., plink_xxxxx)
+#    c) Update @payment_link_id variable below
+#    d) Test Get, Update, Cancel APIs
+
+
+#============================================================
+# VARIABLES
+#============================================================
+
+# Payment Links Service URLs
+# Option 1: Direct URL with devstack label in URL
+# @base_url = https://payment-links-<your-label>.dev.razorpay.in
+
+# Option 2: Base URL with header routing (recommended)
+@base_url = https://payment-links.dev.razorpay.in
+
+# Merchant Details
+# ⚠️ Use this test merchant ID - NOT production IDs!
+@merchant_id = LJ3P0FyFtOULha
+@mode = live
+
+# Auth (Base64 of dev:dev-password)
+@auth_token = ZGV2OmRldi1wYXNzd29yZA==
+
+# ⚠️ UPDATE THESE WITH YOUR VALUES
+@devstack_label = pl-dashboard-test
+@payment_link_id = plink_S6V25H32jGELIO
+
+# For testing specific links (update after creating)
+@created_link_id = plink_S6V25H32jGELIO
+
+
+#============================================================
+# DASHBOARD APIs - Payment Links
+#============================================================
+
+### 1. Create Payment Link
+# POST /v1/payment_links
+# Creates a new payment link
+POST {{base_url}}/v1/payment_links
+rzpctx-dev-serve-user: {{devstack_label}}
+X-Razorpay-MerchantId: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+{
+    "amount": 100,
+    "currency": "INR",
+    "description": "Test payment link from API",
+    "customer": {
+        "name": "Test Customer",
+        "contact": "+918861672025",
+        "email": "test@example.com"
+    },
+    "expire_by": 1776923817,
+    "notify": {
+        "email": false,
+        "sms": true,
+        "whatsapp": false
+    },
+    "notes": {
+        "purpose": "testing"
+    }
+}
+
+
+### 2. List Payment Links (Fetch)
+# GET /v1/payment_links
+# Lists all payment links for the merchant
+GET {{base_url}}/v1/payment_links?skip=0&count=10
+rzpctx-dev-serve-user: {{devstack_label}}
+X-Razorpay-MerchantId: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+Authorization: Basic {{auth_token}}
+
+
+### 3. Get Payment Link
+# GET /v1/payment_links/:id
+# Gets a specific payment link by ID
+GET {{base_url}}/v1/payment_links/{{payment_link_id}}
+rzpctx-dev-serve-user: {{devstack_label}}
+X-Razorpay-MerchantId: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+Authorization: Basic {{auth_token}}
+
+
+### 4. Update Payment Link
+# PATCH /v1/payment_links/:id
+# Updates an existing payment link
+PATCH {{base_url}}/v1/payment_links/{{payment_link_id}}
+rzpctx-dev-serve-user: {{devstack_label}}
+X-Razorpay-MerchantId: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+{
+    "reference_id": "updated-ref-123"
+}
+
+
+### 5. Cancel Payment Link
+# POST /v1/payment_links/:id/cancel
+# Cancels a payment link
+POST {{base_url}}/v1/payment_links/{{payment_link_id}}/cancel
+rzpctx-dev-serve-user: {{devstack_label}}
+X-Razorpay-MerchantId: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+
+#============================================================
+# ADDITIONAL APIs (Not Dashboard, but useful)
+#============================================================
+
+### Health Check
+GET {{base_url}}/status
+rzpctx-dev-serve-user: {{devstack_label}}
+
+
+### Get Commit
+GET {{base_url}}/commit.txt
+rzpctx-dev-serve-user: {{devstack_label}}
+
+
+### Expire Payment Link
+# POST /v1/payment_links/:id/expire
+POST {{base_url}}/v1/payment_links/{{payment_link_id}}/expire
+rzpctx-dev-serve-user: {{devstack_label}}
+X-Razorpay-MerchantId: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+
+### Notify by Medium (SMS)
+# POST /v1/payment_links/:id/notify_by/:medium
+POST {{base_url}}/v1/payment_links/{{payment_link_id}}/notify_by/sms
+rzpctx-dev-serve-user: {{devstack_label}}
+X-Razorpay-MerchantId: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+
+### Notify by Medium (Email)
+POST {{base_url}}/v1/payment_links/{{payment_link_id}}/notify_by/email
+rzpctx-dev-serve-user: {{devstack_label}}
+X-Razorpay-MerchantId: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+
+#============================================================
+# EXAMPLE: Create with all optional fields
+#============================================================
+
+### Create Payment Link (Full Example)
+POST {{base_url}}/v1/payment_links
+rzpctx-dev-serve-user: {{devstack_label}}
+X-Razorpay-MerchantId: {{merchant_id}}
+X-Razorpay-Mode: {{mode}}
+Authorization: Basic {{auth_token}}
+Content-Type: application/json
+
+{
+    "amount": 50000,
+    "currency": "INR",
+    "description": "Payment for Order #12345",
+    "customer": {
+        "name": "John Doe",
+        "contact": "+919876543210",
+        "email": "john.doe@example.com"
+    },
+    "expire_by": 1776923817,
+    "reference_id": "order-12345",
+    "notify": {
+        "email": true,
+        "sms": true,
+        "whatsapp": false
+    },
+    "reminder_enable": true,
+    "notes": {
+        "order_id": "12345",
+        "source": "dashboard"
+    },
+    "callback_url": "https://example.com/callback",
+    "callback_method": "get",
+    "accept_partial": true,
+    "first_min_partial_amount": 10000
+}
+
+
+#============================================================
+# NOTES
+#============================================================
+# 
+# All requests include: rzpctx-dev-serve-user: {{devstack_label}}
+#
+# Auth token is Base64 of "dev:dev-password"
+#   echo -n "dev:dev-password" | base64
+#   Result: ZGV2OmRldi1wYXNzd29yZA==
+#
+# Variables to update before use:
+#   @devstack_label - your devstack label
+#   @payment_link_id - ID of payment link to operate on
+#
+# Dashboard routes (via dashboard.razorpay.com):
+#   Dashboard proxies to: /merchant/api/{mode}/payment_links/...
+#   Which maps to: /v1/payment_links/...
+#
+# Response format:
+#   - V2 routes (/v1/payment_links) return: entity: "payment_link", id: "plink_xxx"
+#   - V1 routes (/v1/invoices) return: entity: "invoice", id: "inv_xxx"

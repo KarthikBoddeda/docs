@@ -47,3 +47,23 @@ grep -r "old-file-name" /path/to/docs/
 - `.cursor/rules/*.mdc` files
 - Other documentation files
 - README files
+
+## 4. DANGEROUS SCRIPTS - NEVER EXECUTE
+
+The following scripts perform **destructive operations** and must NEVER be executed by the agent:
+
+| Script | Location | Reason |
+|--------|----------|--------|
+| `delete_by_ids.py` | `/pythonscripts/decomp-scripts/migration/DANGER_never_run_with_agent/` | **DELETES payment page data permanently from NCA database** |
+
+**Rules:**
+- ❌ **NEVER** run `python delete_by_ids.py` or any variation
+- ❌ **NEVER** set `DRY_RUN = False` in the script
+- ❌ **NEVER** execute the delete API endpoint directly via curl
+- ✅ You MAY read, edit, or explain the script
+- ✅ You MAY run with `DRY_RUN = True` (default) to preview
+
+**If user asks to run the delete script:**
+1. **ABORT** and remind them this must be done manually
+2. Provide the command they should run: `cd /pythonscripts/decomp-scripts/migration/DANGER_never_run_with_agent && python3 delete_by_ids.py`
+3. Remind them to verify `DRY_RUN = True` first, then set to `False` when ready

@@ -1,0 +1,38 @@
+---
+description: Guidelines for sending Slack messages via MCP. Apply when posting messages to Slack channels, sending DMs, or composing Slack notifications.
+alwaysApply: false
+---
+
+# Slack Messaging Guidelines
+
+When sending messages via the `slack_send_message` or `slack_send_dm` MCP tools:
+
+## Before Sending
+
+1. **Always confirm with the user** what channel, who to tag, and the key points before posting.
+2. **Search for the channel first** if you only have the name -- use `slack_search_messages` or `slack_get_channels` to find the correct `channel_id`.
+3. **Find user IDs** for @mentions -- use `slack_get_users` or infer from prior search results. Format: `<@U1234567890>`.
+
+## Message Formatting
+
+- Use Slack mrkdwn, NOT standard markdown:
+  - Bold: `*text*` (not `**text**`)
+  - Italic: `_text_` (not `*text*`)
+  - Code: `` `code` `` or ` ```code block``` `
+  - Links: `<https://url.com|display text>`
+  - User mention: `<@USER_ID>`
+  - Channel mention: `<#CHANNEL_ID>`
+- Keep messages concise -- Slack is not a document. Aim for scannable, bulleted key points.
+- Use emojis sparingly and only standard Slack emoji names (e.g., `:white_check_mark:`, `:rotating_light:`).
+
+## Common Patterns
+
+- **Review requests**: Tag the reviewer, give 2-3 line summary, link to doc/PR/ticket.
+- **Alerts/escalations**: Lead with severity, then impact, then action needed.
+- **Updates**: Lead with status, then details.
+
+## Do NOT
+
+- Send messages without user confirmation of content and target channel.
+- Include sensitive data (API keys, passwords, PII) in messages.
+- Send to public channels without explicit user request.

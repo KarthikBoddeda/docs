@@ -12,6 +12,9 @@ Thumbs.db
 *.swo
 *~
 
+# Benchmark artifacts (generated from CSV)
+projects/payment-pages-decomp/nocode_copy.db
+
 
 
 
