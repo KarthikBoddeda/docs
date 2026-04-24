@@ -1,10 +1,9 @@
 # All Merchants - Response Body Diff Keys (Shadow Mode)
 
 **Created:** 2026-04-16
+**Updated:** 2026-04-24
 **Source:** Coralogix diff checker logs (`DIFF_CHECKER_SHADOW_DIFF_PATHS`)
-**Total Diffs:** 14,161
-**Unique Merchants:** 2,340
-**Time Range:** ~48 hours ending 2026-04-15
+**Total Diffs:** 14,161 (2026-04-15) → ~20,750 (2026-04-21) → ~15,000 (2026-04-24)
 **Data:** `/page-status-mismatch/diff_keys_categorized.csv`
 **Script:** `/page-status-mismatch/categorize_diff_keys.py`
 
@@ -30,6 +29,39 @@
 
 ---
 
+### 2026-04-24 Update
+
+**Source:** `all_merchants_diff_keys_cloned_cloned_logs.tsv`
+**Total Rows:** 8,265 | **Routes:** 10
+
+| Route | Rows | Top Issues |
+|-------|------|------------|
+| payment_page_list | 3,917 | aggregation/total_amount_paid (1,965), pages_extra_in_nca (1,300), pages_missing_in_nca (1,169), count (745), times_paid (192) |
+| pages_view_by_slug | 2,063 | merchant_image (637), support_email (345), support_mobile (332), times_payable (227), fb_pixel (97×3), items (123+), status (34+34) |
+| pages_view | 1,535 | fb_pixel (300×3), merchant_image (217), times_payable (149), items (111+), enable_g_details (96) |
+| payment_page_get_details | 637 | aggregation (466+466+433), fb_pixel (52×3), payment_success (51+49), goal_tracker (26+10) |
+| pages_view_post | 50 | fb_pixel (18×3), goal_tracker_meta (17) |
+| pages_view_by_slug_post | 36 | merchant_image (22) |
+| payment_page_update | 17 | aggregation (15+15+15) |
+| payment_page_deactivate | 6 | aggregation (5+5+4) |
+| payment_page_activate | 2 | aggregation (2+2+2) |
+| payment_page_item_update | 2 | aggregation (2+2) |
+
+**Key changes vs 2026-04-21:**
+- **aggregation_mismatch** exploded: 3,593 diffs across **191 merchants** — now the single largest category. Elevated to own priority row.
+- **items_status_mismatch** (#10): 37 → **152** diffs, now appearing on `pages_view_by_slug` (70 hits on hosted page route — HIGH severity, users see wrong status)
+- **goal_tracker_mismatch** (#1): now **9 merchants** (was 1) — spread widening
+- **short_url_mismatch** (#8): 54 → **206**
+- **times_payable_mismatch** (#4): 286 → **408**
+- **payment_success_settings** (#13): 79 → **100**
+- **fb_pixel** (#14): ~798 → **1,421** across 17 merchants
+- **org_branding** (#18): 179 → **50** (improving)
+- **custom_domain** (#19): 211 → **19** (improving)
+- **NEW**: `expire_by` diffs (26) — `pages_view_by_slug` + `pages_view` showing `/payment_link/expire_by` mismatch. Connects to Scze422kvsbnCq expiry bug.
+- **NEW**: `merchant/brand_text_color` (70) — not in previous checklist
+
+---
+
 ## Status Legend
 
 | Symbol | Meaning |
@@ -44,26 +76,25 @@
 
 ## Summary
 
-| # | Category | Count | % | Severity | Merchants | Status | Notes |
-|---|----------|-------|---|----------|-----------|--------|-------|
-| 1 | [goal_tracker_mismatch](#1-goal_tracker_mismatch) | 1,119 | 7.9% | MEDIUM | 1 | 🟠 | `tracker_type` value mismatch — datafix needed for 5 pages |
-| 2 | [payment_page_items_mismatch](#2-payment_page_items_mismatch) | 966 | 6.8% | HIGH | 79 | 🟠 | 3 root causes: item not linked (387), aggregation drift (365), description missing/different (368) — all datafixes, no code changes |
-| 7 | [list_count_plus_empty_items](#7-list_count_plus_empty_items) | 59 | 0.4% | MEDIUM | 15 | ⬜ | `/items` — `[]` vs `null` serialization diff in list |
-| 8 | [short_url_mismatch](#8-short_url_mismatch) | 54 | 0.4% | LOW | 1 | ⬜ | Different short URL output |
-| 14 | [payment_success_redirect_url](#14-payment_success_redirect_url) | 40 | NEW | MEDIUM | few | ⬜ | `/settings/payment_success_redirect_url` missing in NCA |
-| 15 | [payment_success_message](#15-payment_success_message) | 39 | NEW | MEDIUM | few | ⬜ | `/settings/payment_success_message` missing in NCA |
-| 22 | [merchant_tnc_link_mismatch](#22-merchant_tnc_link_mismatch) | 16 | NEW | LOW | few | ⬜ | `/merchant/tnc_link` differs |
-| 23 | [pp_fb_event_add_to_cart](#23-pp_fb_event_add_to_cart) | 340 | NEW | MEDIUM | many | ⬜ | `/settings/pp_fb_event_add_to_cart_enabled` missing in NCA |
-| 24 | [pp_fb_event_initiate_payment](#24-pp_fb_event_initiate_payment) | 340 | NEW | MEDIUM | many | ⬜ | `/settings/pp_fb_event_initiate_payment_enabled` missing in NCA |
-| 25 | [pp_fb_event_payment_complete](#25-pp_fb_event_payment_complete) | 340 | NEW | MEDIUM | many | ⬜ | `/settings/pp_fb_event_payment_complete_enabled` missing in NCA |
-| 26 | [pp_fb_pixel_tracking_id](#26-pp_fb_pixel_tracking_id) | 14 | NEW | LOW | few | ⬜ | `/settings/pp_fb_pixel_tracking_id` missing in NCA |
-| 27 | [enable_g_details_mismatch](#27-enable_g_details_mismatch) | 126 | NEW | MEDIUM | many | ⬜ | `/payment_link/settings/enable_g_details` differs |
-| 28 | [checkout_options_mismatch](#28-checkout_options_mismatch) | 29 | NEW | LOW | few | ⬜ | `/payment_link/settings/checkout_options` differs |
-| 29 | [enable_custom_serial_number_mismatch](#29-enable_custom_serial_number_mismatch) | 11 | NEW | LOW | few | ⬜ | `/payment_link/settings/enable_custom_serial_number` differs |
-| 30 | [enable_receipt_mismatch](#30-enable_receipt_mismatch) | 11 | NEW | LOW | few | ⬜ | `/payment_link/settings/enable_receipt` differs |
-| 31 | [theme_mismatch](#31-theme_mismatch) | 5 | NEW | LOW | few | ⬜ | `/settings/theme` differs |
-| 35 | [custom_domain_mismatch](#35-custom_domain_mismatch) | 189 | NEW | LOW | few | ⬜ | `/payment_link/settings/custom_domain` (164) + `/settings/custom_domain` (25) |
-| 36 | [title_mismatch](#36-title_mismatch) | 35 | NEW | HIGH | few | ⬜ | Page title differs — possible data drift after migration |
+| # | Category | Apr-15 | Apr-21 | Apr-24 | Severity | Merchants | Status | Notes |
+|---|----------|--------|--------|--------|----------|-----------|--------|-------|
+| AGG | [aggregation_mismatch](#agg-aggregation_mismatch) | ~2,877 | ~2,877 | **3,593** | HIGH | **191** | ⬜ | `total_amount_paid`, `quantity_sold`, `times_paid` not syncing — 191 merchants |
+| 1 | [goal_tracker_mismatch](#1-goal_tracker_mismatch) | 1,119 | 1,119 | **448** | MEDIUM | **9** | 🟠 | `tracker_type` mismatch — now 9 merchants (was 1) |
+| 2 | [payment_page_items_mismatch](#2-payment_page_items_mismatch) | 966 | 966 | **2,584** | HIGH | 30 | 🟠 | Item data drift — item not linked, description missing |
+| 4 | [times_payable_mismatch](#4-times_payable_mismatch) | 286 | 286 | **408** | MEDIUM | 9 | ⬜ | `times_payable` null in NCA |
+| 7 | [list_count_plus_empty_items](#7-list_count_plus_empty_items) | 59 | 59 | ~0 | MEDIUM | — | ⬜ | `/items` — `[]` vs `null` |
+| 8 | [short_url_mismatch](#8-short_url_mismatch) | 54 | 54 | **206** | LOW | — | ⬜ | Different short URL output — increasing |
+| 10 | [items_status_mismatch](#10-items_status_mismatch) | 37 | 37 | **152** | **HIGH** | 5 | ⬜ | Now hitting `pages_view_by_slug` (70 hits) — users see wrong status on hosted pages |
+| 13 | [payment_success_settings_mismatch](#13-payment_success_settings_mismatch) | 79 | 79 | **100** | MEDIUM | — | ⬜ | redirect_url (51) + message (49) missing in NCA |
+| 14 | [fb_pixel_settings_mismatch](#14-fb_pixel_settings_mismatch) | ~798 | ~798 | **1,421** | MEDIUM | 17 | ⬜ | `pp_fb_event_*` fields missing in NCA — increasing |
+| 15 | [merchant_data_mismatch](#15-merchant_data_mismatch) | ~2,200 | ~2,200 | **2,326** | MEDIUM | — | ⬜ | image (877), support_email (420), support_mobile (364) — new: brand_text_color (70) |
+| 16 | [page_list_count_mismatch](#16-page_list_count_mismatch) | ~2,100 | ~2,100 | **3,299** | LOW/MED | — | 🔵/⬜ | ES lag (🔵) + items//amount (85, ⬜) |
+| 17 | [settings_fields_mismatch](#17-settings_fields_mismatch) | ~400 | ~400 | **158** | MEDIUM | — | ⬜ | enable_g_details (109), theme (9) |
+| 18 | [org_branding_mismatch](#18-org_branding_mismatch) | ~179 | ~179 | **50** | LOW | — | ⬜ | Improving |
+| 19 | [custom_domain_mismatch](#19-custom_domain_mismatch) | ~211 | ~211 | **19** | LOW | — | ⬜ | Improving — likely serialization fix landed |
+| 20 | [title_mismatch](#20-title_mismatch) | 35 | 35 | **42** | HIGH | — | ⬜ | Page title differs — data drift |
+| NEW | [expire_by_mismatch](#new-expire_by_mismatch) | — | — | **26** | HIGH | — | ⬜ NEW | `/payment_link/expire_by` diff on hosted page routes — premature expiry risk |
+| NEW | [brand_text_color_mismatch](#new-brand_text_color_mismatch) | — | — | **70** | LOW | — | ⬜ NEW | `/merchant/brand_text_color` missing in NCA |
 
 ---
 
@@ -225,13 +256,27 @@ The `/count` diffs are ES lag (see #16). The `/items` diff is a serialization di
 
 ### 10. items_status_mismatch
 
-**Count:** 37 (0.3%) — 3 merchants
-**Severity:** HIGH
-**Diff:** `/items//status`, `/items//status_reason` — individual item status differs
+**Count:** 37 (Apr-15) → **152 (Apr-24)** — 5 merchants
+**Severity:** HIGH ⬆️
+**Diff:** `/items//status`, `/items//status_reason` + `/payment_link/status`, `/payment_link/status_reason`
+
+**Apr-24 breakdown:**
+| Path | Count | Route | Severity |
+|------|-------|-------|----------|
+| `/items//status_reason` | 47 | payment_page_list | HIGH |
+| `/items//status` | 35 | payment_page_list | HIGH |
+| `/payment_link/status` | 35 | pages_view_by_slug | **CRITICAL** |
+| `/payment_link/status_reason` | 35 | pages_view_by_slug | **CRITICAL** |
+
+**Critical finding (Apr-24):** Status mismatch now appearing on `pages_view_by_slug` — this means users visiting the hosted payment page are being served the **wrong status** directly from NCA. 70 of 152 hits are on hosted page routes. Connected to the page-level status mismatch investigation (QVVfanTkaqXGGA etc.) — same root cause, now confirmed surfacing on the customer-facing render path.
+
+**Root cause:** Same API Kong gap — `payment_page_deactivate/activate` on `prod/api` Kong has no upstream-override to NCA. Monolith status updated, NCA not synced, hosted page renders from NCA's stale status.
 
 **Investigation checklist:**
 - [ ] Check if item-level deactivation/activation bypasses NCA (same kong gap)
-- [ ] Check the 3 merchants — are they using item-level status changes via API?
+- [ ] Check the 5 merchants — are they using status changes via API path (not dashboard)?
+- [ ] Correlate with page-status-mismatch analysis — same 4 pages?
+- [ ] Fix: add upstream-override to `prod/api` Kong for deactivate/activate routes
 
 ---
 
@@ -484,17 +529,78 @@ title='astra' (broad)      → +7/-7  (ES pagination drift only)
 
 ---
 
+---
+
+### AGG. aggregation_mismatch
+
+**Count:** ~2,877 (Apr-21) → **3,593 (Apr-24)** — **191 merchants**
+**Severity:** HIGH
+**Routes:** `payment_page_list`, `payment_page_get_details`, `payment_page_update`, `payment_page_deactivate`, `payment_page_activate`, `payment_page_item_update`
+
+| Path | Count | Notes |
+|------|-------|-------|
+| `/items//payment_page_items//total_amount_paid` | 1,965 | list route — payment totals not syncing |
+| `/payment_page_items//quantity_sold` | 488 | get_details / write routes |
+| `/payment_page_items//total_amount_paid` | 488 | get_details / write routes |
+| `/total_amount_paid` | 456 | top-level total |
+| `/items//times_paid` | 192 | list route — payment count stale |
+
+191 unique merchants affected. This is the largest single category by merchant count and growing. Payments are being processed but NCA's aggregation counters (`total_amount_paid`, `quantity_sold`, `times_paid`) are not being updated.
+
+**Root cause:** NCA aggregation is not receiving payment success events — either event not published to NCA, NCA consumer failing silently, or aggregation computed at query time in monolith but stored/cached in NCA. Needs investigation into NCA's payment event consumer.
+
+**Investigation checklist:**
+- [ ] Check NCA's payment event consumer — is it receiving payment captured events?
+- [ ] Check if NCA recomputes totals at query time or reads from a stored counter
+- [ ] Sample 5 pages with high drift — compare payment records vs NCA's stored total
+- [ ] Check if Kafka/SNS payment events are published to NCA's consumer topic
+
+---
+
+### NEW. expire_by_mismatch
+
+**Count:** **26 (Apr-24 NEW)**
+**Severity:** HIGH — customer-facing premature expiry risk
+**Routes:** `pages_view_by_slug` (3), `pages_view` (4+3), `payment_page_get_details` (1), `payment_page_list` (12)
+
+`/payment_link/expire_by` and `/payment_link/expire_by_formatted` differ between monolith and NCA. Connected to the confirmed incident with `Scze422kvsbnCq` — NCA had a 48-hour shorter `expire_by`, its cron expired the page prematurely.
+
+**Root cause:** `expire_by` update via API path (monolith only) doesn't sync to NCA. NCA's independent expiry cron then acts on stale data.
+
+**Investigation checklist:**
+- [ ] Identify the 26 pages with expire_by drift — compare monolith vs NCA values
+- [ ] Check which direction: monolith longer or NCA longer?
+- [ ] Any of these at risk of imminent premature NCA expiry?
+- [ ] Fix: ensure expire_by updates go through NCA dual-write
+
+---
+
+### NEW. brand_text_color_mismatch
+
+**Count:** **70 (Apr-24 NEW)**
+**Severity:** LOW
+**Routes:** `pages_view_by_slug` (46), `pages_view` (24)
+**Diff:** `/merchant/brand_text_color` — present in monolith, missing/different in NCA
+
+Subcategory of `merchant_data_mismatch` (#15). NCA's merchant data fetch doesn't include `brand_text_color`.
+
+---
+
 ## Priority Order
 
-1. **expire_by_mismatch** (4) — Customer-facing risk: premature page expiry
-2. **page_list_count_mismatch** (762) — Pages missing/extra between systems
-3. **payment_page_items_mismatch** (966) — Item data drift, amounts differ
-4. **status_mismatch** (151) — Status out of sync
-5. **items_status_mismatch** (37) — Item-level status drift
-6. **aggregation_mismatch** (77) — Payment totals differ
-7. **goal_tracker_mismatch** (1,119) — Single merchant config issue
-8. **times_payable_mismatch** (286) — Single merchant
-9. Rest — LOW severity, cosmetic
+### Apr-24 Priority
+
+1. **aggregation_mismatch** (3,593 diffs, **191 merchants**) — Payment totals not syncing; largest category by merchant count
+2. **items_status_mismatch** (152, now on hosted page route) — Users seeing wrong page status on `pages_view_by_slug` — CRITICAL customer-facing
+3. **expire_by_mismatch** (26 NEW) — Premature page expiry risk; confirmed causing real incidents
+4. **payment_page_items_mismatch** (2,584) — Item data drift
+5. **fb_pixel_settings_mismatch** (1,421, 17 merchants) — FB pixel fields missing in NCA
+6. **merchant_data_mismatch** (2,326) — image/support_email/support_mobile stale in NCA
+7. **goal_tracker_mismatch** (448, now 9 merchants) — Spreading beyond 1 merchant; datafix needed
+8. **times_payable_mismatch** (408) — Increasing trend
+9. **title_mismatch** (42) — High severity if routing bug; low if data drift
+10. **payment_success_settings** (100), **short_url** (206) — Medium/low
+11. Rest — cosmetic or no-fix-needed
 
 ---
 
