@@ -1,11 +1,11 @@
 # All Merchants - Status Code Mismatches (Shadow Mode)
 
 **Created:** 2026-04-16
-**Updated:** 2026-04-21
+**Updated:** 2026-04-24
 **Source:** Coralogix diff checker logs (`DIFF_CHECKER_SHADOW_STATUS_CODE_MISMATCH`)
-**Total Mismatches:** 546 (2026-04-21 run) — down from 117,508 (2026-04-20) and 4,938 (2026-04-16)
-**Time Range:** ~24 hours ending 2026-04-21
-**Data:** `/page-status-mismatch/2026-04-21/` (latest), `/page-status-mismatch/categories/` (original)
+**Total Mismatches:** 653 (2026-04-24 run) — 546 (2026-04-21), down from 117,508 (2026-04-20) and 4,938 (2026-04-16)
+**Time Range:** ~24 hours ending 2026-04-24
+**Data:** `/page-status-mismatch/2026-04-24/` (latest), `/page-status-mismatch/2026-04-21/`, `/page-status-mismatch/categories/` (original)
 **Script:** `/page-status-mismatch/categorize_status_code_mismatches.py`
 
 ---
@@ -24,23 +24,23 @@
 
 ## Summary
 
-| # | Category | Old Count | 2026-04-21 | Monolith | NCA | Status | Notes |
-|---|----------|-----------|------------|----------|-----|--------|-------|
-| 1 | [create_order_validation_gap](#1-create_order_validation_gap) | 36,988 | **0** | 200 | 400 | 🟢 | Fixed — NCA now strips invalid UTF-8 bytes before JSON binding |
-| 2 | [proxy_monolith_timeout_pages_view](#2-proxy_monolith_timeout_pages_view) | 74,885 | **0** | 400/500 | 200 | 🔵 | Not in latest TSV (different log source); NCA serves page fine |
-| 3 | [list_validation_diff](#3-list_validation_diff) | 300 | **0** | 400 | 200 | 🟢 | Fixed — NCA now validates count/skip params |
-| 4 | [create_order_nca_500](#4-create_order_nca_500) | 3,839 | **503** | 400 | 500 | 🟠 | Fix deployed but still hitting — investigate if fix covers all paths |
-| 5 | [record_not_found_in_nca](#5-record_not_found_in_nca) | 390 | **20** | 200 | 400 | 🔵 | Reduced — still need data migration for remaining pages |
-| 6 | [dual_write_id_extraction](#6-dual_write_id_extraction) | 20 | **0** | 200 | 400 | 🟢 | Fixed — no longer occurring |
-| 7 | [deactivate_activate_mismatch](#7-deactivate_activate_mismatch) | 3 | **2** | 200 | 400 | 🟠 | Terms fix verified, but NEW errors: stock check (1), already-inactive (1) |
-| 8 | [create_order_monolith_500](#8-create_order_monolith_500) | 35 | **0** | 500 | 400 | 🔵 | No longer occurring |
-| 9 | [other](#9-other) | 3 | **0** | mixed | mixed | ⚠️ | Partial — support_contact letter check NOT removed; domain fix partial (slug path done, Settings.Validate still has is.Domain) |
-| 10 | ~~merged into #2~~ | — | — | — | — | — | Originally "nca_timeout" — actually same as #2 (proxy timeout, NCA OK) |
-| 11 | [list_validation_diff_missing_shadow_code](#11-list_validation_diff_missing_shadow_code) | 485 | **0** | 400 | 200 | 🟢 | Same as #3 — confirmed fixed |
-| 12 | [nca_validation_stricter](#12-nca_validation_stricter) | 292 | **21** | 200 | 400 | 🟠 | Old subcategories resolved; NEW subcategories emerged |
-| 13 | [pages_view_monolith_500](#13-pages_view_monolith_500) | 218 | **0** | 500 | — | 🔵 | Not in latest TSV (different log source) |
-| 14 | [create_order_nca_timeout](#14-create_order_nca_timeout) | 237 | **~6** | 400 | 500 | 🔵 | Reduced (io_read: 4, Post \\: 2) |
-| 15 | [other_misc](#15-other_misc) | 27 | **0** | mixed | mixed | 🟢 | No longer occurring |
+| # | Category | Old Count | 2026-04-21 | 2026-04-24 | Monolith | NCA | Status | Notes |
+|---|----------|-----------|------------|------------|----------|-----|--------|-------|
+| 1 | [create_order_validation_gap](#1-create_order_validation_gap) | 36,988 | **0** | **0** | 200 | 400 | 🟢 | Fixed — NCA now strips invalid UTF-8 bytes before JSON binding |
+| 2 | [proxy_monolith_timeout_pages_view](#2-proxy_monolith_timeout_pages_view) | 74,885 | **0** | **0** | 400/500 | 200 | 🔵 | Not in latest TSV (different log source); NCA serves page fine |
+| 3 | [list_validation_diff](#3-list_validation_diff) | 300 | **0** | **0** | 400 | 200 | 🟢 | Fixed — NCA now validates count/skip params |
+| 4 | [create_order_nca_500](#4-create_order_nca_500) | 3,839 | **503** | **0** | 400 | 500 | 🟢 | Fix verified — validation subcategories gone; only infra timeouts remain (tracked in #14) |
+| 5 | [record_not_found_in_nca](#5-record_not_found_in_nca) | 390 | **20** | **86** ⬆️ | 200 | 400 | 🔴 | Increased — get_details (61), set_receipt_details (14), update (11). Data migration urgent. |
+| 6 | [dual_write_id_extraction](#6-dual_write_id_extraction) | 20 | **0** | **0** | 200 | 400 | 🟢 | Fixed — no longer occurring |
+| 7 | [deactivate_activate_mismatch](#7-deactivate_activate_mismatch) | 3 | **2** | **0** | 200 | 400 | 🔵 | Not in this run — stock check and already-inactive may have resolved or no traffic |
+| 8 | [create_order_monolith_500](#8-create_order_monolith_500) | 35 | **0** | **0** | 500 | 400 | 🔵 | No longer occurring |
+| 9 | [other](#9-other) | 3 | **0** | **0** | mixed | mixed | ⚠️ | Partial — support_contact letter check NOT removed; domain fix partial (slug path done, Settings.Validate still has is.Domain) |
+| 10 | ~~merged into #2~~ | — | — | — | — | — | — | Originally "nca_timeout" — actually same as #2 (proxy timeout, NCA OK) |
+| 11 | [list_validation_diff_missing_shadow_code](#11-list_validation_diff_missing_shadow_code) | 485 | **0** | **0** | 400 | 200 | 🟢 | Same as #3 — confirmed fixed |
+| 12 | [nca_validation_stricter](#12-nca_validation_stricter) | 292 | **21** | **15** | 200 | 400 | 🟠 | custom_domain (6), mandatory_item_ordering NEW (3), support_email NEW (2), title (2), slug (1), nil_items (1) |
+| 13 | [pages_view_monolith_500](#13-pages_view_monolith_500) | 218 | **0** | **0** | 500 | — | 🔵 | Not in latest TSV (different log source) |
+| 14 | [create_order_nca_timeout](#14-create_order_nca_timeout) | 237 | **~6** | **545** ⬆️ | 400 | 500 | 🟠 | Spiked — Post \\ (539), io_read (6). Infrastructure timeouts but 270x increase needs investigation. |
+| 15 | [other_misc](#15-other_misc) | 27 | **0** | **7** | mixed | mixed | ⬜ | Returned — get_details inverted (3), set_receipt_details inverted (4) |
 
 ---
 
@@ -207,24 +207,19 @@ These 500s are **expected behavior in dual-write shadow mode** and will NOT occu
 | `Post \\` | 2 | Timeout — #14 overlap |
 | `page_not_active` | 2 | Same pattern |
 
-**Investigation needed:** Fix reduced count by ~87% (3,839→503) but didn't eliminate. Check:
-- [ ] Is the fix fully deployed? (version rollout may be partial)
-- [ ] Do the remaining 503 share a different code path (e.g., `monolith proxy response not attached` vs `monolith order creation failed`)?
-- [ ] Are some from before the fix deployment timestamp?
+**2026-04-24 update:** All validation subcategories (amount, item mismatch, page_not_active, etc.) are at **0**. Fix is fully effective. Only `Post \\` (539) and `io_read_failed` (6) remain — these are infrastructure timeouts now tracked exclusively in [#14](#14-create_order_nca_timeout).
 
-**Code audit (2026-04-21):** Fix verified in repo — `payment_page.go:734-743` has monolith status check + proxyResp forwarding. Commit `a66dd20a` (not deployed) also adds proxyResp==nil handling (returns server error instead of proceeding). The 4 `io_read_failed` hits may be the proxyResp==nil case — would be fixed by deploying `a66dd20a`.
-
-**Status: 🟠 Partially fixed — fix in repo, 503 remaining (likely partial rollout + proxyResp nil case)**
+**Status: 🟢 Fixed — validation 500s eliminated; remaining infra timeouts tracked in #14**
 
 ---
 
 ### 5. record_not_found_in_nca
 
-**Count:** 390 → **20** (2026-04-21)
-**Code Pair:** Monolith 200 → NCA 400 (18 rows), empty codes (2 rows)
-**Routes:** `payment_page_get_details` (13), `payment_page_set_receipt_details` (5), `payment_page_update` (2)
+**Count:** 390 → **20** (2026-04-21) → **86** ⬆️ (2026-04-24)
+**Code Pair:** Monolith 200 → NCA 400
+**Routes:** `payment_page_get_details` (61), `payment_page_set_receipt_details` (14), `payment_page_update` (11) — 2026-04-24
 **Data:** [`categories/record_not_found_in_nca/`](../../../page-status-mismatch/categories/record_not_found_in_nca/)
-**Entity IDs:** 29 unique pages across 19 merchants
+**Entity IDs:** 29 unique pages across 19 merchants (2026-04-21 data; 2026-04-24 entity IDs not yet extracted)
 
 | Subcategory | Count | Status | Notes |
 |-------------|-------|--------|-------|
@@ -397,26 +392,28 @@ Combined with #3 (300 rows with shadow_code=200), total `list_validation_diff` =
 
 ### 12. nca_validation_stricter
 
-**Count:** 292 → **21** (2026-04-21)
+**Count:** 292 → **21** (2026-04-21) → **15** (2026-04-24)
 **Code Pair:** Monolith 200 → NCA 400
-**Routes:** `payment_page_update` (18), `payment_page_create` (3)
+**Routes:** `payment_page_update`, `payment_page_create`, `payment_page_create_order`
 
-| Subcategory | Old Count | 2026-04-21 | Status | Notes |
-|-------------|-----------|------------|--------|-------|
-| `amount should not be lesser than min amount` | 205 | **0** | 🟢 | Resolved — stale data fixed or no longer hitting |
-| `amount should be equal to payment page item amount` | 39 | **0** | 🟢 | Resolved |
-| `item does not exist, please refresh` | 19 | **0** | 🟢 | Resolved |
-| `order cannot be created for page not active` | 10 | **0** | 🟢 | Resolved |
-| `terms length 5-2048` | 5 | **0** | 🟢 | Fixed — terms validation guarded by update list |
-| `domain: must be a valid domain` | 5 | **0** | 🟢 | Fixed — removed domain validation |
-| `support_contact: invalid characters` | 2 | **0** | 🟢 | Fixed — removed letter pre-check |
-| `mandatory item missing` | 3 | **0** | 🟢 | Resolved |
-| `already active/inactive` | 2 | **0** | 🟢 | Resolved |
-| `custom_domain: key not expected` | — | **10** | ⬜ | **NEW** — NCA rejects `custom_domain` in update payload |
-| `slug already exists` | 2 | **4** | ⬜ | **INCREASED** — NCA enforces unique slug, monolith doesn't |
-| `terms_length_validation` | — | **4** | ⬜ | **NEW** — on update route (different from #7 deactivate path) |
-| `line_items_nil_on_create` | — | **2** | ⬜ | **NEW** — NCA requires non-nil items array on create |
-| `title_byte_length_bug` | — | **1** | ⬜ | **NEW** — `validation.Length(0,80)` byte-length bug in `line_item/validation.go:44` |
+| Subcategory | Old Count | 2026-04-21 | 2026-04-24 | Status | Notes |
+|-------------|-----------|------------|------------|--------|-------|
+| `amount should not be lesser than min amount` | 205 | **0** | **0** | 🟢 | Resolved — stale data fixed or no longer hitting |
+| `amount should be equal to payment page item amount` | 39 | **0** | **0** | 🟢 | Resolved |
+| `item does not exist, please refresh` | 19 | **0** | **0** | 🟢 | Resolved |
+| `order cannot be created for page not active` | 10 | **0** | **0** | 🟢 | Resolved |
+| `terms length 5-2048` | 5 | **0** | **0** | 🟢 | Fixed — terms validation guarded by update list |
+| `domain: must be a valid domain` | 5 | **0** | **0** | 🟢 | Fixed — removed domain validation |
+| `support_contact: invalid characters` | 2 | **0** | **0** | 🟢 | Fixed — removed letter pre-check |
+| `mandatory item missing` | 3 | **0** | **0** | 🟢 | Resolved |
+| `already active/inactive` | 2 | **0** | **0** | 🟢 | Resolved |
+| `custom_domain: key not expected` | — | **10** | **6** | ⬜ | Fix in repo (`a66dd20a`) — needs deploy |
+| `slug already exists` | 2 | **4** | **1** | ⬜ | NCA enforces unique slug, monolith doesn't — investigate scope |
+| `terms_length_validation` | — | **4** | **0** | ⬜ | May have resolved or no traffic this run |
+| `line_items_nil_on_create` | — | **2** | **1** | ⬜ | NCA requires non-nil items array on create |
+| `title_byte_length_bug` | — | **1** | **2** | ⬜ | Fix in repo (RuneLength) — needs deploy |
+| `mandatory_item_ordering` | — | **—** | **3** | ⬜ | **NEW** — NCA rejects order when mandatory PPI not ordered; route: `create_order` |
+| `support_email: must be a valid email address` | — | **—** | **2** | ⬜ | **NEW** — NCA enforces email format on update; monolith accepts |
 
 **Root Cause Analysis (COMPLETED):**
 
@@ -431,17 +428,19 @@ Same null-check, same comparison. When monolith returns 200 but NCA returns 400,
 
 Affected pages: `pl_RZD1SzmGsOSzQX` (204 hits), `pl_RDdOoUSowsRT0B` (13), `pl_SP8sZYvbYB4D5X` (10), `pl_STWfXTizcVpcGc` (9) — these need their `line_item_price` data re-synced from monolith.
 
-**2026-04-21 update:** Old subcategories (amount/min_amount/item/status data issues) all at **0** — resolved. But **5 new subcategories** emerged:
+**2026-04-21 update:** Old subcategories (amount/min_amount/item/status data issues) all at **0** — resolved. 5 new subcategories emerged.
 
-- [ ] **Fix `custom_domain_key_not_expected`** (10): Fix in repo at `a66dd20a` on `pp-with-tidb` — removes `CustomDomainKey` from `validatingMap` in `ValidateSlug()`. **NOT deployed** — deployed commit `2404d6c6` only removed the `is.Domain` rule but left the key in the map → ozzo rejects it. **Need to deploy `a66dd20a`.**
-- [ ] **Fix `slug_uniqueness`** (4): NCA enforces unique slug constraint that monolith doesn't (or scopes differently). Investigate slug uniqueness scope. **No fix in repo yet.**
-- [ ] **Fix `terms_length_validation`** (4 in TSV + ongoing in live logs): TWO distinct sources producing similar errors:
-  - **With `terms:` prefix** (TSV): From `PaymentPageEntity.ValidateForUpdate()` (`payment_page/validation.go:101`) using `ValidateStruct` → `RuneLength(5, 2048)` guarded by `IsFieldInUpdateList`. Fires when merchant sends `terms` in update request with value < 5 chars. Guard is working (only fires when terms is in request). **Root cause**: monolith accepts short terms on update despite `min:5` in `$editRules` — need to investigate why monolith is lenient. May need to remove the `RuneLength` check entirely on update, keeping only UTF8 validation.
-  - **Without field prefix** (live Coralogix log): From `Settings.ValidateForUpdate()` (`nocode/validation.go:583`) validating `PaymentSuccessMessage` with `validation.Length(5, 2048)` (byte length, not char count). Uses `validation.Validate()` not `ValidateStruct` so no field name in error. **Fix in repo**: changed `Length` to `RuneLength` (uncommitted on `pp-with-tidb`).
-- [ ] **Fix `line_items_nil_on_create`** (2): NCA requires non-nil items array on payment_page_create. Monolith allows create without items. **No fix in repo yet.**
-- [x] **Fix `title_byte_length_bug`** (1): `line_item/validation.go:44` — changed `Length(0, 80)` to `RuneLength(0, 512)` to match monolith's `Item::NAME => 'max:512'`. **Fix in repo** (uncommitted on `pp-with-tidb`). Not deployed.
+**2026-04-24 update:** 15 total. 2 new subcategories added (`mandatory_item_ordering`, `support_email`). `terms_length_validation` dropped to 0 this run.
 
-**Status: 🟠 Old data issues resolved; 5 new subcategories — 1 fixed in repo (title), 1 fix in repo awaiting deploy (custom_domain), 1 likely rollout timing (terms), 2 need investigation (slug, nil items)**
+- [ ] **Fix `custom_domain_key_not_expected`** (6, down from 10): Fix in repo at `a66dd20a` on `pp-with-tidb` — removes `CustomDomainKey` from `validatingMap` in `ValidateSlug()`. **NOT deployed.** Deploy `a66dd20a`.
+- [ ] **Fix `slug_uniqueness`** (1, down from 4): NCA enforces unique slug constraint that monolith doesn't (or scopes differently). Investigate slug uniqueness scope. **No fix in repo yet.**
+- [ ] **Fix `terms_length_validation`** (0 this run, 4 in 2026-04-21 TSV): May be resolved or low traffic. Monitor next run.
+- [ ] **Fix `line_items_nil_on_create`** (1): NCA requires non-nil items array on payment_page_create. Monolith allows create without items. **No fix in repo yet.**
+- [x] **Fix `title_byte_length_bug`** (2, up from 1): `line_item/validation.go:44` — changed `Length(0, 80)` to `RuneLength(0, 512)`. **Fix in repo** (uncommitted on `pp-with-tidb`). Not deployed.
+- [ ] **Investigate `mandatory_item_ordering`** (3, NEW): `create_order` route, monolith=200, NCA=400. NCA rejects order saying mandatory PPI `ppi_SgCf51034loYHu` must be ordered. Monolith accepted. Check if this is a data issue (stale `mandatory` flag on PPI in NCA) or a logic gap.
+- [ ] **Investigate `support_email: must be a valid email address`** (2, NEW): `payment_page_update` route, monolith=200, NCA=400. NCA enforces email format; monolith does not. Determine if monolith has no email validation or uses lenient regex. May need to relax NCA's validator.
+
+**Status: 🟠 Old data issues resolved; 7 active subcategories — 2 fixes in repo awaiting deploy (custom_domain, title), 2 need investigation (mandatory_item_ordering, support_email), 2 ongoing (slug, nil items)**
 
 ---
 
@@ -455,61 +454,70 @@ These are the 218 rows where api-graphql returned 500 ("We are facing some troub
 
 ### 14. create_order_nca_timeout
 
-**Count:** 237 (0.2%) — NEW CATEGORY (split from #4 create_order_nca_500)
+**Count:** 237 (original) → ~6 (2026-04-21) → **545** ⬆️ (2026-04-24)
 **Code Pair:** Monolith 400 → NCA 500
 **Route:** `payment_page_create_order`
 
-| Subcategory | Count | Status | Notes |
-|-------------|-------|--------|-------|
-| `Post \\` (HTTP timeout) | 214 | 🔵 | NCA timed out calling downstream |
-| `io_read_failed: recoverable` | 8 | 🔵 | Network read error |
-| `DCS Fetch Feature Failure` | 15 | 🔵 | Feature flag service timeout |
+| Subcategory | Old Count | 2026-04-21 | 2026-04-24 | Status | Notes |
+|-------------|-----------|------------|------------|--------|-------|
+| `Post \\` (HTTP timeout) | 214 | ~2 | **539** ⬆️ | 🟠 | NCA timed out calling downstream — spiked 270x |
+| `io_read_failed: recoverable` | 8 | ~4 | **6** | 🔵 | Network read error — stable |
+| `DCS Fetch Feature Failure` | 15 | 0 | **0** | 🔵 | Feature flag service timeout — resolved |
 
 These are infrastructure/network issues, not logic bugs. NCA's create_order path timed out or hit transient errors while processing the shadow request.
 
-**Status: 🔵 No code fix needed — infrastructure timeouts**
+**2026-04-24 update:** `Post \\` (HTTP connection timeout) spiked from ~2 to **539** — a 270x increase in one run. This is not a logic regression but warrants investigation: is some downstream service (payment gateway, DB, internal API) slower? Check infra/latency dashboards for the create_order NCA path around 2026-04-24.
+
+- [ ] Check if `Post \\` spike correlates with a specific downstream service (check Coralogix for which URL was being called in these logs)
+- [ ] Verify NCA create_order p99 latency in Grafana around 2026-04-24
+
+**Status: 🟠 `Post \\` spiked unexpectedly — investigate downstream latency**
 
 ---
 
 ### 15. other_misc
 
-**Count:** 27 (0.0%) — NEW CATEGORY
+**Count:** 27 (original) → 0 (2026-04-21) → **7** (2026-04-24)
 **Various edge cases across routes:**
 
-| Error | Route | Monolith | NCA | Count | Notes |
-|-------|-------|----------|-----|-------|-------|
-| `pages_view_by_slug` unknown error | pages_view_by_slug | 400 | 200 | 18 | Unknown parse error |
-| `pages_view` unknown error | pages_view | 400 | 200 | 8 | Unknown parse error |
-| `get_details` NCA timeout | payment_page_get_details | — | — | 11 | Empty codes — NCA timeout |
-| `The id provided does not exist` | payment_page_get_details | 400 | 200 | 4 | Monolith says ID invalid, NCA finds it |
-| `The id provided does not exist` | payment_page_set_receipt_details | 400 | 200 | 2 | Same pattern |
-| `title length > 80` | payment_page_update | — | — | 1 | NCA timeout + validation edge case |
-| `invalid request sent` | payment_page_hosted_view_admin | 200 | 400 | 1 | Admin route edge case (already tracked in #9) |
-| `502/504 → 500` | payment_page_create_order | 502/504 | 500 | 2 | Gateway errors |
+| Error | Route | Monolith | NCA | Old Count | 2026-04-24 | Notes |
+|-------|-------|----------|-----|-----------|------------|-------|
+| `pages_view_by_slug` unknown error | pages_view_by_slug | 400 | 200 | 18 | **0** | Unknown parse error |
+| `pages_view` unknown error | pages_view | 400 | 200 | 8 | **0** | Unknown parse error |
+| `get_details` NCA timeout | payment_page_get_details | — | — | 11 | **0** | Empty codes — NCA timeout |
+| `The id provided does not exist` | payment_page_get_details | 400 | 200 | 4 | **3** | Monolith says ID invalid, NCA finds it — 🔵 NCA better |
+| `The id provided does not exist` | payment_page_set_receipt_details | 400 | 200 | 2 | **1** | Same pattern — 🔵 NCA better |
+| `title length > 80` | payment_page_update | — | — | 1 | **0** | NCA timeout + validation edge case |
+| `invalid request sent` | payment_page_hosted_view_admin | 200 | 400 | 1 | **0** | Admin route edge case |
+| `502/504 → 500` | payment_page_create_order | 502/504 | 500 | 2 | **0** | Gateway errors |
+| `Post \\` | payment_page_set_receipt_details | 400 | 200 | — | **2** | **NEW** — Monolith network error; NCA returned 200 — 🔵 NCA better |
+| `Input field not present` | payment_page_set_receipt_details | 400 | 200 | — | **1** | **NEW** — Monolith rejected; NCA returned 200 — 🔵 NCA better |
 
-**Status: ⬜ Low priority — edge cases**
+All inverted cases (monolith=400, NCA=200) are 🔵 — NCA is handling these correctly. Will disappear after cutover.
+
+**Status: 🔵 Low priority — all inverted mismatches where NCA is better; no fix needed**
 
 ---
 
-## Priority Order (updated 2026-04-21)
+## Priority Order (updated 2026-04-24)
 
 ### Active issues (need investigation or fix):
-1. **#4 create_order_nca_500** (503) — 🟠 Fix deployed, reduced 87% but 503 remaining. Investigate if fix covers all paths.
-2. **#12 nca_validation_stricter** (21) — 🟠 Old data issues resolved. 5 new validation gaps: custom_domain (10), slug (4), terms on update (4), nil items (2), title byte-length (1).
-3. **#5 record_not_found_in_nca** (20) — 🔵 Reduced from 390. Data migration still needed for remaining pages.
-4. **#7 deactivate_activate_mismatch** (2) — 🟠 Terms fix verified. 2 new: stock check (1), already-inactive status sync (1).
-5. **#9 other** (3 → 0) — ⚠️ Count is 0 but fixes incomplete:
-   - `support_contact` letter pre-check NOT removed (`custom_rules.go:118-122`) — contradicts checklist claim. 0 hits currently but could recur. Need to verify if monolith actually rejects letters in `contact_syntax`.
-   - `is.Domain` partially removed — gone from `ValidateSlug()` but still in `Settings.Validate()` line 498 (harmless in practice, dead code cleanup).
+1. **#5 record_not_found_in_nca** (86, up from 20) — 🔴 INCREASED. get_details (61), set_receipt_details (14), update (11). Data migration urgent — run for all affected entity IDs.
+2. **#14 create_order_nca_timeout** (545, up from ~6) — 🟠 `Post \\` spiked 270x. Infrastructure timeouts but unexpected spike needs investigation. Check downstream latency for create_order NCA path.
+3. **#12 nca_validation_stricter** (15) — 🟠 7 active subcategories: deploy `a66dd20a` for custom_domain (6) + title (2); investigate mandatory_item_ordering (3) and support_email (2); resolve slug (1) and nil items (1).
+4. **#9 other** (0) — ⚠️ Still 0 but fixes incomplete:
+   - `support_contact` letter pre-check NOT removed (`custom_rules.go:118-122`) — could recur. Verify if monolith actually rejects letters.
+   - `is.Domain` still in `Settings.Validate()` line 498 — harmless dead code but should be cleaned.
 
-### Resolved (confirmed 0 on 2026-04-21, fix verified in repo):
-6. ~~**#1 create_order_validation_gap** (36,988 → 0)~~ — 🟢 UTF-8 sanitization fix (`payment_page.go:758-759`)
-7. ~~**#3 list_validation_diff** (300 → 0)~~ — 🟢 count/skip param validation (`ValidateListFilterParams`)
-8. ~~**#11 list_validation_diff_missing_shadow_code** (485 → 0)~~ — 🟢 Same as #3
-9. ~~**#6 dual_write_id_extraction** (20 → 0)~~ — 🟢 No longer occurring (no specific code fix — monolith data issue)
-10. ~~**#8 create_order_monolith_500** (35 → 0)~~ — 🟢 No longer occurring
-11. ~~**#15 other_misc** (27 → 0)~~ — 🟢 No longer occurring
+### Resolved (confirmed 0 on 2026-04-24):
+5. ~~**#4 create_order_nca_500** (3,839 → 503 → 0)~~ — 🟢 Fix fully effective; validation 500s eliminated
+6. ~~**#7 deactivate_activate_mismatch** (3 → 2 → 0)~~ — 🟢 Not in this run; terms fix verified, stock/inactive sub-issues not recurring
+7. ~~**#1 create_order_validation_gap** (36,988 → 0)~~ — 🟢 UTF-8 sanitization fix (`payment_page.go:758-759`)
+8. ~~**#3 list_validation_diff** (300 → 0)~~ — 🟢 count/skip param validation (`ValidateListFilterParams`)
+9. ~~**#11 list_validation_diff_missing_shadow_code** (485 → 0)~~ — 🟢 Same as #3
+10. ~~**#6 dual_write_id_extraction** (20 → 0)~~ — 🟢 No longer occurring
+11. ~~**#8 create_order_monolith_500** (35 → 0)~~ — 🟢 No longer occurring
 
-### No fix needed (disappear after cutover):
+### No fix needed (disappear after cutover or NCA is already better):
 12. **#2 proxy_monolith_timeout_pages_view** (74,885) — 🔵 Proxy architecture artifact
-13. **#14 create_order_nca_timeout** (~6) — 🔵 Infrastructure timeouts, reduced from 237
+13. **#15 other_misc** (7) — 🔵 All inverted (monolith=400, NCA=200); NCA is better here
