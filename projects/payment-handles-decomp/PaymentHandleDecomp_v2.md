@@ -83,6 +83,20 @@ In the new approach, **NCA handles step 1** using the existing `CreatePaymentPag
 **APIs based on query params:**
 - `payment_page_list` - `GET /payment_pages` (from merchant dashboard)
 
+**Payment Button Hosted APIs (public, header-based routing):**
+
+These are public-facing APIs served by payment buttons embedded on merchant websites. They are routed to NCA only when the `X-NoCodeApps-Routing: nocodeapps` header is present in Kong (same mechanism as `pages_view`).
+
+| Route name | HTTP | Path | Description |
+|---|---|---|---|
+| `payment_button_hosted_view` | GET/POST | `/v1/payment_buttons/{id}/view` | Renders the hosted payment button page |
+| `payment_page_hosted_button_details` | GET | `/v1/payment_buttons/{id}/button_details` | Returns button configuration for rendering |
+| `payment_page_hosted_button_preferences` | GET | `/v1/payment_buttons/{id}/button_preferences` | Returns button preferences (theme, settings) |
+
+**Recursive call prevention:** When NCA proxies any of these back to monolith (proxy state = `monolith_only`), it uses basic auth and does NOT forward the `X-NoCodeApps-Routing` header. This prevents Kong from re-routing the monolith-bound request back to NCA. All three routes are added to the `no_code_apps` allowlist so monolith accepts NCA's basic-auth proxy calls (API monolith PR #65689).
+
+**Kong routing:** Header-based upstream-override added to `prod/api/api.tf` and `base/api/api.tf` (terraform-kong PRs #9347/#9348). No dashboard-specific (merchant/admin) routing needed since these are public routes.
+
 **APIs with no changes needed:**
 - `orders/{order_id}/product_details` - Not supported currently for handles, no edits needed
 - `payment_page_expire_cron` - No changes needed, just ensure handles aren't expired
